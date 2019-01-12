@@ -2,12 +2,15 @@
 using SevenTiny.Bantina.Bankinate.Helpers;
 using System.Collections.Generic;
 using Test.SevenTiny.Bantina.Bankinate.Model;
+using SevenTiny.Bantina.Bankinate.Attributes;
 
 namespace Test.SevenTiny.Bantina.Bankinate.DbContext
 {
     public class ConnectionStrings : ConfigBase<ConnectionStrings>
     {
+        [Column]
         public string Key { get; set; }
+        [Column]
         public string Value { get; set; }
 
         private static Dictionary<string, string> dictionary;
