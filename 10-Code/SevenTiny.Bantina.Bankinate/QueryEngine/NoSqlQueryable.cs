@@ -42,5 +42,10 @@ namespace SevenTiny.Bantina.Bankinate
         {
             throw new NotImplementedException();
         }
+
+        public override bool Any(Expression<Func<TEntity, bool>> filter)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

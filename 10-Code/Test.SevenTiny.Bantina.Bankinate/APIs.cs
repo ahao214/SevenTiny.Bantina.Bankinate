@@ -124,6 +124,9 @@ namespace Test.SevenTiny.Bantina.Bankinate
                 // -- use count > 0 internal
                 // 返回是否存在相关条件记录，内部使用判断数量是否>0实现
                 var exist1 = db.QueryExist<Student>(t => true);
+                // -- use Any()
+                // 用懒加载拼接条件的方式返回是否存在
+                var exist2 = db.Queryable<Student>().Any(t => true);
             }
         }
 

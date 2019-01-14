@@ -179,5 +179,10 @@ namespace SevenTiny.Bantina.Bankinate
                 return Convert.ToInt32(DbHelper.ExecuteScalar(_dbContext));
             });
         }
+
+        public override bool Any(Expression<Func<TEntity, bool>> filter)
+        {
+            return this.Where(filter).ToCount() > 0;
+        }
     }
 }

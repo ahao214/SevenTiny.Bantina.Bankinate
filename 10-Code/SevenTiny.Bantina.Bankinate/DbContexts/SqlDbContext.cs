@@ -60,7 +60,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
                     ParamsDic = this.Parameters
                 });
             }
-            DbHelper.BatchExecuteNonQueryAsync(this,batchExecuteModels);
+            DbHelper.BatchExecuteNonQueryAsync(this, batchExecuteModels);
             DbCacheManager.Add(this, entities);
         }
 
@@ -106,7 +106,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         public void Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            SqlGenerator.Update(this, filter, entity );
+            SqlGenerator.Update(this, filter, entity);
             DbHelper.ExecuteNonQuery(this);
             DbCacheManager.Update(this, entity, filter);
         }
@@ -142,7 +142,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         }
         public bool QueryExist<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
         {
-            return QueryCount(filter) > 0;
+            return Queryable<TEntity>().Any(filter);
         }
 
         public void ExecuteSql(string sqlStatement, IDictionary<string, object> parms = null)

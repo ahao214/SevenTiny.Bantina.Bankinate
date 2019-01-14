@@ -134,5 +134,12 @@ namespace Test.SevenTiny.Bantina.Bankinate
             var re6 = Db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("1")).Select(t => new { t.IntKey, t.StringKey }).OrderBy(t => t.IntKey).Paging(1, 10).ToList();
             Assert.True(re4.Count == re5.Count && re5.Count == re6.Count && re6.Count == re4.Count);
         }
+
+        [Fact]
+        public void Query_Any()
+        {
+            var re = Db.Queryable<OperateTestModel>().Any(t => t.StringKey.EndsWith("3"));
+            Assert.True(re);
+        }
     }
 }

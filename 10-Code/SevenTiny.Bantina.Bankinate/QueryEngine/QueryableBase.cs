@@ -90,5 +90,11 @@ namespace SevenTiny.Bantina.Bankinate
         /// </summary>
         /// <returns></returns>
         public abstract int ToCount();
+        /// <summary>
+        /// 查询是否有符合条件的记录数
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public abstract bool Any(Expression<Func<TEntity, bool>> filter);
     }
 }
