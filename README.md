@@ -1,2 +1,2 @@
 # SevenTiny.Bantina.Bankinate
-SevenTiny.Bantina.Bankinate ORM Framework（ORM框架）
+[SevenTiny.Bantina.Bankinate ORM Framework（ORM框架）](wiki)
