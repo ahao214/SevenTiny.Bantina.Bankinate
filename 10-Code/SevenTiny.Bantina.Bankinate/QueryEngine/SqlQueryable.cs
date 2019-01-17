@@ -114,9 +114,7 @@ namespace SevenTiny.Bantina.Bankinate
 
             if (_isPaging)
             {
-                var result = DbCacheManager.GetEntities(_dbContext, _where, () =>
-                {
-                    _dbContext.SqlStatement = SqlGenerator.QueryablePaging<TEntity>(
+                _dbContext.SqlStatement = SqlGenerator.QueryablePaging<TEntity>(
                         _dbContext,
                         _columns,
                         _alias,
@@ -124,21 +122,23 @@ namespace SevenTiny.Bantina.Bankinate
                         SqlGenerator.QueryableOrderBy(_dbContext, _orderby, _isDesc),
                         _pageIndex,
                         _pageSize);
+                var result = DbCacheManager.GetEntities(_dbContext, _where, () =>
+                {
                     return DbHelper.ExecuteList<TEntity>(_dbContext);
                 });
                 return result;
             }
             else
             {
-                return DbCacheManager.GetEntities(_dbContext, _where, () =>
-                {
-                    _dbContext.SqlStatement = SqlGenerator.QueryableQuery<TEntity>(
+                _dbContext.SqlStatement = SqlGenerator.QueryableQuery<TEntity>(
                         _dbContext,
                         _columns,
                         _alias,
                         SqlGenerator.QueryableWhere(_dbContext, _where),
                         SqlGenerator.QueryableOrderBy(_dbContext, _orderby, _isDesc),
                         _top);
+                return DbCacheManager.GetEntities(_dbContext, _where, () =>
+                {
                     return DbHelper.ExecuteList<TEntity>(_dbContext);
                 });
             }
