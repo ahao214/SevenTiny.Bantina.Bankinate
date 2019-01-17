@@ -4,6 +4,7 @@ using System;
 namespace Test.SevenTiny.Bantina.Bankinate.Model
 {
     [Table("OperateTest")]
+    //[TableCaching]//二级缓存开关
     public class OperateTestModel
     {
         [Key]

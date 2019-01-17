@@ -12,36 +12,6 @@ namespace Test.SevenTiny.Bantina.Bankinate
     {
         public MySqlDb Db => new MySqlDb();
 
-        [Fact]
-        [Trait("desc", "初始化测试数据，当跑全部下列用例的时候，删除所有数据并执行预置数据操作！")]
-        public void InitTestDatas()
-        {
-            return;//初始化数据把这行代码放开
-
-            //清空所有数据,并重置索引
-            Db.ExecuteSql("truncate table " + Db.GetTableName<OperateTestModel>());
-
-            //预置测试数据
-            List<OperateTestModel> models = new List<OperateTestModel>();
-            for (int i = 1; i < 1001; i++)
-            {
-                models.Add(new OperateTestModel
-                {
-                    Key2 = i,
-                    StringKey = $"test_{i}",
-                    IntKey = i,
-                    IntNullKey = null,
-                    DateNullKey = DateTime.Now.Date,
-                    DateTimeNullKey = DateTime.Now,
-                    DoubleNullKey = i,
-                    FloatNullKey = i
-                });
-            }
-            Db.Add<OperateTestModel>(models);
-
-            Assert.True(true);
-        }
-
         [Theory]
         [InlineData(9999)]
         public void Add(int value)
@@ -140,6 +110,17 @@ namespace Test.SevenTiny.Bantina.Bankinate
         {
             var re = Db.Queryable<OperateTestModel>().Any(t => t.StringKey.EndsWith("3"));
             Assert.True(re);
+        }
+
+        [Theory]
+        [InlineData(10)]
+        public void Cache_Query_All(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var re = Db.Queryable<OperateTestModel>().ToList();
+                Assert.Equal(1000, re.Count);
+            }
         }
     }
 }
