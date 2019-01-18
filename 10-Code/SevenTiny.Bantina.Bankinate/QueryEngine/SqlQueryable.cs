@@ -122,11 +122,6 @@ namespace SevenTiny.Bantina.Bankinate
                         SqlGenerator.QueryableOrderBy(_dbContext, _orderby, _isDesc),
                         _pageIndex,
                         _pageSize);
-                var result = DbCacheManager.GetEntities(_dbContext, _where, () =>
-                {
-                    return DbHelper.ExecuteList<TEntity>(_dbContext);
-                });
-                return result;
             }
             else
             {
@@ -137,11 +132,12 @@ namespace SevenTiny.Bantina.Bankinate
                         SqlGenerator.QueryableWhere(_dbContext, _where),
                         SqlGenerator.QueryableOrderBy(_dbContext, _orderby, _isDesc),
                         _top);
-                return DbCacheManager.GetEntities(_dbContext, _where, () =>
-                {
-                    return DbHelper.ExecuteList<TEntity>(_dbContext);
-                });
             }
+
+            return DbCacheManager.GetEntities(_dbContext, _where, () =>
+            {
+                return DbHelper.ExecuteList<TEntity>(_dbContext);
+            });
         }
 
         public override TEntity ToEntity()
@@ -151,15 +147,16 @@ namespace SevenTiny.Bantina.Bankinate
 
             Limit(1);
 
-            return DbCacheManager.GetEntity(_dbContext, _where, () =>
-            {
-                _dbContext.SqlStatement = SqlGenerator.QueryableQuery<TEntity>(
+            _dbContext.SqlStatement = SqlGenerator.QueryableQuery<TEntity>(
                     _dbContext,
                     _columns,
                     _alias,
                     SqlGenerator.QueryableWhere(_dbContext, _where),
                     SqlGenerator.QueryableOrderBy(_dbContext, _orderby, _isDesc),
                     _top);
+
+            return DbCacheManager.GetEntity(_dbContext, _where, () =>
+            {
                 return DbHelper.ExecuteEntity<TEntity>(_dbContext);
             });
         }
@@ -169,13 +166,13 @@ namespace SevenTiny.Bantina.Bankinate
             MustExistCheck();
             ReSetTableName();
 
-            return DbCacheManager.GetCount(_dbContext, _where, () =>
-            {
-                _dbContext.SqlStatement = SqlGenerator.QueryableQueryCount<TEntity>(
+            _dbContext.SqlStatement = SqlGenerator.QueryableQueryCount<TEntity>(
                     _dbContext,
                     _alias,
                     SqlGenerator.QueryableWhere(_dbContext, _where));
 
+            return DbCacheManager.GetCount(_dbContext, _where, () =>
+            {
                 return Convert.ToInt32(DbHelper.ExecuteScalar(_dbContext));
             });
         }

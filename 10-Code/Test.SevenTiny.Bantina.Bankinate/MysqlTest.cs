@@ -122,5 +122,16 @@ namespace Test.SevenTiny.Bantina.Bankinate
                 Assert.Equal(1000, re.Count);
             }
         }
+
+        [Theory]
+        [InlineData(10)]
+        public void Cache_Query_One(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var re = Db.QueryOne<OperateTestModel>(t=>t.StringKey.Contains("test"));
+                Assert.NotNull(re);
+            }
+        }
     }
 }
