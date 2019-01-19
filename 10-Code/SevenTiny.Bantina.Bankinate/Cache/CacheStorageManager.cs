@@ -26,14 +26,14 @@ namespace SevenTiny.Bantina.Bankinate.Cache
     {
         public static bool IsExist(DbContext dbContext, string key)
         {
-            return IsExist(dbContext, key,out object obj);
+            return IsExist(dbContext, key, out object obj);
         }
-        public static bool IsExist<TValue>(DbContext dbContext, string key,out TValue value)
+        public static bool IsExist<TValue>(DbContext dbContext, string key, out TValue value)
         {
             switch (dbContext.CacheMediaType)
             {
                 case CacheMediaType.Local:
-                    return MemoryCacheHelper.Exist(key,out value);
+                    return MemoryCacheHelper.Exist(key, out value);
                 case CacheMediaType.Redis:
                     value = default(TValue);
                     return false;
@@ -73,6 +73,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
             switch (dbContext.CacheMediaType)
             {
                 case CacheMediaType.Local:
+                    MemoryCacheHelper.Delete<string>(key);
                     break;
                 case CacheMediaType.Redis:
                     break;

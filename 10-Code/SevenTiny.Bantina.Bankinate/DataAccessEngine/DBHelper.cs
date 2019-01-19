@@ -280,12 +280,11 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
         //DESC:由于性能较低，现在使用全部切换到高性能的方法V2版本，V1版本代码切换成私有方法不再对外开放 -- 7tiny - 2019年1月10日 22点46分
         private static List<Entity> GetListFromDataSet<Entity>(DataSet ds) where Entity : class
         {
-            List<Entity> list = new List<Entity>();//实例化一个list对象
-            PropertyInfo[] propertyInfos = typeof(Entity).GetProperties();     //获取T对象的所有公共属性
-
             DataTable dt = ds.Tables[0];//获取到ds的dt
             if (dt.Rows.Count > 0)
             {
+                PropertyInfo[] propertyInfos = typeof(Entity).GetProperties();     //获取T对象的所有公共属性
+                List<Entity> list = new List<Entity>();//实例化一个list对象
                 //判断读取的行是否>0 即数据库数据已被读取
                 foreach (DataRow row in dt.Rows)
                 {
@@ -322,8 +321,9 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
                     }
                     list.Add(model1);//将对象填充到list中
                 }
+                return list;
             }
-            return list;
+            return default(List<Entity>);
         }
         private static Entity GetEntityFromDataReader<Entity>(DbDataReader reader) where Entity : class
         {
@@ -363,7 +363,7 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
         }
         private static Entity GetEntityFromDataSet<Entity>(DataSet ds) where Entity : class
         {
-            return GetListFromDataSet<Entity>(ds).FirstOrDefault();
+            return GetListFromDataSet<Entity>(ds)?.FirstOrDefault();
         }
 
         /// <summary>
@@ -374,17 +374,18 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
         /// <returns></returns>
         public static List<Entity> GetListFromDataSetV2<Entity>(DataSet ds) where Entity : class
         {
-            List<Entity> list = new List<Entity>();
             DataTable dt = ds.Tables[0];
             if (dt.Rows.Count > 0)
             {
+                List<Entity> list = new List<Entity>();
                 foreach (DataRow row in dt.Rows)
                 {
                     Entity entity = FillAdapter<Entity>.AutoFill(row);
                     list.Add(entity);
                 }
+                return list;
             }
-            return list;
+            return default(List<Entity>);
         }
         public static Entity GetEntityFromDataSetV2<Entity>(DataSet ds) where Entity : class
         {
