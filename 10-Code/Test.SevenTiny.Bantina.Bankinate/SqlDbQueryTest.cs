@@ -8,51 +8,14 @@ using Xunit;
 
 namespace Test.SevenTiny.Bantina.Bankinate
 {
-    public class MysqlTest
+    /// <summary>
+    /// 关系型数据库查询测试
+    /// </summary>
+    public class SqlDbQueryTest
     {
-        public MySqlDb Db => new MySqlDb();
-
-        [Theory]
-        [InlineData(9999)]
-        public void Add(int value)
-        {
-            OperateTestModel model = new OperateTestModel();
-            model.IntKey = value;
-            model.StringKey = "AddTest";
-            model.IntKey = value;
-            Db.Add<OperateTestModel>(model);
-        }
-
-        [Theory]
-        [InlineData(9999)]
-        public void Update(int value)
-        {
-            OperateTestModel model = Db.QueryOne<OperateTestModel>(t => t.IntKey == value);
-            //model.Id = value;   //自增的主键不应该被修改,如果用这种方式进行修改，给Id赋值就会导致修改不成功，因为条件是用第一个主键作为标识修改的
-            model.Key2 = value;
-            model.StringKey = $"UpdateTest_{value}";
-            model.IntNullKey = value;
-            model.DateTimeNullKey = DateTime.Now;
-            model.DateNullKey = DateTime.Now.Date;
-            model.DoubleNullKey = model.IntNullKey;
-            model.FloatNullKey = model.IntNullKey;
-            Db.Update<OperateTestModel>(model);
-        }
-
-        [Theory]
-        [InlineData(9999)]
-        public void DeleteWhere(int value)
-        {
-            Db.Delete<OperateTestModel>(t => t.IntKey == value);
-        }
-
-        [Theory]
-        [InlineData(9999)]
-        public void DeleteEntity(int value)
-        {
-            OperateTestModel model = Db.QueryOne<OperateTestModel>(t => t.IntKey == value);
-            Db.Delete<OperateTestModel>(model);
-        }
+        //这里切换对应的关系型数据库上下文来测试不同的关系型数据库操作
+        MySqlDb Db => new MySqlDb();
+        //SqlServerDb Db => new SqlServerDb();
 
         [Fact]
         public void Query_All()
@@ -69,7 +32,7 @@ namespace Test.SevenTiny.Bantina.Bankinate
         }
 
         [Fact]
-        public void Query_Where_Multi()
+        public void Query_MultiWhere()
         {
             var re = Db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("3")).Where(t => t.IntKey == 3).ToList();
             Assert.Single(re);
@@ -110,28 +73,6 @@ namespace Test.SevenTiny.Bantina.Bankinate
         {
             var re = Db.Queryable<OperateTestModel>().Any(t => t.StringKey.EndsWith("3"));
             Assert.True(re);
-        }
-
-        [Theory]
-        [InlineData(10)]
-        public void Cache_Query_All(int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                var re = Db.Queryable<OperateTestModel>().ToList();
-                Assert.Equal(1000, re.Count);
-            }
-        }
-
-        [Theory]
-        [InlineData(10)]
-        public void Cache_Query_One(int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                var re = Db.QueryOne<OperateTestModel>(t=>t.StringKey.Contains("test"));
-                Assert.NotNull(re);
-            }
         }
     }
 }

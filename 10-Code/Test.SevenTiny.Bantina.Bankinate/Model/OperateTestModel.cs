@@ -4,7 +4,7 @@ using System;
 namespace Test.SevenTiny.Bantina.Bankinate.Model
 {
     [Table("OperateTest")]
-    //[TableCaching]//二级缓存开关
+    [TableCaching]//二级缓存开关,需要上下文开启二级缓存
     public class OperateTestModel
     {
         [Key]

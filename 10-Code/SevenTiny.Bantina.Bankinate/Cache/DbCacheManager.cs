@@ -101,7 +101,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
             }
 
             //3.如果都没有，则直接从逻辑中获取
-            if (result == null)
+            if (result == null || result == default(TEntity))
             {
                 result = func();
                 dbContext.IsFromCache = false;
@@ -119,11 +119,11 @@ namespace SevenTiny.Bantina.Bankinate.Cache
             //2.判断是否在一级QueryCahe中
             if (result == null)
             {
-                result = QueryCacheManager.GetEntitiesFromCache<int>(dbContext);
+                result = QueryCacheManager.GetEntitiesFromCache<int?>(dbContext);
             }
 
             //3.如果都没有，则直接从逻辑中获取
-            if (result == null || result == default(int))
+            if (result == null || result == default(int?))
             {
                 result = func();
                 dbContext.IsFromCache = false;
