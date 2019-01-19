@@ -117,6 +117,10 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     //这里用object类型进行存储，因为字典的value可能有list集合，int，object等多种类型，泛型使用会出现识别异常
                     if (CacheStorageManager.IsExist(dbContext, GetQueryCacheKey(dbContext), out Dictionary<int, object> t))
                     {
+                        //如果超出单表的query缓存键阈值，则按先后顺序进行移除
+                        if (t.Count >= dbContext.QueryCacheMaxCountPerTable)
+                            t.Remove(t.First().Key);
+
                         t.AddOrUpdate(sqlQueryCacheKey, cacheValue);
                         CacheStorageManager.Put(dbContext, GetQueryCacheKey(dbContext), t, dbContext.QueryCacheExpiredTimeSpan);
                     }

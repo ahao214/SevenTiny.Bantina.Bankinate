@@ -98,6 +98,10 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             }
         }
         /// <summary>
+        /// 每张表一级缓存的最大个数，超出数目将会按从早到晚的顺序移除缓存键
+        /// </summary>
+        public int QueryCacheMaxCountPerTable { get; protected set; } = DefaultValue.QueryCacheMaxCountPerTable;
+        /// <summary>
         /// 数据是否从缓存中获取
         /// </summary>
         public bool IsFromCache { get; internal set; } = false;

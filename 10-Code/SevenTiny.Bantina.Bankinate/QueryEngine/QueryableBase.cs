@@ -47,6 +47,11 @@ namespace SevenTiny.Bantina.Bankinate
         protected int _pageIndex = 0;
         protected int _pageSize = 0;
 
+        //query info
+        public string SqlStatement => _dbContext.SqlStatement;
+        public string TableName => _dbContext.TableName;
+        public IDictionary<string, object> Parameters => _dbContext.Parameters;
+
         /// <summary>
         /// 要查询的列
         /// </summary>

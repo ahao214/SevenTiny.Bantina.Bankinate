@@ -6,6 +6,10 @@ namespace SevenTiny.Bantina.Bankinate.Configs
     internal static class DefaultValue
     {
         /// <summary>
+        /// 每张表一级缓存的最大个数，超出数目将会按从早到晚的顺序移除缓存键
+        /// </summary>
+        internal static readonly int QueryCacheMaxCountPerTable = 50;
+        /// <summary>
         /// QueryCache默认过期时间
         /// </summary>
         internal static readonly TimeSpan QueryCacheExpiredTimeSpan = TimeSpan.FromMinutes(10);
@@ -46,7 +50,7 @@ namespace SevenTiny.Bantina.Bankinate.Configs
         /// </summary>
         internal static readonly TimeSpan CacheKeysMaxExpiredTime = TimeSpan.FromDays(1);
 
-        internal static string GetQueryCacheKeysCacheKey(string dataBaseName) =>$"{CacheKey_QueryCacheKeys}{dataBaseName}";
-        internal static string GetTableCacheKeysCacheKey(string dataBaseName) =>$"{CacheKey_TableCacheKeys}{dataBaseName}";
+        internal static string GetQueryCacheKeysCacheKey(string dataBaseName) => $"{CacheKey_QueryCacheKeys}{dataBaseName}";
+        internal static string GetTableCacheKeysCacheKey(string dataBaseName) => $"{CacheKey_TableCacheKeys}{dataBaseName}";
     }
 }
