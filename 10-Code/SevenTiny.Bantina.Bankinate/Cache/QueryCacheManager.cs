@@ -3,6 +3,7 @@ using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SevenTiny.Bantina.Bankinate.Cache
 {
@@ -59,6 +60,21 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         }
 
         /// <summary>
+        /// 构建sql查询的sql语句缓存键Key
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <returns></returns>
+        private static int GetSqlQueryCacheKey(DbContext dbContext)
+        {
+            //如果有条件，则sql的key要拼接对应的参数值
+            if (dbContext.Parameters != null && dbContext.Parameters.Any())
+            {
+                return $"{dbContext.SqlStatement}_{string.Join("|", dbContext.Parameters.Values)}".GetHashCode();
+            }
+            return dbContext.SqlStatement.GetHashCode();
+        }
+
+        /// <summary>
         /// 从缓存中获取数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -72,10 +88,11 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                 //2.如果QueryCache里面有该缓存键，则直接获取，并从单个表单位中获取到对应sql的值
                 if (CacheStorageManager.IsExist(dbContext, GetQueryCacheKey(dbContext), out Dictionary<int, object> t))
                 {
-                    if (t.ContainsKey(dbContext.SqlStatement.GetHashCode()))
+                    int sqlQueryCacheKey = GetSqlQueryCacheKey(dbContext);
+                    if (t.ContainsKey(sqlQueryCacheKey))
                     {
                         dbContext.IsFromCache = true;
-                        return (T)t[dbContext.SqlStatement.GetHashCode()];
+                        return (T)t[sqlQueryCacheKey];
                     }
                 }
             }
@@ -95,7 +112,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
             {
                 if (cacheValue != null)
                 {
-                    int sqlQueryCacheKey = dbContext.SqlStatement.GetHashCode();
+                    int sqlQueryCacheKey = GetSqlQueryCacheKey(dbContext);
                     //如果缓存中存在，则拿到表单位的缓存并更新
                     //这里用object类型进行存储，因为字典的value可能有list集合，int，object等多种类型，泛型使用会出现识别异常
                     if (CacheStorageManager.IsExist(dbContext, GetQueryCacheKey(dbContext), out Dictionary<int, object> t))

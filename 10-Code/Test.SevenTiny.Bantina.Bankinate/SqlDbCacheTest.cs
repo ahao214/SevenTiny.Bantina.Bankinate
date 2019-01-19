@@ -93,6 +93,18 @@ namespace Test.SevenTiny.Bantina.Bankinate
 
         [Theory]
         [InlineData(100)]
+        public void QueryCache_Query_WhereWithUnSameCondition(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var re = QueryCacheDb.QueryOne<OperateTestModel>(t => t.Id == 1);
+                var re1 = QueryCacheDb.QueryOne<OperateTestModel>(t => t.Id == 2);
+                Assert.NotEqual(re.StringKey, re1.StringKey);
+            }
+        }
+
+        [Theory]
+        [InlineData(100)]
         [Trait("desc", "设置缓存过期时间进行测试")]
         public void QueryCache_Expired(int count)
         {
