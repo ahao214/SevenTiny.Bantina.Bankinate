@@ -4,11 +4,11 @@ using SevenTiny.Bantina.Bankinate.Attributes;
 namespace Test.SevenTiny.Bantina.Bankinate.DbContext
 {
     [DataBase("SevenTinyTest")]
-    public class MySqlDb : MySqlDbContext<MySqlDb>
+    public class MySqlDbOfQueryCache : MySqlDbContext<MySqlDb>
     {
-        public MySqlDb() : base(ConnectionStrings.Get("mysql39901"))
+        public MySqlDbOfQueryCache() : base(ConnectionStrings.Get("mysql39901"))
         {
-            
+            OpenQueryCache = true;//一级缓存开关
         }
     }
 }

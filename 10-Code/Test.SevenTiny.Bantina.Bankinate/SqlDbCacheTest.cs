@@ -3,116 +3,69 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Test.SevenTiny.Bantina.Bankinate.DbContext;
 using Test.SevenTiny.Bantina.Bankinate.Model;
 using Xunit;
 
 namespace Test.SevenTiny.Bantina.Bankinate
 {
-    public class SqlServerTest
+    /// <summary>
+    /// 关系型数据库缓存测试
+    /// </summary>
+    public class SqlDbCacheTest
     {
-        public SqlServerDb Db => new SqlServerDb();
+        //这里切换对应的关系型数据库上下文
+        MySqlDbOfQueryCache QueryCacheDb => new MySqlDbOfQueryCache();
+        MySqlDbOfTableCache TableCacheDb => new MySqlDbOfTableCache();
+        //SqlServerDb Db => new SqlServerDb();
 
         [Theory]
-        [InlineData(9999)]
-        public void Add(int value)
+        [InlineData(100)]
+        public void QueryCache_Query_All(int count)
         {
-            OperateTestModel model = new OperateTestModel();
-            model.IntKey = value;
-            model.StringKey = "AddTest";
-            model.IntKey = value;
-            model.IntNullKey = null;
-            Db.Add<OperateTestModel>(model);
-        }
-
-        [Theory]
-        [InlineData(9999)]
-        public void Update(int value)
-        {
-            OperateTestModel model = Db.QueryOne<OperateTestModel>(t => t.IntKey == value);
-            //model.Id = value;   //自增的主键不应该被修改,如果用这种方式进行修改，给Id赋值就会导致修改不成功，因为条件是用第一个主键作为标识修改的
-            model.Key2 = value;
-            model.StringKey = $"UpdateTest_{value}";
-            model.IntNullKey = value;
-            model.DateTimeNullKey = DateTime.Now;
-            model.DateNullKey = DateTime.Now.Date;
-            model.DoubleNullKey = model.IntNullKey;
-            model.FloatNullKey = model.IntNullKey;
-            Db.Update<OperateTestModel>(model);
+            for (int i = 0; i < count; i++)
+            {
+                var re = QueryCacheDb.Queryable<OperateTestModel>().ToList();
+                Assert.Equal(1000, re.Count);
+            }
         }
 
         [Theory]
-        [InlineData(9999)]
-        public void DeleteWhere(int value)
+        [InlineData(100)]
+        public void QueryCache_Query_One(int count)
         {
-            Db.Delete<OperateTestModel>(t => t.IntKey == value);
+            for (int i = 0; i < count; i++)
+            {
+                var re = QueryCacheDb.QueryOne<OperateTestModel>(t => t.StringKey.Contains("test"));
+                Assert.NotNull(re);
+            }
         }
 
         [Theory]
-        [InlineData(9999)]
-        public void DeleteEntity(int value)
+        [InlineData(100)]
+        public void QueryCache_Query_Count(int count)
         {
-            OperateTestModel model = Db.QueryOne<OperateTestModel>(t => t.IntKey == value);
-            Db.Delete<OperateTestModel>(model);
+            for (int i = 0; i < count; i++)
+            {
+                var re = QueryCacheDb.QueryCount<OperateTestModel>(t => t.StringKey.Contains("test"));
+                Assert.Equal(1000,re);
+            }
         }
 
-        [Fact]
-        public void Query_All()
+        [Theory]
+        [InlineData(100)]
+        [Trait("desc","设置缓存过期时间进行测试")]
+        public void QueryCache_Expired(int count)
         {
-            var re = Db.Queryable<OperateTestModel>().ToList();
-            Assert.Equal(1000, re.Count);
+            for (int i = 0; i < count; i++)
+            {
+                var re = QueryCacheDb.QueryOne<OperateTestModel>(t => t.StringKey.Contains("test"));
+                Assert.NotNull(re);
+            }
         }
 
-        [Fact]
-        public void Query_Where()
-        {
-            var re = Db.Queryable<OperateTestModel>().Where(t => t.StringKey.EndsWith("3")).ToList();
-            Assert.Equal(100, re.Count);
-        }
-
-        [Fact]
-        public void Query_Where_Multi()
-        {
-            var re = Db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("3")).Where(t => t.IntKey == 3).ToList();
-            Assert.Single(re);
-        }
-
-        [Fact]
-        public void Query_Select()
-        {
-            var re = Db.Queryable<OperateTestModel>().Where(t => t.IntKey <= 3).Select(t => new { t.IntKey, t.StringKey }).ToList();
-            Assert.Equal(3, re.Count);
-        }
-
-        [Fact]
-        public void Query_OrderBy()
-        {
-            var re = Db.Queryable<OperateTestModel>().Where(t => t.IntKey <= 9).Select(t => new { t.IntKey, t.StringKey }).OrderByDescending(t => t.IntKey).ToList();
-            Assert.True(re.Count == 9 && re.First().IntKey == 9 && re.First().Id == 0);//没有查id，id应该=0
-        }
-
-        [Fact]
-        public void Query_Limit()
-        {
-            var re = Db.Queryable<OperateTestModel>().Where(t => t.IntKey > 3).Select(t => new { t.IntKey, t.StringKey }).OrderByDescending(t => t.IntKey).Limit(30).ToList();
-            Assert.Equal(30, re.Count);
-        }
-
-        [Fact]
-        public void Query_Paging()
-        {
-            var re4 = Db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("1")).Select(t => new { t.IntKey, t.StringKey }).OrderBy(t => t.IntKey).Paging(0, 10).ToList();
-            var re5 = Db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("1")).Select(t => new { t.IntKey, t.StringKey }).OrderByDescending(t => t.IntKey).Paging(0, 10).ToList();
-            var re6 = Db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("1")).Select(t => new { t.IntKey, t.StringKey }).OrderBy(t => t.IntKey).Paging(1, 10).ToList();
-            Assert.True(re4.Count == re5.Count && re5.Count == re6.Count && re6.Count == re4.Count);
-        }
-
-        [Fact]
-        public void Query_Any()
-        {
-            var re = Db.Queryable<OperateTestModel>().Any(t => t.StringKey.EndsWith("3"));
-            Assert.True(re);
-        }
+        //下面方法需要重构 -------------------------------
 
         [Theory]
         [InlineData(100)]
