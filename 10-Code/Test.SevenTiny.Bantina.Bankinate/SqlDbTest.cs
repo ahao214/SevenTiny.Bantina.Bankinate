@@ -163,5 +163,14 @@ namespace Test.SevenTiny.Bantina.Bankinate
             var re = Db.Queryable<OperateTestModel>().Any(t => t.StringKey.EndsWith("3"));
             Assert.True(re);
         }
+
+        [Fact]
+        [Trait("bug","修复同字段不同值的，sql和参数生成错误")]
+        [Trait("bug", "修复生成sql语句由于没有括号，逻辑顺序有误")]
+        public void Query_BugRepaire1()
+        {
+            var re = Db.QueryOne<OperateTestModel>(t => t.IntKey == 1 && t.Id != 2 && (t.StringKey.Contains("1") || t.StringKey.Contains("2")));
+            Assert.NotNull(re);
+        }
     }
 }

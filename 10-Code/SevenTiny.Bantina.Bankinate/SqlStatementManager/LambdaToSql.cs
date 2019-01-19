@@ -120,12 +120,15 @@ namespace SevenTiny.Bantina.Bankinate.SqlStatementManager
             {
                 var keyNameNoPoint = leftValue.Replace(".", "");
 
-                parameters.AddOrUpdate($"@{keyNameNoPoint}", $"{rightValue}");
-                return $"{leftValue} {typeCast} @{keyNameNoPoint}";
+                keyNameNoPoint = FindAppropriateKey($"@{keyNameNoPoint}", parameters);
+
+                parameters.AddOrUpdate(keyNameNoPoint, $"{rightValue}");
+
+                return $"{leftValue} {typeCast} {keyNameNoPoint}";
             }
             else
             {
-                return $"{leftValue} {typeCast} {rightValue}";
+                return $"({leftValue}) {typeCast} ({rightValue})";
             }
         }
 
@@ -187,27 +190,29 @@ namespace SevenTiny.Bantina.Bankinate.SqlStatementManager
 
                 //参数名
                 var keyName = mce.Object.ToString();
-                var keyNameNoPoint = keyName.Replace(".","");
+                var keyNameNoPoint = keyName.Replace(".", "");
+
+                keyNameNoPoint = FindAppropriateKey($"@{keyNameNoPoint}", parameters);
 
                 if (mce.Method.Name.Equals("Equals"))
                 {
-                    parameters.AddOrUpdate($"@{keyNameNoPoint}", $"{value}");
-                    return $"{keyName} = @{keyNameNoPoint}";
+                    parameters.AddOrUpdate(keyNameNoPoint, $"{value}");
+                    return $"{keyName} = {keyNameNoPoint}";
                 }
                 else if (mce.Method.Name.Equals("Contains"))
                 {
-                    parameters.AddOrUpdate($"@{keyNameNoPoint}", $"%{value.Replace("'", "")}%");
-                    return $"{keyName} LIKE @{keyNameNoPoint}";
+                    parameters.AddOrUpdate(keyNameNoPoint, $"%{value.Replace("'", "")}%");
+                    return $"{keyName} LIKE {keyNameNoPoint}";
                 }
                 else if (mce.Method.Name.Equals("StartsWith"))
                 {
-                    parameters.AddOrUpdate($"@{keyNameNoPoint}", $"{value.Replace("'", "")}%");
-                    return $"{keyName} LIKE @{keyNameNoPoint}";
+                    parameters.AddOrUpdate(keyNameNoPoint, $"{value.Replace("'", "")}%");
+                    return $"{keyName} LIKE {keyNameNoPoint}";
                 }
                 else if (mce.Method.Name.Equals("EndsWith"))
                 {
-                    parameters.AddOrUpdate($"@{keyNameNoPoint}", $"%{value.Replace("'", "")}");
-                    return $"{keyName} LIKE @{keyNameNoPoint}";
+                    parameters.AddOrUpdate(keyNameNoPoint, $"%{value.Replace("'", "")}");
+                    return $"{keyName} LIKE {keyNameNoPoint}";
                 }
                 return value;
             }
@@ -281,6 +286,31 @@ namespace SevenTiny.Bantina.Bankinate.SqlStatementManager
                 default:
                     return null;
             }
+        }
+
+        /// <summary>
+        /// 处理同key但是不同value的情况,查找适合的key返回
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="parameters"></param>
+        private static string FindAppropriateKey(string key, IDictionary<string, object> parameters)
+        {
+            if (!parameters.ContainsKey(key))
+            {
+                return key;
+            }
+
+            //循环99次，如果期间有符合条件的直接返回
+            for (int i = 0; i < 99; i++)
+            {
+                string tempKey = $"{key}{i}";
+                if (!parameters.ContainsKey(tempKey))
+                {
+                    return tempKey;
+                }
+            }
+
+            throw new KeyNotFoundException($"The appropriate key was not found in the interval [{key}0,{key}99]");
         }
     }
 }
