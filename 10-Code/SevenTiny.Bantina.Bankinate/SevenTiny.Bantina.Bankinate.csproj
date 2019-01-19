@@ -11,7 +11,7 @@
     <PackageLicenseUrl>https://github.com/sevenTiny/SevenTiny.Bantina</PackageLicenseUrl>
     <Company>www.7tiny.com</Company>
     <Authors>7tiny</Authors>
-    <Description>update multi-thread bugs of Task scan table;</Description>
+    <Description></Description>
   </PropertyGroup>
 
   <ItemGroup>
