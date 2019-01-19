@@ -18,7 +18,45 @@ namespace Test.SevenTiny.Bantina.Bankinate
         //这里切换对应的关系型数据库上下文
         MySqlDbOfQueryCache QueryCacheDb => new MySqlDbOfQueryCache();
         MySqlDbOfTableCache TableCacheDb => new MySqlDbOfTableCache();
-        //SqlServerDb Db => new SqlServerDb();
+
+        [Fact]
+        public void QueryCache_Query_Add()
+        {
+            //1.先查询肯定是没有的
+            var re0 = QueryCacheDb.Queryable<OperateTestModel>().Where(t => t.StringKey.StartsWith("CacheAddTest")).ToList();
+            Assert.Null(re0);
+
+            QueryCacheDb.Add(new OperateTestModel
+            {
+                IntKey = 123,
+                StringKey = "CacheAddTest123"
+            });
+
+            //2.这时候查询应该有一条，这次查询才加入缓存
+            var re = QueryCacheDb.Queryable<OperateTestModel>().Where(t => t.StringKey.StartsWith("CacheAddTest")).ToList();
+            Assert.Single(re);
+
+            //3.重复查询，这次是从缓存查的，还是一条
+            var re2 = QueryCacheDb.Queryable<OperateTestModel>().Where(t => t.StringKey.StartsWith("CacheAddTest")).ToList();
+            Assert.Single(re2);
+
+            //再次新增，清楚一级缓存
+            QueryCacheDb.Add(new OperateTestModel
+            {
+                IntKey = 123,
+                StringKey = "CacheAddTest123"
+            });
+
+            //4.这次查应该从数据库查询，加入缓存，2条
+            var re4 = QueryCacheDb.Queryable<OperateTestModel>().Where(t => t.StringKey.StartsWith("CacheAddTest")).ToList();
+            Assert.Equal(2, re4.Count);
+
+            QueryCacheDb.Delete<OperateTestModel>(t => t.StringKey.StartsWith("CacheAddTest"));
+
+            //4.删除完毕以后，查询是没有的
+            var re3 = QueryCacheDb.Queryable<OperateTestModel>().Where(t => t.StringKey.StartsWith("CacheAddTest")).ToList();
+            Assert.Null(re3);
+        }
 
         [Theory]
         [InlineData(100)]
@@ -49,13 +87,13 @@ namespace Test.SevenTiny.Bantina.Bankinate
             for (int i = 0; i < count; i++)
             {
                 var re = QueryCacheDb.QueryCount<OperateTestModel>(t => t.StringKey.Contains("test"));
-                Assert.Equal(1000,re);
+                Assert.Equal(1000, re);
             }
         }
 
         [Theory]
         [InlineData(100)]
-        [Trait("desc","设置缓存过期时间进行测试")]
+        [Trait("desc", "设置缓存过期时间进行测试")]
         public void QueryCache_Expired(int count)
         {
             for (int i = 0; i < count; i++)

@@ -11,7 +11,7 @@ namespace Test.SevenTiny.Bantina.Bankinate
     /// </summary>
     public class DataPreseter
     {
-        [Fact]
+        //[Fact]
         [Trait("desc", "初始化MySql测试数据")]
         public void InitMySqlData()
         {
@@ -41,7 +41,7 @@ namespace Test.SevenTiny.Bantina.Bankinate
             Assert.True(true);
         }
 
-        [Fact]
+        //[Fact]
         [Trait("desc", "初始化SqlServer测试数据")]
         public void InitSqlServerData()
         {
