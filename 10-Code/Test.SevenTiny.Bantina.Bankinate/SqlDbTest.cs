@@ -18,7 +18,7 @@ namespace Test.SevenTiny.Bantina.Bankinate
         //SqlServerDb Db => new SqlServerDb();
 
         [Fact]
-        [Trait("desc","持久化测试")]
+        [Trait("desc", "持久化测试")]
         public void Persistence()
         {
             int value = 999999;
@@ -71,7 +71,7 @@ namespace Test.SevenTiny.Bantina.Bankinate
         }
 
         [Fact]
-        [Trait("desc","持久化测试_默认使用实体主键删除数据")]
+        [Trait("desc", "持久化测试_默认使用实体主键删除数据")]
         public void Persistence_DeleteEntity()
         {
             int value = 999999;
@@ -165,12 +165,28 @@ namespace Test.SevenTiny.Bantina.Bankinate
         }
 
         [Fact]
-        [Trait("bug","修复同字段不同值的，sql和参数生成错误")]
+        [Trait("bug", "修复同字段不同值的，sql和参数生成错误")]
         [Trait("bug", "修复生成sql语句由于没有括号，逻辑顺序有误")]
         public void Query_BugRepaire1()
         {
             var re = Db.QueryOne<OperateTestModel>(t => t.IntKey == 1 && t.Id != 2 && (t.StringKey.Contains("1") || t.StringKey.Contains("2")));
             Assert.NotNull(re);
+        }
+
+        [Fact]
+        [Trait("bug", "两次查出来的结果不正确【由于内存做的缓存，改内存数据时缓存会一起变动...作为缓存时，慎改内存数据】")]
+        [Trait("bug", "参数传递值没有使用参数化查询")]
+        public void Query_BugRepaire2()
+        {
+            int metaObjectId = 1;
+            using (var db = new MySqlDbOfQueryCache())
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    var re = db.QueryList<OperateTestModel>(t => t.IntNullKey == 1 && t.IntKey == metaObjectId);
+                    Assert.NotNull(re);
+                }
+            }
         }
     }
 }

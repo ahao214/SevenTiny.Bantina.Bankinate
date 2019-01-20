@@ -116,7 +116,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlStatementManager
             var typeCast = ExpressionTypeCast(type);
             var rightValue = ExpressionRouter(right, ref parameters);
 
-            if (left is MemberExpression && right is ConstantExpression)
+            if (left is MemberExpression && (right is ConstantExpression || right is MemberExpression))
             {
                 var keyNameNoPoint = leftValue.Replace(".", "");
 
