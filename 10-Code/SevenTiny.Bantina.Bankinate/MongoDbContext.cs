@@ -112,7 +112,8 @@ namespace SevenTiny.Bantina.Bankinate
         }
         public List<BsonDocument> QueryListBson<TEntity>(FilterDefinition<BsonDocument> filter, int pageIndex, int pageSize) where TEntity : class
         {
-            return GetCollectionBson<TEntity>().Find(filter).Skip(pageIndex * pageSize).Limit(pageSize).ToList();
+            int skipSize = (pageIndex - 1) > 0 ? ((pageIndex - 1) * pageSize) : 0;
+            return GetCollectionBson<TEntity>().Find(filter).Skip(skipSize).Limit(pageSize).ToList();
         }
 
         public int QueryCount<TEntity>(FilterDefinition<BsonDocument> filter) where TEntity : class
@@ -123,6 +124,6 @@ namespace SevenTiny.Bantina.Bankinate
         {
             return QueryCount<TEntity>(filter) > 0;
         }
-        
+
     }
 }
