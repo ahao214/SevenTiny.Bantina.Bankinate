@@ -32,7 +32,7 @@ namespace Test.SevenTiny.Bantina.Bankinate
 
             using (MongoDb db = new MongoDb())
             {
-                db.Add<Student>(bsons);
+                db.Add(bsons);
             }
         }
 

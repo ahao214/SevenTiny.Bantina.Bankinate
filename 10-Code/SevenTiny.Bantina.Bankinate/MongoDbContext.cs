@@ -30,77 +30,99 @@ namespace SevenTiny.Bantina.Bankinate
         protected MongoDbContext(string connectionString) : base(DataBaseType.MongoDB, connectionString) { }
         protected MongoDbContext(MongoClientSettings mongoClientSettings) : base(mongoClientSettings) { }
 
-        public IMongoCollection<BsonDocument> BsonCollection => DataBase.GetCollection<BsonDocument>(typeof(BsonDocument).Name);
+        /// <summary>
+        /// MongoDb Bson集合
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        public IMongoCollection<BsonDocument> GetCollectionBson<TEntity>() where TEntity : class => DataBase.GetCollection<BsonDocument>(TableAttribute.GetName(typeof(TEntity)));
+
         public IMongoQueryable<TEntity> Queryable<TEntity>() where TEntity : class
         {
             return GetCollectionEntity<TEntity>().AsQueryable();
         }
 
-        public void Add(BsonDocument bsonDocument)
+        public void Add<TEntity>(BsonDocument bsonDocument) where TEntity : class
         {
-            BsonCollection.InsertOne(bsonDocument);
+            GetCollectionBson<TEntity>().InsertOne(bsonDocument);
         }
-        public void AddAsync(BsonDocument bsonDocument)
+        public void AddAsync<TEntity>(BsonDocument bsonDocument) where TEntity : class
         {
-            BsonCollection.InsertOneAsync(bsonDocument);
+            GetCollectionBson<TEntity>().InsertOneAsync(bsonDocument);
         }
-        public void Add(IEnumerable<BsonDocument> bsonDocuments)
+        public void Add<TEntity>(IEnumerable<BsonDocument> bsonDocuments) where TEntity : class
         {
-            BsonCollection.InsertMany(bsonDocuments);
+            GetCollectionBson<TEntity>().InsertMany(bsonDocuments);
         }
-        public void AddAsync(IEnumerable<BsonDocument> bsonDocuments)
+        public void AddAsync<TEntity>(IEnumerable<BsonDocument> bsonDocuments) where TEntity : class
         {
-            BsonCollection.InsertManyAsync(bsonDocuments);
-        }
-
-        public void Update(FilterDefinition<BsonDocument> filter, BsonDocument replacement)
-        {
-            BsonCollection.ReplaceOne(filter, replacement);
-        }
-        public void UpdateAsync(FilterDefinition<BsonDocument> filter, BsonDocument replacement)
-        {
-            BsonCollection.ReplaceOneAsync(filter, replacement);
+            GetCollectionBson<TEntity>().InsertManyAsync(bsonDocuments);
         }
 
-        public void DeleteOne(FilterDefinition<BsonDocument> filter)
+        public void Update<TEntity>(FilterDefinition<BsonDocument> filter, BsonDocument replacement) where TEntity : class
         {
-            BsonCollection.DeleteOne(filter);
+            GetCollectionBson<TEntity>().ReplaceOne(filter, replacement);
         }
-        public void Delete(FilterDefinition<BsonDocument> filter)
+        public void UpdateAsync<TEntity>(FilterDefinition<BsonDocument> filter, BsonDocument replacement) where TEntity : class
         {
-            BsonCollection.DeleteMany(filter);
-        }
-        public void DeleteAsync(FilterDefinition<BsonDocument> filter)
-        {
-            BsonCollection.DeleteManyAsync(filter);
+            GetCollectionBson<TEntity>().ReplaceOneAsync(filter, replacement);
         }
 
-        public BsonDocument QueryOneBson(string _id)
+        public void DeleteOne<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
+        {
+            GetCollectionEntity<TEntity>().DeleteOne(filter);
+        }
+        public void DeleteOne<TEntity>(FilterDefinition<BsonDocument> filter) where TEntity : class
+        {
+            GetCollectionBson<TEntity>().DeleteOne(filter);
+        }
+        public void Delete<TEntity>(FilterDefinition<BsonDocument> filter) where TEntity : class
+        {
+            GetCollectionBson<TEntity>().DeleteMany(filter);
+        }
+        public void DeleteAsync<TEntity>(FilterDefinition<BsonDocument> filter) where TEntity : class
+        {
+            GetCollectionBson<TEntity>().DeleteManyAsync(filter);
+        }
+
+        public TEntity QueryOne<TEntity>(string _id) where TEntity : class
+        {
+            FilterDefinitionBuilder<TEntity> builderFilter = Builders<TEntity>.Filter;
+            FilterDefinition<TEntity> filter = builderFilter.Eq("_id", _id);
+            return GetCollectionEntity<TEntity>().Find(filter).FirstOrDefault();
+        }
+        public BsonDocument QueryOneBson<TEntity>(string _id) where TEntity : class
         {
             FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("_id", _id);
-            return BsonCollection.Find(filter).FirstOrDefault();
+            return GetCollectionBson<TEntity>().Find(filter).FirstOrDefault();
         }
-        public BsonDocument QueryOneBson(FilterDefinition<BsonDocument> filter)
+        public BsonDocument QueryOneBson<TEntity>(FilterDefinition<BsonDocument> filter) where TEntity : class
         {
-            return BsonCollection.Find(filter).FirstOrDefault();
+            return GetCollectionBson<TEntity>().Find(filter).FirstOrDefault();
         }
 
-        public List<BsonDocument> QueryListBson(FilterDefinition<BsonDocument> filter)
+        public List<BsonDocument> QueryListBson<TEntity>() where TEntity : class
         {
-            return BsonCollection.Find(filter).ToList();
+            FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Where(t => true);
+            return GetCollectionBson<TEntity>().Find(filter).ToList();
         }
-        public List<BsonDocument> QueryListBson(FilterDefinition<BsonDocument> filter, int pageIndex, int pageSize)
+        public List<BsonDocument> QueryListBson<TEntity>(FilterDefinition<BsonDocument> filter) where TEntity : class
         {
-            return BsonCollection.Find(filter).Skip(pageIndex * pageSize).Limit(pageSize).ToList();
+            return GetCollectionBson<TEntity>().Find(filter).ToList();
+        }
+        public List<BsonDocument> QueryListBson<TEntity>(FilterDefinition<BsonDocument> filter, int pageIndex, int pageSize) where TEntity : class
+        {
+            return GetCollectionBson<TEntity>().Find(filter).Skip(pageIndex * pageSize).Limit(pageSize).ToList();
         }
 
-        public int QueryCount(FilterDefinition<BsonDocument> filter)
+        public int QueryCount<TEntity>(FilterDefinition<BsonDocument> filter) where TEntity : class
         {
-            return Convert.ToInt32(BsonCollection.Count(filter));
+            return Convert.ToInt32(GetCollectionBson<TEntity>().Count(filter));
         }
-        public bool QueryExist(FilterDefinition<BsonDocument> filter)
+        public bool QueryExist<TEntity>(FilterDefinition<BsonDocument> filter) where TEntity : class
         {
-            return QueryCount(filter) > 0;
+            return QueryCount<TEntity>(filter) > 0;
         }
+        
     }
 }
