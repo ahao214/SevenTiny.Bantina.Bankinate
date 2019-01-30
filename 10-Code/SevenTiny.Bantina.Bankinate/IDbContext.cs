@@ -52,14 +52,6 @@ namespace SevenTiny.Bantina.Bankinate
     }
 
     /// <summary>
-    /// NoSql引擎查询Api
-    /// </summary>
-    public interface INoSqlQueryOperate : IQueryOperate
-    {
-        NoSqlQueryable<TEntity> Queryable<TEntity>() where TEntity : class;
-    }
-
-    /// <summary>
     /// 基础查询Api
     /// </summary>
     public interface IQueryOperate
