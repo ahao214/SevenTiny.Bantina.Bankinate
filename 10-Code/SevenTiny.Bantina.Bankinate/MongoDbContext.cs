@@ -36,6 +36,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
         public IMongoCollection<BsonDocument> GetCollectionBson<TEntity>() where TEntity : class => DataBase.GetCollection<BsonDocument>(TableAttribute.GetName(typeof(TEntity)));
+        public IMongoCollection<BsonDocument> GetCollectionBson(string collectionName) => DataBase.GetCollection<BsonDocument>(collectionName);
 
         public IMongoQueryable<TEntity> Queryable<TEntity>() where TEntity : class
         {

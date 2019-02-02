@@ -19,20 +19,16 @@ namespace Test.SevenTiny.Bantina.Bankinate
         [Fact]
         public void Add()
         {
-            List<BsonDocument> bsons = new List<BsonDocument>();
-            for (int i = 0; i < 100; i++)
-            {
-                bsons.Add(new BsonDocument
+            var bson = new BsonDocument
                 {
-                    { "name", $"7tiny_{i}" },
-                    { "age", i },
+                    { "name", $"7tiny_{1}" },
+                    { "age", 1 },
                     { "sex", new Random(DateTime.Now.Millisecond).Next(3) },
-                });
-            }
+                };
 
             using (MongoDb db = new MongoDb())
             {
-                db.Add(bsons);
+                db.GetCollectionBson("TestCollection").InsertOne(bson);
             }
         }
 
