@@ -2,7 +2,7 @@
 
 namespace SevenTiny.Bantina.Bankinate.Helpers.Redis
 {
-    public interface IRedisCache
+    internal interface IRedisCache
     {
         string Get(string key);
         void Set(string key, string value);

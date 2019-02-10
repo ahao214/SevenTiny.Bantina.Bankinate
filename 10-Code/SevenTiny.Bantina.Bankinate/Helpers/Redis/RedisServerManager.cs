@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace SevenTiny.Bantina.Bankinate.Helpers.Redis
 {
-    public abstract class RedisServerManager
+    internal abstract class RedisServerManager
     {
         protected ConnectionMultiplexer Redis { get; set; }
         protected IDatabase Db { get; set; }

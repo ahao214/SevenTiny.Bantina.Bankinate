@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace SevenTiny.Bantina.Bankinate.Helpers
 {
-    public class TypeConvertHelper
+    internal class TypeConvertHelper
     {
         /// <summary>
         /// 弱类型转泛型类型

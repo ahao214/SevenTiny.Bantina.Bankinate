@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SevenTiny.Bantina.Bankinate.Helpers.Redis
 {
-    public class RedisCacheManager : RedisServerManager, IRedisCache
+    internal class RedisCacheManager : RedisServerManager, IRedisCache
     {
         private TimeSpan AbsoluteExpirationRelativeToNow { get; set; }
 
