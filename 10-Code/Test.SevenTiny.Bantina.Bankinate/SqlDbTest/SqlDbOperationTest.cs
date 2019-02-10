@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SevenTiny.Bantina.Bankinate.DbContexts;
+using System;
 using System.Linq;
-using System.Text;
-using Test.SevenTiny.Bantina.Bankinate.DbContext;
 using Test.SevenTiny.Bantina.Bankinate.Model;
 using Xunit;
 
@@ -11,11 +9,10 @@ namespace Test.SevenTiny.Bantina.Bankinate
     /// <summary>
     /// 关系型数据库查询测试
     /// </summary>
-    public class SqlDbTest
+    public abstract class SqlDbOperationTest<DataBase> where DataBase : class
     {
-        //这里切换对应的关系型数据库上下文来测试不同的关系型数据库操作
-        MySqlDb Db => new MySqlDb();
-        //SqlServerDb Db => new SqlServerDb();
+        //这里使用继承关系测试不同的关系型数据库操作
+        public abstract SqlDbContext<DataBase> Db { get; }
 
         [Fact]
         [Trait("desc", "持久化测试")]
@@ -171,22 +168,6 @@ namespace Test.SevenTiny.Bantina.Bankinate
         {
             var re = Db.QueryOne<OperateTestModel>(t => t.IntKey == 1 && t.Id != 2 && (t.StringKey.Contains("1") || t.StringKey.Contains("2")));
             Assert.NotNull(re);
-        }
-
-        [Fact]
-        [Trait("bug", "两次查出来的结果不正确【由于内存做的缓存，改内存数据时缓存会一起变动...作为缓存时，慎改内存数据】")]
-        [Trait("bug", "参数传递值没有使用参数化查询")]
-        public void Query_BugRepaire2()
-        {
-            int metaObjectId = 1;
-            using (var db = new MySqlDbOfQueryCache())
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    var re = db.QueryList<OperateTestModel>(t => t.IntNullKey == 1 && t.IntKey == metaObjectId);
-                    Assert.NotNull(re);
-                }
-            }
         }
     }
 }

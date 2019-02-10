@@ -1,7 +1,7 @@
 ﻿using SevenTiny.Bantina.Bankinate;
 using SevenTiny.Bantina.Bankinate.Attributes;
 
-namespace Test.SevenTiny.Bantina.Bankinate.DbContext
+namespace Test.SevenTiny.Bantina.Bankinate.SqlDbTest.SqlServer
 {
     [DataBase("SevenTinyTest")]
     public class SqlServerDb : SqlServerDbContext<SqlServerDb>

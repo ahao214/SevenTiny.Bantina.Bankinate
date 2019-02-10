@@ -1,6 +1,8 @@
 ﻿using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.Helpers;
+using SevenTiny.Bantina.Bankinate.Helpers.Redis;
 using System;
+using Newtonsoft.Json;
 
 namespace SevenTiny.Bantina.Bankinate.Cache
 {
@@ -24,6 +26,23 @@ namespace SevenTiny.Bantina.Bankinate.Cache
     /// </summary>
     internal abstract class CacheStorageManager
     {
+        private static IRedisCache redisCache = null;
+        private static IRedisCache GetRedisCacheProvider(DbContext dbContext)
+        {
+            if (redisCache != null)
+                return redisCache;
+
+            if (string.IsNullOrEmpty(dbContext.CacheMediaServer))
+                throw new ArgumentException("Cache server address error", "dbContext.CacheMediaServer");
+
+            redisCache = new RedisCacheManager(dbContext.CacheMediaServer);
+
+            if (redisCache == null)
+                throw new Exception("redis init timeout");
+
+            return redisCache;
+        }
+
         public static bool IsExist(DbContext dbContext, string key)
         {
             return IsExist(dbContext, key, out object obj);
@@ -35,6 +54,12 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                 case CacheMediaType.Local:
                     return MemoryCacheHelper.Exist(key, out value);
                 case CacheMediaType.Redis:
+                    var redisResult = GetRedisCacheProvider(dbContext).Get(key);
+                    if (!string.IsNullOrEmpty(redisResult))
+                    {
+                        value = JsonConvert.DeserializeObject<TValue>(redisResult);
+                        return true;
+                    }
                     value = default(TValue);
                     return false;
                 default:
@@ -51,6 +76,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     MemoryCacheHelper.Put(key, value, expiredTime);
                     break;
                 case CacheMediaType.Redis:
+                    GetRedisCacheProvider(dbContext).Set(key, JsonConvert.SerializeObject(value), expiredTime);
                     break;
                 default:
                     break;
@@ -63,6 +89,11 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                 case CacheMediaType.Local:
                     return MemoryCacheHelper.Get<string, T>(key);
                 case CacheMediaType.Redis:
+                    var redisResult = GetRedisCacheProvider(dbContext).Get(key);
+                    if (!string.IsNullOrEmpty(redisResult))
+                    {
+                        return JsonConvert.DeserializeObject<T>(redisResult);
+                    }
                     return default(T);
                 default:
                     return default(T);
@@ -76,6 +107,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     MemoryCacheHelper.Delete<string>(key);
                     break;
                 case CacheMediaType.Redis:
+                    GetRedisCacheProvider(dbContext).Delete(key);
                     break;
                 default:
                     break;

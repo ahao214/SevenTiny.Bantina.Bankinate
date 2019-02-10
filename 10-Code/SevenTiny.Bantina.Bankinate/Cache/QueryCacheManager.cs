@@ -92,7 +92,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     if (t.ContainsKey(sqlQueryCacheKey))
                     {
                         dbContext.IsFromCache = true;
-                        return (T)t[sqlQueryCacheKey];
+                        return TypeConvertHelper.ToGenericType<T>(t[sqlQueryCacheKey]);
                     }
                 }
             }

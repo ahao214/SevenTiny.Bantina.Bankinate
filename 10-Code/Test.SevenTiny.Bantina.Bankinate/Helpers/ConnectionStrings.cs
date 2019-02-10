@@ -1,10 +1,9 @@
-﻿using SevenTiny.Bantina.Configuration;
+﻿using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.Helpers;
+using SevenTiny.Bantina.Configuration;
 using System.Collections.Generic;
-using Test.SevenTiny.Bantina.Bankinate.Model;
-using SevenTiny.Bantina.Bankinate.Attributes;
 
-namespace Test.SevenTiny.Bantina.Bankinate.DbContext
+namespace Test.SevenTiny.Bantina.Bankinate.Helpers
 {
     public class ConnectionStrings : ConfigBase<ConnectionStrings>
     {

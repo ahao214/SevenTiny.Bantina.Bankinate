@@ -1,10 +1,25 @@
-﻿using System;
-using Test.SevenTiny.Bantina.Bankinate.DbContext;
+﻿using SevenTiny.Bantina.Bankinate;
+using SevenTiny.Bantina.Bankinate.Attributes;
+using System;
+using Test.SevenTiny.Bantina.Bankinate.Helpers;
 using Test.SevenTiny.Bantina.Bankinate.Model;
 using Xunit;
 
 namespace Test.SevenTiny.Bantina.Bankinate
 {
+    /// <summary>
+    /// 数据校验上下文
+    /// </summary>
+    [DataBase("SevenTinyTest")]
+    public class MySqlPropertyValidateDb : MySqlDbContext<MySqlPropertyValidateDb>
+    {
+        public MySqlPropertyValidateDb() : base(ConnectionStrings.Get("mysql39901"))
+        {
+            OpenPropertyDataValidate = true;
+            OpenRealExecutionSaveToDb = false;
+        }
+    }
+
     [Trait("desc", "测试需要先打开校验属性值的开关")]
     [Trait("desc", "当前标签的限制为1-10")]
     public class DataValidateTest

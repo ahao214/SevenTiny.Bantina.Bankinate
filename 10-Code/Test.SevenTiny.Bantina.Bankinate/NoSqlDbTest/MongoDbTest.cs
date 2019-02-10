@@ -1,13 +1,24 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
+using SevenTiny.Bantina.Bankinate;
+using SevenTiny.Bantina.Bankinate.Attributes;
 using System;
 using System.Collections.Generic;
-using Test.SevenTiny.Bantina.Bankinate.DbContext;
+using Test.SevenTiny.Bantina.Bankinate.Helpers;
 using Test.SevenTiny.Bantina.Bankinate.Model;
 using Xunit;
 
-namespace Test.SevenTiny.Bantina.Bankinate
+namespace Test.SevenTiny.Bantina.Bankinate.NoSqlDbTest
 {
+    [DataBase("local")]
+    public class MongoDb : MongoDbContext<MongoDb>
+    {
+        public MongoDb() : base(ConnectionStrings.Get("mongodb39911"))
+        {
+
+        }
+    }
+
     public class MongoDbTest
     {
         [Fact]

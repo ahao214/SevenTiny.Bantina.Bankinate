@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Test.SevenTiny.Bantina.Bankinate.DbContext;
 using Test.SevenTiny.Bantina.Bankinate.Model;
+using Test.SevenTiny.Bantina.Bankinate.SqlDbTest.MySql;
+using Test.SevenTiny.Bantina.Bankinate.SqlDbTest.SqlServer;
 using Xunit;
 
 namespace Test.SevenTiny.Bantina.Bankinate
