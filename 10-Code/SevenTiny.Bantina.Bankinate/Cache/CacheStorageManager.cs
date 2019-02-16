@@ -32,6 +32,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
             if (redisCache != null)
                 return redisCache;
 
+            //配置的异常是参数异常，在处理数据时应抛出异常，其他连接异常应该忽略返回获取缓存失败
             if (string.IsNullOrEmpty(dbContext.CacheMediaServer))
                 throw new ArgumentException("Cache server address error", "dbContext.CacheMediaServer");
 
@@ -63,6 +64,10 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                             return true;
                         }
                     }
+                    catch (ArgumentException argEx)
+                    {
+                        throw argEx;
+                    }
                     finally
                     {
                         value = default(TValue);
@@ -82,7 +87,14 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     MemoryCacheHelper.Put(key, value, expiredTime);
                     break;
                 case CacheMediaType.Redis:
-                    GetRedisCacheProvider(dbContext).Set(key, JsonConvert.SerializeObject(value), expiredTime);
+                    try
+                    {
+                        GetRedisCacheProvider(dbContext).Set(key, JsonConvert.SerializeObject(value), expiredTime);
+                    }
+                    catch (ArgumentException argEx)
+                    {
+                        throw argEx;
+                    }
                     break;
                 default:
                     break;
@@ -95,10 +107,17 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                 case CacheMediaType.Local:
                     return MemoryCacheHelper.Get<string, T>(key);
                 case CacheMediaType.Redis:
-                    var redisResult = GetRedisCacheProvider(dbContext).Get(key);
-                    if (!string.IsNullOrEmpty(redisResult))
+                    try
                     {
-                        return JsonConvert.DeserializeObject<T>(redisResult);
+                        var redisResult = GetRedisCacheProvider(dbContext).Get(key);
+                        if (!string.IsNullOrEmpty(redisResult))
+                        {
+                            return JsonConvert.DeserializeObject<T>(redisResult);
+                        }
+                    }
+                    catch (ArgumentException argEx)
+                    {
+                        throw argEx;
                     }
                     return default(T);
                 default:
@@ -113,7 +132,14 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     MemoryCacheHelper.Delete<string>(key);
                     break;
                 case CacheMediaType.Redis:
-                    GetRedisCacheProvider(dbContext).Delete(key);
+                    try
+                    {
+                        GetRedisCacheProvider(dbContext).Delete(key);
+                    }
+                    catch (ArgumentException argEx)
+                    {
+                        throw argEx;
+                    }
                     break;
                 default:
                     break;
