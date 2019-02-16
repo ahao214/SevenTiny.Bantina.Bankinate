@@ -68,10 +68,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     {
                         throw argEx;
                     }
-                    finally
-                    {
-                        value = default(TValue);
-                    }
+                    value = default(TValue);
                     return false;
                 default:
                     value = default(TValue);
