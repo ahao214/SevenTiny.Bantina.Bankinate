@@ -54,13 +54,19 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                 case CacheMediaType.Local:
                     return MemoryCacheHelper.Exist(key, out value);
                 case CacheMediaType.Redis:
-                    var redisResult = GetRedisCacheProvider(dbContext).Get(key);
-                    if (!string.IsNullOrEmpty(redisResult))
+                    try
                     {
-                        value = JsonConvert.DeserializeObject<TValue>(redisResult);
-                        return true;
+                        var redisResult = GetRedisCacheProvider(dbContext).Get(key);
+                        if (!string.IsNullOrEmpty(redisResult))
+                        {
+                            value = JsonConvert.DeserializeObject<TValue>(redisResult);
+                            return true;
+                        }
                     }
-                    value = default(TValue);
+                    finally
+                    {
+                        value = default(TValue);
+                    }
                     return false;
                 default:
                     value = default(TValue);
