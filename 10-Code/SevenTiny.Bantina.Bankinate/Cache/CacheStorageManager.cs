@@ -68,6 +68,10 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     {
                         throw argEx;
                     }
+                    catch (Exception)
+                    {
+                        //这里忽略redis异常返回获取缓存失败
+                    }
                     value = default(TValue);
                     return false;
                 default:
@@ -91,6 +95,10 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     catch (ArgumentException argEx)
                     {
                         throw argEx;
+                    }
+                    catch (Exception)
+                    {
+                        //这里忽略redis异常返回获取缓存失败
                     }
                     break;
                 default:
@@ -116,6 +124,10 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     {
                         throw argEx;
                     }
+                    catch (Exception)
+                    {
+                        //这里忽略redis异常返回获取缓存失败
+                    }
                     return default(T);
                 default:
                     return default(T);
@@ -136,6 +148,10 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     catch (ArgumentException argEx)
                     {
                         throw argEx;
+                    }
+                    catch (Exception)
+                    {
+                        //这里忽略redis异常返回获取缓存失败
                     }
                     break;
                 default:
