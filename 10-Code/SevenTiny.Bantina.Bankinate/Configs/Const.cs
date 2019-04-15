@@ -3,7 +3,7 @@ using System;
 
 namespace SevenTiny.Bantina.Bankinate.Configs
 {
-    internal static class DefaultValue
+    internal static class Const
     {
         /// <summary>
         /// 每张表一级缓存的最大个数，超出数目将会按从早到晚的顺序移除缓存键

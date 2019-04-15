@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2037
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenTiny.Bantina.Bankinate", "..\10-Code\SevenTiny.Bantina.Bankinate\SevenTiny.Bantina.Bankinate.csproj", "{81F0C6B2-6BC5-47D5-B198-C34DA71BA920}"
 EndProject
@@ -9,11 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{9C767BBE-6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.SevenTiny.Bantina.Bankinate", "..\10-Code\Test.SevenTiny.Bantina.Bankinate\Test.SevenTiny.Bantina.Bankinate.csproj", "{EEA57B47-FEE1-48AA-81A3-7159260A3E3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenTiny.Bantina.Bankinate.Core", "..\10-Code\SevenTiny.Bantina.Bankinate.Core\SevenTiny.Bantina.Bankinate.Core.csproj", "{7F7642E8-7CD6-4579-9088-327436DB4AFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenTiny.Bantina.Bankinate.MySql", "..\10-Code\SevenTiny.Bantina.Bankinate.MySql\SevenTiny.Bantina.Bankinate.MySql.csproj", "{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenTiny.Bantina.Bankinate.MySql", "..\10-Code\SevenTiny.Bantina.Bankinate.MySql\SevenTiny.Bantina.Bankinate.MySql.csproj", "{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SevenTiny.Bantina.Bankinate.SqlServer", "..\10-Code\SevenTiny.Bantina.Bankinate.SqlServer\SevenTiny.Bantina.Bankinate.SqlServer.csproj", "{C6FEDA1C-99B1-444D-9EAE-57EE2DE67C98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenTiny.Bantina.Bankinate.SqlServer", "..\10-Code\SevenTiny.Bantina.Bankinate.SqlServer\SevenTiny.Bantina.Bankinate.SqlServer.csproj", "{C6FEDA1C-99B1-444D-9EAE-57EE2DE67C98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +27,6 @@ Global
 		{EEA57B47-FEE1-48AA-81A3-7159260A3E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEA57B47-FEE1-48AA-81A3-7159260A3E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEA57B47-FEE1-48AA-81A3-7159260A3E3C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F7642E8-7CD6-4579-9088-327436DB4AFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F7642E8-7CD6-4579-9088-327436DB4AFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F7642E8-7CD6-4579-9088-327436DB4AFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F7642E8-7CD6-4579-9088-327436DB4AFD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}.Release|Any CPU.ActiveCfg = Release|Any CPU

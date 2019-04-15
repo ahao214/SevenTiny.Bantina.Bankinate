@@ -12,10 +12,11 @@
 * Description: 
 * Thx , Best Regards ~
 *********************************************************/
-namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
+namespace SevenTiny.Bantina.Bankinate
 {
     public enum DataBaseType
     {
+        UnKnown,
         SqlServer,
         MySql,
         Oracle,
