@@ -29,11 +29,11 @@ namespace SevenTiny.Bantina.Bankinate
     {
         public SqlQueryableBase(SqlDbContext _dbContext)
         {
-            this.dbContext = _dbContext;
+            this.DbContext = _dbContext;
         }
 
         //context
-        protected SqlDbContext dbContext;
+        protected SqlDbContext DbContext;
 
         //where
         protected Expression<Func<TEntity, bool>> _where = t => true;
@@ -48,9 +48,9 @@ namespace SevenTiny.Bantina.Bankinate
         protected int _pageSize = 0;
 
         //query info
-        public string SqlStatement => dbContext.SqlStatement;
-        public string TableName => dbContext.TableName;
-        public IDictionary<string, object> Parameters => dbContext.Parameters;
+        public string SqlStatement => DbContext.SqlStatement;
+        public string TableName => DbContext.TableName;
+        public IDictionary<string, object> Parameters => DbContext.Parameters;
 
         /// <summary>
         /// 要查询的列
@@ -77,7 +77,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// </summary>
         protected void ReSetTableName()
         {
-            dbContext.TableName = TableAttribute.GetName(typeof(TEntity));
+            DbContext.TableName = TableAttribute.GetName(typeof(TEntity));
         }
 
         /// <summary>

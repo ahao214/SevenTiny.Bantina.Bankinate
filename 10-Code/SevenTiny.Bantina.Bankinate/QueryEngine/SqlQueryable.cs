@@ -2,36 +2,26 @@
 using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace SevenTiny.Bantina.Bankinate
 {
+    /// <summary>
+    /// SQL弱类型复杂查询器
+    /// </summary>
     public class SqlQueryable : SqlQueryableBase
     {
-        public SqlQueryable(SqlDbContext _dbContext) : base(_dbContext) { }
+        public SqlQueryable(SqlDbContext _dbContext) : base(_dbContext)
+        {
+            DbContext.DbCommand.CommandType = CommandType.Text;
+        }
 
-        public DataSet ToDataSet(string sqlStatement, IDictionary<string, object> parms = null)
-        {
-            dbContext.SqlStatement = sqlStatement;
-            dbContext.Parameters = parms;
-            return QueryExecutor.ExecuteDataSet(dbContext);
-        }
-        public object ToData(string sqlStatement, IDictionary<string, object> parms = null)
-        {
-            dbContext.SqlStatement = sqlStatement;
-            dbContext.Parameters = parms;
-            return QueryExecutor.ExecuteScalar(dbContext);
-        }
-        public TEntity ToOne<TEntity>(string sqlStatement, IDictionary<string, object> parms = null) where TEntity : class
-        {
-            dbContext.SqlStatement = sqlStatement;
-            dbContext.Parameters = parms;
-            return QueryExecutor.ExecuteEntity<TEntity>(dbContext);
-        }
-        public List<TEntity> ToList<TEntity>(string sqlStatement, IDictionary<string, object> parms = null) where TEntity : class
-        {
-            dbContext.SqlStatement = sqlStatement;
-            dbContext.Parameters = parms;
-            return QueryExecutor.ExecuteList<TEntity>(dbContext);
-        }
+        public void Execute() => QueryExecutor.ExecuteNonQuery(DbContext);
+        public async Task<int> ExecuteSqlAsync() => await QueryExecutor.ExecuteNonQueryAsync(DbContext);
+
+        public DataSet ToDataSet() => QueryExecutor.ExecuteDataSet(DbContext);
+        public object ToData() => QueryExecutor.ExecuteScalar(DbContext);
+        public TEntity ToOne<TEntity>() where TEntity : class => QueryExecutor.ExecuteEntity<TEntity>(DbContext);
+        public List<TEntity> ToList<TEntity>() where TEntity : class => QueryExecutor.ExecuteList<TEntity>(DbContext);
     }
 }

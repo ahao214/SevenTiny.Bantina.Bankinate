@@ -35,8 +35,6 @@ namespace SevenTiny.Bantina.Bankinate
         {
             DbCommand = new MySqlCommand();
             DbCommand.Connection = this.DbConnection;
-
-            //记得在使用的地方给类型和sql语句赋值
         }
         private void CreateDbDataAdapter()
         {

@@ -25,15 +25,15 @@ namespace SevenTiny.Bantina.Bankinate
     {
         public SqlQueryableBase(SqlDbContext _dbContext)
         {
-            dbContext = _dbContext;
+            DbContext = _dbContext;
         }
 
         //context
-        protected SqlDbContext dbContext;
+        protected SqlDbContext DbContext;
 
         //query info
-        public string SqlStatement => dbContext.SqlStatement;
-        public string TableName => dbContext.TableName;
-        public IDictionary<string, object> Parameters => dbContext.Parameters;
+        public string SqlStatement => DbContext.DbCommand.CommandText;
+        public string TableName => DbContext.TableName;
+        public IDictionary<string, object> Parameters => DbContext.Parameters;
     }
 }

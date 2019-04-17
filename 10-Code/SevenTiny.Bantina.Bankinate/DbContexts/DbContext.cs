@@ -1,13 +1,12 @@
-﻿using SevenTiny.Bantina.Bankinate.Attributes;
-using SevenTiny.Bantina.Bankinate.Cache;
+﻿using SevenTiny.Bantina.Bankinate.Cache;
 using SevenTiny.Bantina.Bankinate.Configs;
-using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using System;
-using System.Collections.Generic;
-using System.Data;
 
 namespace SevenTiny.Bantina.Bankinate.DbContexts
 {
+    /// <summary>
+    /// 数据上下文
+    /// </summary>
     public abstract class DbContext : IDisposable
     {
         protected DbContext(string connectionString_Write, params string[] connectionStrings_Read)
@@ -16,6 +15,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             ConnectionStrings_Read = connectionStrings_Read;
         }
 
+        #region Database Control 数据库管理
         /// <summary>
         /// 数据库类型
         /// </summary>
@@ -41,14 +41,13 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             }
         }
 
-
-        //Db Control
         /// <summary>
         /// 真实执行持久化操作开关，如果为false，则只执行准备动作，不实际操作数据库（友情提示：测试框架代码执行情况可以将其关闭）
         /// </summary>
         public bool OpenRealExecutionSaveToDb { get; protected set; } = true;
+        #endregion
 
-        //Cache Control
+        #region Cache Control 缓存管理
         /// <summary>
         /// 一级缓存
         /// 查询条件级别的缓存（filter），可以暂时缓存根据查询条件查询到的数据
@@ -125,12 +124,14 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// 清空二级缓存
         /// </summary>
         public void FlushTableCache() => TableCacheManager.FlushAllCache(this);
+        #endregion
 
-        //Validate Control
+        #region Validate Control 校验管理
         /// <summary>
         /// 属性值校验开关，如开启，则Add/Update等操作会校验输入的值是否满足特性标签标识的条件
         /// </summary>
         public bool OpenPropertyDataValidate { get; protected set; } = false;
+        #endregion
 
         public void Dispose()
         {
