@@ -25,15 +25,15 @@ namespace SevenTiny.Bantina.Bankinate
     /// SqlQueryable的相关配置信息
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    public abstract class QueryableBase<TEntity> where TEntity : class
+    public abstract class SqlQueryableBase<TEntity> where TEntity : class
     {
-        public QueryableBase(DbContext dbContext)
+        public SqlQueryableBase(SqlDbContext _dbContext)
         {
-            _dbContext = dbContext;
+            this.dbContext = _dbContext;
         }
 
         //context
-        protected DbContext _dbContext;
+        protected SqlDbContext dbContext;
 
         //where
         protected Expression<Func<TEntity, bool>> _where = t => true;
@@ -48,9 +48,9 @@ namespace SevenTiny.Bantina.Bankinate
         protected int _pageSize = 0;
 
         //query info
-        public string SqlStatement => _dbContext.SqlStatement;
-        public string TableName => _dbContext.TableName;
-        public IDictionary<string, object> Parameters => _dbContext.Parameters;
+        public string SqlStatement => dbContext.SqlStatement;
+        public string TableName => dbContext.TableName;
+        public IDictionary<string, object> Parameters => dbContext.Parameters;
 
         /// <summary>
         /// 要查询的列
@@ -77,7 +77,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// </summary>
         protected void ReSetTableName()
         {
-            _dbContext.TableName = TableAttribute.GetName(typeof(TEntity));
+            dbContext.TableName = TableAttribute.GetName(typeof(TEntity));
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// 查询生成符合当前条件的单个实体
         /// </summary>
         /// <returns></returns>
-        public abstract TEntity ToEntity();
+        public abstract TEntity ToOne();
         /// <summary>
         /// 查询出符合当前条件的数据条数
         /// </summary>

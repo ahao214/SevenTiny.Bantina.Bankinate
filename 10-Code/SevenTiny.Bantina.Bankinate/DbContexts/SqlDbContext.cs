@@ -1,91 +1,137 @@
 ﻿using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.Cache;
-using SevenTiny.Bantina.Bankinate.DataAccessEngine;
+using SevenTiny.Bantina.Bankinate.Configs;
+using SevenTiny.Bantina.Bankinate.SqlDataAccess;
+using SevenTiny.Bantina.Bankinate.Helpers;
 using SevenTiny.Bantina.Bankinate.SqlStatementManager;
 using SevenTiny.Bantina.Bankinate.Validation;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace SevenTiny.Bantina.Bankinate.DbContexts
 {
-    public abstract class SqlDbContext<TDataBase> : DbContext, IDbContext, ISqlQueryOperate, IExecuteSqlOperate where TDataBase : class
+    public abstract class SqlDbContext : DbContext, IDbContext
     {
-        public SqlDbContext(DataBaseType dataBaseType, string connectionString) : this(dataBaseType, connectionString, connectionString) { }
 
-        public SqlDbContext(DataBaseType dataBaseType, string connectionString_ReadWrite, string connectionString_Read) : base(dataBaseType, connectionString_ReadWrite, connectionString_Read)
+        protected SqlDbContext(string connectionString_Write, params string[] connectionStrings_Read) : base(connectionString_Write, connectionStrings_Read)
         {
-            DataBaseName = DataBaseAttribute.GetName(typeof(TDataBase));
+
+        }
+
+        /// <summary>
+        /// 库名
+        /// </summary>
+        public string DataBaseName { get; protected set; }
+        /// <summary>
+        /// 表名
+        /// </summary>
+        public string TableName { get; internal set; }
+        /// <summary>
+        /// Sql语句
+        /// </summary>
+        public string SqlStatement { get; internal set; }
+        /// <summary>
+        /// 数据库连接管理器
+        /// </summary>
+        protected abstract DbConnection DbConnection { get; set; }
+        /// <summary>
+        /// 命令管理器
+        /// </summary>
+        protected internal abstract DbCommand DbCommand { get; set; }
+        /// <summary>
+        /// 集合访问器
+        /// </summary>
+        protected internal abstract DbDataAdapter DbDataAdapter { get; set; }
+        /// <summary>
+        /// 初始化访问器
+        /// </summary>
+        protected void AccessorInitializes()
+        {
+            //打开连接
+            if (DbConnection.State != ConnectionState.Open)
+                DbConnection.Open();
+
+            //设置SqlCommand对象的属性值
+            DbCommand.CommandTimeout = BankinateConst.CommandTimeout;
+            DbCommand.CommandType = CommandType.Text;
+        }
+        /// <summary>
+        /// 初始化查询参数
+        /// </summary>
+        protected internal abstract void ParameterInitializes();
+
+        /// <summary>
+        /// 参数化查询参数
+        /// </summary>
+        public IDictionary<string, object> Parameters { get; set; }
+
+        /// <summary>
+        /// 根据实体获取表明
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        public string GetTableName<TEntity>() where TEntity : class
+            => TableAttribute.GetName(typeof(TEntity));
+
+        /// <summary>
+        /// 事务处理
+        /// </summary>
+        /// <param name="action"></param>
+        public void Transaction(Action action)
+        {
+            try
+            {
+                this.DbCommand.Transaction = this.DbConnection.BeginTransaction();
+                action();
+                this.DbCommand.Transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                this.DbCommand.Transaction.Rollback();
+                throw ex;
+            }
         }
 
         public void Add<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
             SqlGenerator.Add(this, entity);
-            DbHelper.ExecuteNonQuery(this);
+            QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Add(this, entity);
         }
         public void AddAsync<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
             SqlGenerator.Add(this, entity);
-            DbHelper.ExecuteNonQueryAsync(this);
+            QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Add(this, entity);
-        }
-        public void Add<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
-        {
-            List<BatchExecuteModel> batchExecuteModels = new List<BatchExecuteModel>();
-            foreach (var item in entities)
-            {
-                PropertyDataValidator.Verify(this, item);
-                batchExecuteModels.Add(new BatchExecuteModel
-                {
-                    CommandTextOrSpName = SqlGenerator.Add(this, item),
-                    ParamsDic = this.Parameters
-                });
-            }
-            DbHelper.BatchExecuteNonQuery(this, batchExecuteModels);
-            DbCacheManager.Add(this, entities);
-        }
-        public void AddAsync<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
-        {
-            List<BatchExecuteModel> batchExecuteModels = new List<BatchExecuteModel>();
-            foreach (var item in entities)
-            {
-                PropertyDataValidator.Verify(this, item);
-                batchExecuteModels.Add(new BatchExecuteModel
-                {
-                    CommandTextOrSpName = SqlGenerator.Add(this, item),
-                    ParamsDic = this.Parameters
-                });
-            }
-            DbHelper.BatchExecuteNonQueryAsync(this, batchExecuteModels);
-            DbCacheManager.Add(this, entities);
         }
 
         public void Delete<TEntity>(TEntity entity) where TEntity : class
         {
             SqlGenerator.Delete(this, entity);
-            DbHelper.ExecuteNonQuery(this);
+            QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Delete(this, entity);
         }
         public void DeleteAsync<TEntity>(TEntity entity) where TEntity : class
         {
             SqlGenerator.Delete(this, entity);
-            DbHelper.ExecuteNonQueryAsync(this);
+            QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Delete(this, entity);
         }
         public void Delete<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
         {
             SqlGenerator.Delete(this, filter);
-            DbHelper.ExecuteNonQuery(this);
+            QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Delete(this, filter);
         }
         public void DeleteAsync<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
         {
             SqlGenerator.Delete(this, filter);
-            DbHelper.ExecuteNonQueryAsync(this);
+            QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Delete(this, filter);
         }
 
@@ -93,28 +139,28 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         {
             PropertyDataValidator.Verify(this, entity);
             SqlGenerator.Update(this, entity, out Expression<Func<TEntity, bool>> filter);
-            DbHelper.ExecuteNonQuery(this);
+            QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Update(this, entity, filter);
         }
         public void UpdateAsync<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
             SqlGenerator.Update(this, entity, out Expression<Func<TEntity, bool>> filter);
-            DbHelper.ExecuteNonQueryAsync(this);
+            QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Update(this, entity, filter);
         }
         public void Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
             SqlGenerator.Update(this, filter, entity);
-            DbHelper.ExecuteNonQuery(this);
+            QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Update(this, entity, filter);
         }
         public void UpdateAsync<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
             SqlGenerator.Update(this, filter, entity);
-            DbHelper.ExecuteNonQueryAsync(this);
+            QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Update(this, entity, filter);
         }
 
@@ -127,64 +173,22 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         {
             return new SqlQueryable<TEntity>(this);
         }
-
-        public List<TEntity> QueryList<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
+        public SqlQueryable Queryable()
         {
-            return Queryable<TEntity>().Where(filter).ToList();
-        }
-        public TEntity QueryOne<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
-        {
-            return Queryable<TEntity>().Where(filter).ToEntity();
-        }
-        public int QueryCount<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
-        {
-            return Queryable<TEntity>().Where(filter).ToCount();
-        }
-        public bool QueryExist<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
-        {
-            return Queryable<TEntity>().Any(filter);
+            return new SqlQueryable(this);
         }
 
         public void ExecuteSql(string sqlStatement, IDictionary<string, object> parms = null)
         {
             SqlStatement = sqlStatement;
             Parameters = parms;
-            DbHelper.ExecuteNonQuery(this);
+            QueryExecutor.ExecuteNonQuery(this);
         }
         public void ExecuteSqlAsync(string sqlStatement, IDictionary<string, object> parms = null)
         {
             SqlStatement = sqlStatement;
             Parameters = parms;
-            DbHelper.ExecuteNonQueryAsync(this);
-        }
-        public DataSet ExecuteQueryDataSetSql(string sqlStatement, IDictionary<string, object> parms = null)
-        {
-            SqlStatement = sqlStatement;
-            Parameters = parms;
-            return DbHelper.ExecuteDataSet(this);
-        }
-        public object ExecuteQueryOneDataSql(string sqlStatement, IDictionary<string, object> parms = null)
-        {
-            SqlStatement = sqlStatement;
-            Parameters = parms;
-            return DbHelper.ExecuteScalar(this);
-        }
-        public TEntity ExecuteQueryOneSql<TEntity>(string sqlStatement, IDictionary<string, object> parms = null) where TEntity : class
-        {
-            SqlStatement = sqlStatement;
-            Parameters = parms;
-            return DbHelper.ExecuteEntity<TEntity>(this);
-        }
-        public List<TEntity> ExecuteQueryListSql<TEntity>(string sqlStatement, IDictionary<string, object> parms = null) where TEntity : class
-        {
-            SqlStatement = sqlStatement;
-            Parameters = parms;
-            return DbHelper.ExecuteList<TEntity>(this);
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
+            QueryExecutor.ExecuteNonQueryAsync(this);
         }
     }
 }

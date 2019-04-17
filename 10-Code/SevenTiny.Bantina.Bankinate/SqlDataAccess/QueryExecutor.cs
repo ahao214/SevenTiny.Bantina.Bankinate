@@ -13,7 +13,6 @@
  * Description: 
  * Thx , Best Regards ~
  *********************************************************/
-using MySql.Data.MySqlClient;
 using SevenTiny.Bantina.Bankinate.DbContexts;
 using System;
 using System.Collections.Generic;
@@ -25,70 +24,29 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
+namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
 {
-    public abstract class DbHelper
+    /// <summary>
+    /// 为了统一控制，这里仅仅存在执行语句，初始化转移到了上下文中进行管理
+    /// </summary>
+    public abstract class QueryExecutor
     {
         /// <summary>
         /// ExcuteNonQuery 执行sql语句或者存储过程,返回影响的行数---ExcuteNonQuery
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static int ExecuteNonQuery(DbContext dbContext)
+        public static int ExecuteNonQuery(SqlDbContext dbContext)
         {
-            using (SqlConnection_RW conn = new SqlConnection_RW(dbContext.DataBaseType, dbContext.ConnString_RW))
-            {
-                using (DbCommandCommon cmd = new DbCommandCommon(dbContext.DataBaseType))
-                {
-                    PreparCommand(conn.DbConnection, cmd.DbCommand, dbContext.SqlStatement, dbContext.CommandType, dbContext.Parameters);//参数增加了参数增加了commandType 可以自己编辑执行方式
-                    if (dbContext.OpenRealExecutionSaveToDb)
-                        return cmd.DbCommand.ExecuteNonQuery();
-                    return default(int);
-                }
-            }
+            if (dbContext.OpenRealExecutionSaveToDb)
+                return dbContext.DbCommand.ExecuteNonQuery();
+            return default(int);
         }
-        public static Task<int> ExecuteNonQueryAsync(DbContext dbContext)
+        public static Task<int> ExecuteNonQueryAsync(SqlDbContext dbContext)
         {
-            using (SqlConnection_RW conn = new SqlConnection_RW(dbContext.DataBaseType, dbContext.ConnString_RW))
-            {
-                using (DbCommandCommon cmd = new DbCommandCommon(dbContext.DataBaseType))
-                {
-                    PreparCommand(conn.DbConnection, cmd.DbCommand, dbContext.SqlStatement, dbContext.CommandType, dbContext.Parameters);//参数增加了commandType 可以自己编辑执行方式
-                    if (dbContext.OpenRealExecutionSaveToDb)
-                        return cmd.DbCommand.ExecuteNonQueryAsync();
-                    return default(Task<int>);
-                }
-            }
-        }
-        public static void BatchExecuteNonQuery(DbContext dbContext, IEnumerable<BatchExecuteModel> batchExecuteModels)
-        {
-            using (SqlConnection_RW conn = new SqlConnection_RW(dbContext.DataBaseType, dbContext.ConnString_RW))
-            {
-                using (DbCommandCommon cmd = new DbCommandCommon(dbContext.DataBaseType))
-                {
-                    foreach (var item in batchExecuteModels)
-                    {
-                        PreparCommand(conn.DbConnection, cmd.DbCommand, item.CommandTextOrSpName, item.CommandType, item.ParamsDic);
-                        if (dbContext.OpenRealExecutionSaveToDb)
-                            cmd.DbCommand.ExecuteNonQuery();
-                    }
-                }
-            }
-        }
-        public static void BatchExecuteNonQueryAsync(DbContext dbContext, IEnumerable<BatchExecuteModel> batchExecuteModels)
-        {
-            using (SqlConnection_RW conn = new SqlConnection_RW(dbContext.DataBaseType, dbContext.ConnString_RW))
-            {
-                using (DbCommandCommon cmd = new DbCommandCommon(dbContext.DataBaseType))
-                {
-                    foreach (var item in batchExecuteModels)
-                    {
-                        PreparCommand(conn.DbConnection, cmd.DbCommand, item.CommandTextOrSpName, item.CommandType, item.ParamsDic);
-                        if (dbContext.OpenRealExecutionSaveToDb)
-                            cmd.DbCommand.ExecuteNonQueryAsync();
-                    }
-                }
-            }
+            if (dbContext.OpenRealExecutionSaveToDb)
+                return dbContext.DbCommand.ExecuteNonQueryAsync();
+            return default(Task<int>);
         }
 
         /// <summary>
@@ -96,33 +54,17 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static object ExecuteScalar(DbContext dbContext)
+        public static object ExecuteScalar(SqlDbContext dbContext)
         {
-            using (SqlConnection_RW conn = new SqlConnection_RW(dbContext.DataBaseType, dbContext.ConnString_RW))
-            {
-                using (DbCommandCommon cmd = new DbCommandCommon(dbContext.DataBaseType))
-                {
-                    PreparCommand(conn.DbConnection, cmd.DbCommand, dbContext.SqlStatement, dbContext.CommandType, dbContext.Parameters);
-                    if (dbContext.OpenRealExecutionSaveToDb)
-                        return cmd.DbCommand.ExecuteScalar();
-                    return default(object);
-                }
-
-            }
+            if (dbContext.OpenRealExecutionSaveToDb)
+                return dbContext.DbCommand.ExecuteScalar();
+            return default(object);
         }
-        public static Task<object> ExecuteScalarAsync(DbContext dbContext)
+        public static Task<object> ExecuteScalarAsync(SqlDbContext dbContext)
         {
-            using (SqlConnection_RW conn = new SqlConnection_RW(dbContext.DataBaseType, dbContext.ConnString_RW))
-            {
-                using (DbCommandCommon cmd = new DbCommandCommon(dbContext.DataBaseType))
-                {
-                    PreparCommand(conn.DbConnection, cmd.DbCommand, dbContext.SqlStatement, dbContext.CommandType, dbContext.Parameters);
-                    if (dbContext.OpenRealExecutionSaveToDb)
-                        return cmd.DbCommand.ExecuteScalarAsync();
-                    return default(Task<object>);
-                }
-
-            }
+            if (dbContext.OpenRealExecutionSaveToDb)
+                return dbContext.DbCommand.ExecuteScalarAsync();
+            return default(Task<object>);
         }
 
         /// <summary>
@@ -130,14 +72,10 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static DbDataReader ExecuteReader(DbContext dbContext)
+        public static DbDataReader ExecuteReader(SqlDbContext dbContext)
         {
-            //sqlDataReader不能用using 会关闭conn 导致不能获取到返回值。注意：DataReader获取值时必须保持连接状态
-            SqlConnection_RW conn = new SqlConnection_RW(dbContext.DataBaseType, dbContext.ConnString_R, dbContext.ConnString_RW);
-            DbCommandCommon cmd = new DbCommandCommon(dbContext.DataBaseType);
-            PreparCommand(conn.DbConnection, cmd.DbCommand, dbContext.SqlStatement, dbContext.CommandType, dbContext.Parameters);
             if (dbContext.OpenRealExecutionSaveToDb)
-                return cmd.DbCommand.ExecuteReader(CommandBehavior.CloseConnection);
+                return dbContext.DbCommand.ExecuteReader(CommandBehavior.CloseConnection);
             return default(DbDataReader);
         }
 
@@ -148,7 +86,7 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns> 
-        public static DataTable ExecuteDataTable(DbContext dbContext)
+        public static DataTable ExecuteDataTable(SqlDbContext dbContext)
         {
             DataSet ds = ExecuteDataSet(dbContext);
             if (ds != null && ds.Tables != null && ds.Tables.Count > 0)
@@ -163,27 +101,17 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static DataSet ExecuteDataSet(DbContext dbContext)
+        public static DataSet ExecuteDataSet(SqlDbContext dbContext)
         {
-            using (SqlConnection_RW conn = new SqlConnection_RW(dbContext.DataBaseType, dbContext.ConnString_R, dbContext.ConnString_RW))
+            if (dbContext.OpenRealExecutionSaveToDb)
             {
-                using (DbCommandCommon cmd = new DbCommandCommon(dbContext.DataBaseType))
-                {
-                    PreparCommand(conn.DbConnection, cmd.DbCommand, dbContext.SqlStatement, dbContext.CommandType, dbContext.Parameters);
-                    if (dbContext.OpenRealExecutionSaveToDb)
-                    {
-                        using (DbDataAdapterCommon da = new DbDataAdapterCommon(dbContext.DataBaseType, cmd.DbCommand))
-                        {
-                            DataSet ds = new DataSet();
-                            da.Fill(ds);
-                            return ds;
-                        }
-                    }
-                    else
-                    {
-                        return default(DataSet);
-                    }
-                }
+                DataSet ds = new DataSet();
+                dbContext.DbDataAdapter.Fill(ds);
+                return ds;
+            }
+            else
+            {
+                return default(DataSet);
             }
         }
 
@@ -193,7 +121,7 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
         /// <typeparam name="Entity"></typeparam>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static List<Entity> ExecuteList<Entity>(DbContext dbContext) where Entity : class
+        public static List<Entity> ExecuteList<Entity>(SqlDbContext dbContext) where Entity : class
         {
             return GetListFromDataSetV2<Entity>(ExecuteDataSet(dbContext));
         }
@@ -204,76 +132,9 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
         /// <typeparam name="Entity"></typeparam>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static Entity ExecuteEntity<Entity>(DbContext dbContext) where Entity : class
+        public static Entity ExecuteEntity<Entity>(SqlDbContext dbContext) where Entity : class
         {
             return GetEntityFromDataSetV2<Entity>(ExecuteDataSet(dbContext));
-        }
-
-        /// <summary>
-        ///  ---PreparCommand 构建一个通用的command对象供内部方法进行调用---
-        /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="cmd"></param>
-        /// <param name="commandTextOrSpName"></param>
-        /// <param name="commandType"></param>
-        /// <param name="dictionary"></param>
-        private static void PreparCommand(DbConnection conn, DbCommand cmd, string commandTextOrSpName, CommandType commandType, IDictionary<string, object> dictionary = null)
-        {
-            //打开连接
-            if (conn.State != ConnectionState.Open)
-            {
-                conn.Open();
-            }
-
-            //设置SqlCommand对象的属性值
-            cmd.Connection = conn;
-            cmd.CommandType = commandType;
-            cmd.CommandText = commandTextOrSpName;
-            cmd.CommandTimeout = 60;
-
-            if (dictionary != null)
-            {
-                cmd.Parameters.Clear();
-                DbParameter[] parameters;
-                switch (conn)
-                {
-                    case SqlConnection s:
-                        parameters = new SqlParameter[dictionary.Count];
-                        break;
-                    case MySqlConnection m:
-                        parameters = new MySqlParameter[dictionary.Count];
-                        break;
-                    //case OracleConnection o:
-                    //parameters = new OracleParameter[dictionary.Count];
-                    //break;
-                    default:
-                        parameters = new SqlParameter[dictionary.Count];
-                        break;
-                }
-
-                string[] keyArray = dictionary.Keys.ToArray();
-                object[] valueArray = dictionary.Values.ToArray();
-
-                for (int i = 0; i < parameters.Length; i++)
-                {
-                    switch (conn)
-                    {
-                        case SqlConnection s:
-                            parameters[i] = new SqlParameter(keyArray[i], valueArray[i] ?? DBNull.Value);
-                            break;
-                        case MySqlConnection m:
-                            parameters[i] = new MySqlParameter(keyArray[i], valueArray[i] ?? DBNull.Value);
-                            break;
-                        //case OracleConnection o:
-                        // parameters[i] = new OracleParameter(keyArray[i], valueArray[i]);
-                        // break;
-                        default:
-                            parameters[i] = new SqlParameter(keyArray[i], valueArray[i] ?? DBNull.Value);
-                            break;
-                    }
-                }
-                cmd.Parameters.AddRange(parameters);
-            }
         }
 
         #region 通过Model反射返回结果集 Model为 Entity 泛型变量的真实类型---反射返回结果集
@@ -285,7 +146,7 @@ namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
             {
                 PropertyInfo[] propertyInfos = typeof(Entity).GetProperties();     //获取T对象的所有公共属性
                 List<Entity> list = new List<Entity>();//实例化一个list对象
-                //判断读取的行是否>0 即数据库数据已被读取
+                                                       //判断读取的行是否>0 即数据库数据已被读取
                 foreach (DataRow row in dt.Rows)
                 {
                     Entity model1 = System.Activator.CreateInstance<Entity>();//实例化一个对象，便于往list里填充数据

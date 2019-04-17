@@ -19,7 +19,7 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace SevenTiny.Bantina.Bankinate.DataAccessEngine
+namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
 {
     /// <summary>
     /// Auto Fill Adapter

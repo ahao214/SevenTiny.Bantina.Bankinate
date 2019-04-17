@@ -1,54 +1,46 @@
 ﻿using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.Cache;
 using SevenTiny.Bantina.Bankinate.Configs;
-using SevenTiny.Bantina.Bankinate.DataAccessEngine;
+using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace SevenTiny.Bantina.Bankinate
+namespace SevenTiny.Bantina.Bankinate.DbContexts
 {
-    public class DbContext
+    public abstract class DbContext : IDisposable
     {
-        #region Properties
+        protected DbContext(string connectionString_Write, params string[] connectionStrings_Read)
+        {
+            ConnectionString_Write = connectionString_Write;
+            ConnectionStrings_Read = connectionStrings_Read;
+        }
+
         /// <summary>
         /// 数据库类型
         /// </summary>
-        public DataBaseType DataBaseType { get; set; }
+        public DataBaseType DataBaseType { get; protected set; }
         /// <summary>
         /// 写数据的连接字符串
         /// </summary>
-        public string ConnectionString_Write { get; set; }
+        public string ConnectionString_Write { get; private set; }
         /// <summary>
         /// 读数据的连接字符串
         /// </summary>
-        public string[] ConnectionStrings_Read { get; set; }
-        #endregion
-
-        #region Methods
-
-
-        #endregion
-
-        public string ConnString_R { get; set; }
-        public string DataBaseName { get; protected set; }
-        public string TableName { get; internal set; }
+        public string[] ConnectionStrings_Read { get; private set; }
         /// <summary>
-        /// Sql语句
+        /// 当前使用的连接字符串
         /// </summary>
-        public string SqlStatement { get; internal set; }
-        /// <summary>
-        /// 命令类型，可以在运行时随时灵活调整
-        /// </summary>
-        public CommandType CommandType { get; set; } = CommandType.Text;
-        /// <summary>
-        /// 参数化查询参数
-        /// </summary>
-        public IDictionary<string, object> Parameters { get; set; }
-        /// <summary>
-        /// NoSql的文档集合
-        /// </summary>
-        internal dynamic NoSqlCollection { get; set; }
+        public string CurrentConnectionString_Read
+        {
+            get
+            {
+                //根据随机算法获取读字符串
+                return "";
+
+            }
+        }
+
 
         //Db Control
         /// <summary>
@@ -71,7 +63,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// <summary>
         /// 查询缓存的默认缓存时间
         /// </summary>
-        private TimeSpan _QueryCacheExpiredTimeSpan = Const.QueryCacheExpiredTimeSpan;
+        private TimeSpan _QueryCacheExpiredTimeSpan = BankinateConst.QueryCacheExpiredTimeSpan;
         public TimeSpan QueryCacheExpiredTimeSpan
         {
             get { return _QueryCacheExpiredTimeSpan; }
@@ -87,7 +79,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// <summary>
         /// 表缓存的缓存时间
         /// </summary>
-        private TimeSpan _TableCacheExpiredTimeSpan = Const.TableCacheExpiredTimeSpan;
+        private TimeSpan _TableCacheExpiredTimeSpan = BankinateConst.TableCacheExpiredTimeSpan;
         public TimeSpan TableCacheExpiredTimeSpan
         {
             get { return _TableCacheExpiredTimeSpan; }
@@ -103,7 +95,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// <summary>
         /// 每张表一级缓存的最大个数，超出数目将会按从早到晚的顺序移除缓存键
         /// </summary>
-        public int QueryCacheMaxCountPerTable { get; protected set; } = Const.QueryCacheMaxCountPerTable;
+        public int QueryCacheMaxCountPerTable { get; protected set; } = BankinateConst.QueryCacheMaxCountPerTable;
         /// <summary>
         /// 数据是否从缓存中获取
         /// </summary>
@@ -111,7 +103,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// <summary>
         /// Cache 存储媒介,默认本地缓存
         /// </summary>
-        public CacheMediaType CacheMediaType { get; protected set; } = Const.CacheMediaType;
+        public CacheMediaType CacheMediaType { get; protected set; } = BankinateConst.CacheMediaType;
         /// <summary>
         /// Cache 第三方存储媒介服务地址
         /// </summary>
@@ -119,7 +111,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// <summary>
         /// 最大的缓存时间（用于缓存缓存键）
         /// </summary>
-        internal TimeSpan MaxExpiredTimeSpan { get; set; } = Const.CacheKeysMaxExpiredTime;
+        internal TimeSpan MaxExpiredTimeSpan { get; set; } = BankinateConst.CacheKeysMaxExpiredTime;
 
         /// <summary>
         /// 清空全部缓存
@@ -140,13 +132,9 @@ namespace SevenTiny.Bantina.Bankinate
         /// </summary>
         public bool OpenPropertyDataValidate { get; protected set; } = false;
 
-        //内置方法
-        /// <summary>
-        /// 根据实体获取表明
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
-        public string GetTableName<TEntity>() where TEntity : class
-        => TableAttribute.GetName(typeof(TEntity));
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }

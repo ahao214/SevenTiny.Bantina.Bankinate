@@ -3,8 +3,12 @@ using System;
 
 namespace SevenTiny.Bantina.Bankinate.Configs
 {
-    internal static class Const
+    internal static class BankinateConst
     {
+        /// <summary>
+        /// Sql查询超时
+        /// </summary>
+        internal static readonly int CommandTimeout = 60;
         /// <summary>
         /// 每张表一级缓存的最大个数，超出数目将会按从早到晚的顺序移除缓存键
         /// </summary>

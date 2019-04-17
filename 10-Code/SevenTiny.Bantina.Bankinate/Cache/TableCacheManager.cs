@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.Configs;
-using SevenTiny.Bantina.Bankinate.DataAccessEngine;
+using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using SevenTiny.Bantina.Bankinate.DbContexts;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// </summary>
         internal static void FlushAllCache(DbContext dbContext)
         {
-            if (CacheStorageManager.IsExist(dbContext, Const.GetTableCacheKeysCacheKey(dbContext.DataBaseName), out HashSet<string> keys))
+            if (CacheStorageManager.IsExist(dbContext, BankinateConst.GetTableCacheKeysCacheKey(dbContext.DataBaseName), out HashSet<string> keys))
             {
                 foreach (var item in keys)
                 {
@@ -41,14 +41,14 @@ namespace SevenTiny.Bantina.Bankinate.Cache
 
         private static string GetTableCacheKey(DbContext dbContext)
         {
-            string key = $"{Const.CacheKey_TableCache}{dbContext.TableName}";
+            string key = $"{BankinateConst.CacheKey_TableCache}{dbContext.TableName}";
             //缓存键更新
-            if (!CacheStorageManager.IsExist(dbContext, Const.GetTableCacheKeysCacheKey(dbContext.DataBaseName), out HashSet<string> keys))
+            if (!CacheStorageManager.IsExist(dbContext, BankinateConst.GetTableCacheKeysCacheKey(dbContext.DataBaseName), out HashSet<string> keys))
             {
                 keys = new HashSet<string>();
             }
             keys.Add(key);
-            CacheStorageManager.Put(dbContext, Const.GetTableCacheKeysCacheKey(dbContext.DataBaseName), keys, dbContext.MaxExpiredTimeSpan);
+            CacheStorageManager.Put(dbContext, BankinateConst.GetTableCacheKeysCacheKey(dbContext.DataBaseName), keys, dbContext.MaxExpiredTimeSpan);
             return key;
         }
 
@@ -231,7 +231,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <param name="tableCacheTimeSpan">tableCache过期时间</param>
         private static void ScanTableBackground<TEntity>(DbContext dbContext, TimeSpan tableCacheTimeSpan) where TEntity : class
         {
-            string scanKey = $"{Const.CacheKey_TableScanning}{dbContext.TableName}";
+            string scanKey = $"{BankinateConst.CacheKey_TableScanning}{dbContext.TableName}";
             //1.判断正在扫描键是否存在，如果存在，则返回null，继续等待扫描任务完成
             if (CacheStorageManager.IsExist(dbContext, scanKey))
             {
@@ -241,7 +241,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
             Task.Run(() =>
             {
                 //设置扫描键，标识当前正在进行扫描
-                CacheStorageManager.Put(dbContext, scanKey, 1, Const.SpanScaningKeyExpiredTime);
+                CacheStorageManager.Put(dbContext, scanKey, 1, BankinateConst.SpanScaningKeyExpiredTime);
                 //对扫描任务加锁，防止多线程环境多次执行任务
                 lock (tableScaningLocker)
                 {
@@ -278,7 +278,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                 case DataBaseType.Oracle:
                     dbContext.SqlStatement = $"SELECT * FROM {dbContext.TableName}";
                     dbContext.Parameters = null;
-                    return DbHelper.ExecuteList<TEntity>(dbContext);
+                    return QueryExecutor.ExecuteList<TEntity>(dbContext);
                 case DataBaseType.MongoDB:
                     return (dbContext.NoSqlCollection as IMongoCollection<TEntity>).Find(t => true).ToList();//获取MongoDb全文档记录
                 default:

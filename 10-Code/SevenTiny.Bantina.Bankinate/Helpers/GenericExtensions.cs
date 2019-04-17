@@ -1,22 +1,9 @@
-﻿/*********************************************************
- * CopyRight: QIXIAO CODE BUILDER. 
- * Version: 5.0.0
- * Author: sevenTiny
- * Address: Earth
- * Create: 2017-12-03 21:12:20
- * Modify: 2018-2-13 21:10:58
- * E-mail: dong@qixiao.me | wd8622088@foxmail.com 
- * GitHub: https://github.com/sevenTiny 
- * Personal web site: http://www.7tiny.com 
- * Technical WebSit: http://www.cnblogs.com/7tiny/ 
- * Description: 
- * Thx , Best Regards ~
- *********************************************************/
+﻿using System;
 using System.Collections.Generic;
 
 namespace SevenTiny.Bantina.Bankinate.Helpers
 {
-    public static class DictionaryExtensions
+    public static class GenericExtensions
     {
         /// <summary>
         /// If exist the key , update the value.
@@ -43,9 +30,22 @@ namespace SevenTiny.Bantina.Bankinate.Helpers
         /// <returns></returns>
         public static TValue SafeGet<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
-            if (dictionary.TryGetValue(key,out TValue value))
+            if (dictionary.TryGetValue(key, out TValue value))
                 return value;
             return default(TValue);
+        }
+        /// <summary>
+        /// Foreach
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataSource"></param>
+        /// <param name="func"></param>
+        public static void Foreach<T>(this IEnumerable<T> dataSource, Action<T> func)
+        {
+            foreach (var dataItem in dataSource)
+            {
+                func(dataItem);
+            }
         }
     }
 }

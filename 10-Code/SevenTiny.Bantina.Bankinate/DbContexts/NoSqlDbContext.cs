@@ -2,7 +2,7 @@
 using MongoDB.Driver.Linq;
 using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.Cache;
-using SevenTiny.Bantina.Bankinate.DataAccessEngine;
+using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using SevenTiny.Bantina.Bankinate.Validation;
 using System;
 using System.Collections.Generic;
@@ -13,6 +13,11 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
 {
     public abstract class NoSqlDbContext<TDataBase> : DbContext, IDbContext where TDataBase : class
     {
+        /// <summary>
+        /// NoSql的文档集合
+        /// </summary>
+        internal dynamic NoSqlCollection { get; set; }
+
         protected NoSqlDbContext(DataBaseType dataBaseType, string connectionString) : base(dataBaseType, connectionString)
         {
             switch (dataBaseType)

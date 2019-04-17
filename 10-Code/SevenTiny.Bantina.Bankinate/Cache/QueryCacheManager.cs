@@ -23,7 +23,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// </summary>
         internal static void FlushAllCache(DbContext dbContext)
         {
-            if (CacheStorageManager.IsExist(dbContext, Const.GetQueryCacheKeysCacheKey(dbContext.DataBaseName), out HashSet<string> keys))
+            if (CacheStorageManager.IsExist(dbContext, BankinateConst.GetQueryCacheKeysCacheKey(dbContext.DataBaseName), out HashSet<string> keys))
             {
                 foreach (var item in keys)
                 {
@@ -48,14 +48,14 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <returns></returns>
         private static string GetQueryCacheKey(DbContext dbContext)
         {
-            string key = $"{Const.CacheKey_QueryCache}{dbContext.TableName}";
+            string key = $"{BankinateConst.CacheKey_QueryCache}{dbContext.TableName}";
             //缓存键更新
-            if (!CacheStorageManager.IsExist(dbContext, Const.GetQueryCacheKeysCacheKey(dbContext.DataBaseName), out HashSet<string> keys))
+            if (!CacheStorageManager.IsExist(dbContext, BankinateConst.GetQueryCacheKeysCacheKey(dbContext.DataBaseName), out HashSet<string> keys))
             {
                 keys = new HashSet<string>();
             }
             keys.Add(key);
-            CacheStorageManager.Put(dbContext, Const.GetQueryCacheKeysCacheKey(dbContext.DataBaseName), keys, dbContext.MaxExpiredTimeSpan);
+            CacheStorageManager.Put(dbContext, BankinateConst.GetQueryCacheKeysCacheKey(dbContext.DataBaseName), keys, dbContext.MaxExpiredTimeSpan);
             return key;
         }
 

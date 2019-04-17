@@ -3,8 +3,8 @@
  * Version: 5.0.0
  * Author: 7tiny
  * Address: Earth
- * Create: 2018-04-19 23:57:48
- * Modify: 2018-04-19 23:57:48
+ * Create: 2018-04-19 23:58:08
+ * Modify: 2018-04-19 23:58:08
  * E-mail: dong@7tiny.com | sevenTiny@foxmail.com 
  * GitHub: https://github.com/sevenTiny 
  * Personal web site: http://www.7tiny.com 
@@ -12,9 +12,14 @@
  * Description: 
  * Thx , Best Regards ~
  *********************************************************/
-using SevenTiny.Bantina.Bankinate.DataAccessEngine;
-using SevenTiny.Bantina.Bankinate.DbContexts;
+using System;
 
 namespace SevenTiny.Bantina.Bankinate
 {
+    /// <summary>
+    /// 通用的Api接口，具备基础的操作，缓存
+    /// </summary>
+    public interface IDbContext : IDisposable, IBaseOperate, ICacheable
+    {
+    }
 }
