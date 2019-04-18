@@ -12,7 +12,7 @@
 * Description: 适合于Sql条件下的懒加载查询配置
 * Thx , Best Regards ~
 *********************************************************/
-using SevenTiny.Bantina.Bankinate.Cache;
+using SevenTiny.Bantina.Bankinate.CacheManagement;
 using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.Extensions;
 using SevenTiny.Bantina.Bankinate.SqlDataAccess;

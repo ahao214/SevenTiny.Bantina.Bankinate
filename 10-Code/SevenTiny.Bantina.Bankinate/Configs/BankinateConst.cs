@@ -1,5 +1,4 @@
-﻿using SevenTiny.Bantina.Bankinate.Cache;
-using System;
+﻿using System;
 
 namespace SevenTiny.Bantina.Bankinate.Configs
 {

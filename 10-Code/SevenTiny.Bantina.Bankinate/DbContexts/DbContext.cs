@@ -1,4 +1,4 @@
-﻿using SevenTiny.Bantina.Bankinate.Cache;
+﻿using SevenTiny.Bantina.Bankinate.CacheManagement;
 using SevenTiny.Bantina.Bankinate.Configs;
 using SevenTiny.Bantina.Bankinate.ConnectionManagement;
 using SevenTiny.Bantina.Bankinate.Helpers;

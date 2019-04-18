@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace SevenTiny.Bantina.Bankinate.Cache
+namespace SevenTiny.Bantina.Bankinate.CacheManagement
 {
     /// <summary>
     /// 数据库缓存管理器

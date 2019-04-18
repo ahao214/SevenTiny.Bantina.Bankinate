@@ -1,7 +1,7 @@
 ﻿//using MongoDB.Driver;
 //using MongoDB.Driver.Linq;
 //using SevenTiny.Bantina.Bankinate.Attributes;
-//using SevenTiny.Bantina.Bankinate.Cache;
+//using SevenTiny.Bantina.Bankinate.CacheManagement;
 //using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 //using SevenTiny.Bantina.Bankinate.Validation;
 //using System;

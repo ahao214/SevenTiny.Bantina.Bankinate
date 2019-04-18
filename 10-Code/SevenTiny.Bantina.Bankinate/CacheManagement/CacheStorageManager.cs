@@ -4,7 +4,7 @@ using SevenTiny.Bantina.Bankinate.Helpers.Redis;
 using System;
 using Newtonsoft.Json;
 
-namespace SevenTiny.Bantina.Bankinate.Cache
+namespace SevenTiny.Bantina.Bankinate.CacheManagement
 {
     /// <summary>
     /// 缓存存储管理器

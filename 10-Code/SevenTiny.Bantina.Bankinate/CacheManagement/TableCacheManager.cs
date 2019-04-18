@@ -9,7 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace SevenTiny.Bantina.Bankinate.Cache
+namespace SevenTiny.Bantina.Bankinate.CacheManagement
 {
     /// <summary>
     /// 表缓存管理器(二级缓存管理器）
