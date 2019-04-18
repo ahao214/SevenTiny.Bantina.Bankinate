@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace SevenTiny.Bantina.Bankinate.SqlStatementManager
+namespace SevenTiny.Bantina.Bankinate.SqlStatementManagement
 {
     /// <summary>
     /// 命令生成规则的基类

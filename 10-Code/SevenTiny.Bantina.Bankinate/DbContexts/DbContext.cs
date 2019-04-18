@@ -1,6 +1,9 @@
 ﻿using SevenTiny.Bantina.Bankinate.Cache;
 using SevenTiny.Bantina.Bankinate.Configs;
+using SevenTiny.Bantina.Bankinate.ConnectionManagement;
+using SevenTiny.Bantina.Bankinate.Helpers;
 using System;
+using System.Linq;
 
 namespace SevenTiny.Bantina.Bankinate.DbContexts
 {
@@ -11,8 +14,11 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
     {
         protected DbContext(string connectionString_Write, params string[] connectionStrings_Read)
         {
-            ConnectionString_Write = connectionString_Write;
-            ConnectionStrings_Read = connectionStrings_Read;
+            if (string.IsNullOrEmpty(connectionString_Write))
+                throw new ArgumentNullException(nameof(connectionString_Write), "argument can not be null");
+
+            if (ConnectionManager == null)
+                ConnectionManager = new ConnectionManager(connectionString_Write, connectionStrings_Read);
         }
 
         #region Database Control 数据库管理
@@ -21,26 +27,9 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// </summary>
         public DataBaseType DataBaseType { get; protected set; }
         /// <summary>
-        /// 写数据的连接字符串
+        /// 连接管理器
         /// </summary>
-        public string ConnectionString_Write { get; private set; }
-        /// <summary>
-        /// 读数据的连接字符串
-        /// </summary>
-        public string[] ConnectionStrings_Read { get; private set; }
-        /// <summary>
-        /// 当前使用的连接字符串
-        /// </summary>
-        public string CurrentConnectionString_Read
-        {
-            get
-            {
-                //根据随机算法获取读字符串
-                return "";
-
-            }
-        }
-
+        public ConnectionManager ConnectionManager { get; }
         /// <summary>
         /// 真实执行持久化操作开关，如果为false，则只执行准备动作，不实际操作数据库（友情提示：测试框架代码执行情况可以将其关闭）
         /// </summary>

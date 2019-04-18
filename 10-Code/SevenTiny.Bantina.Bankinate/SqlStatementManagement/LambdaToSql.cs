@@ -22,7 +22,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace SevenTiny.Bantina.Bankinate.SqlStatementManager
+namespace SevenTiny.Bantina.Bankinate.SqlStatementManagement
 {
     internal class LambdaToSql
     {

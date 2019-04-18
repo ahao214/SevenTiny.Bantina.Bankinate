@@ -1,6 +1,6 @@
 ﻿using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.Extensions;
-using SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManager;
+using SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement;
 using System;
 using System.Data;
 using System.Data.SqlClient;

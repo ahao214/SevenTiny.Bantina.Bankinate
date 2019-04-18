@@ -1,15 +1,11 @@
 ﻿using MySql.Data.MySqlClient;
 using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.Extensions;
-using SevenTiny.Bantina.Bankinate.Helpers;
-using SevenTiny.Bantina.Bankinate.MySql.SqlStatementManager;
-using SevenTiny.Bantina.Bankinate.SqlStatementManager;
+using SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Text;
 
 namespace SevenTiny.Bantina.Bankinate
 {

@@ -3,7 +3,7 @@ using SevenTiny.Bantina.Bankinate.Cache;
 using SevenTiny.Bantina.Bankinate.Configs;
 using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using SevenTiny.Bantina.Bankinate.Helpers;
-using SevenTiny.Bantina.Bankinate.SqlStatementManager;
+using SevenTiny.Bantina.Bankinate.SqlStatementManagement;
 using SevenTiny.Bantina.Bankinate.Validation;
 using System;
 using System.Collections.Generic;
@@ -134,6 +134,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         {
             PropertyDataValidator.Verify(this, entity);
             this.CommandTextGenerator.Add(this, entity);
+            this.CurrentConnectionString
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Add(this, entity);
         }
