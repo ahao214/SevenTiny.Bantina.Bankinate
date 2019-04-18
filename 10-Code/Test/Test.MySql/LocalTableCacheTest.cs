@@ -9,7 +9,7 @@ namespace Test.MySql
     [DataBase("SevenTinyTest")]
     public class LocalTableCache : MySqlDbContext<LocalTableCache>
     {
-        public LocalTableCache() : base(ConnectionStrings.Get("mysql39901"))
+        public LocalTableCache() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
         {
             OpenTableCache = true;//二级缓存开关，表实体上的二级标签也需要提供
         }

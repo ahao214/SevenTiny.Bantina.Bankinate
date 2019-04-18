@@ -9,7 +9,7 @@ namespace Test.MySql
     [DataBase("SevenTinyTest")]
     public class RedisQueryCache : MySqlDbContext<RedisQueryCache>
     {
-        public RedisQueryCache() : base(ConnectionStrings.Get("mysql39901"))
+        public RedisQueryCache() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
         {
             OpenQueryCache = true;//一级缓存开关
             CacheMediaType = CacheMediaType.Redis;

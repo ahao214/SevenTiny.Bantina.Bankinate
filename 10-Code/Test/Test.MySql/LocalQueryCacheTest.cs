@@ -9,7 +9,7 @@ namespace Test.MySql
     [DataBase("SevenTinyTest")]
     public class LocalQueryCache : MySqlDbContext<LocalQueryCache>
     {
-        public LocalQueryCache() : base(ConnectionStrings.Get("mysql39901"))
+        public LocalQueryCache() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
         {
             OpenQueryCache = true;//一级缓存开关
         }

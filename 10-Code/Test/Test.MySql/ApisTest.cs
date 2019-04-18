@@ -11,7 +11,7 @@ namespace Test.MySql
     [DataBase("SevenTinyTest")]
     public class OperationDb : MySqlDbContext<OperationDb>
     {
-        public OperationDb() : base(ConnectionStrings.Get("mysql39901"))
+        public OperationDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
         {
 
         }

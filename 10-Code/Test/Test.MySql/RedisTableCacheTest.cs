@@ -10,7 +10,7 @@ namespace Test.MySql
     [DataBase("SevenTinyTest")]
     public class RedisTableCache : MySqlDbContext<RedisTableCache>
     {
-        public RedisTableCache() : base(ConnectionStrings.Get("mysql39901"))
+        public RedisTableCache() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
         {
             OpenTableCache = true;//二级缓存开关，表实体上的二级标签也需要提供
             CacheMediaType = CacheMediaType.Redis;

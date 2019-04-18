@@ -13,7 +13,7 @@ namespace Test.MySql
     [DataBase("SevenTinyTest")]
     public class PropertyValidateDb : MySqlDbContext<PropertyValidateDb>
     {
-        public PropertyValidateDb() : base(ConnectionStrings.Get("mysql39901"))
+        public PropertyValidateDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
         {
             OpenPropertyDataValidate = true;
             OpenRealExecutionSaveToDb = false;

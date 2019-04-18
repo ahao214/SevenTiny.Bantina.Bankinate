@@ -11,7 +11,7 @@ namespace Test.MySql
     [DataBase("SevenTinyTest")]
     public class DataPreseterDb : MySqlDbContext<DataPreseterDb>
     {
-        public DataPreseterDb() : base(ConnectionStrings.Get("mysql39901"))
+        public DataPreseterDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
         {
 
         }
