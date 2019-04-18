@@ -26,6 +26,7 @@ namespace Test.MySql
         [Trait("desc", "初始化测试数据")]
         public void InitData()
         {
+            return;
             using (var db = new DataPreseterDb())
             {
                 //清空所有数据,并重置索引
