@@ -13,12 +13,6 @@ namespace SevenTiny.Bantina.Bankinate
         protected SqlServerDbContext(string connectionString_Write, params string[] connectionStrings_Read) : base(connectionString_Write, connectionStrings_Read)
         {
             DataBaseType = DataBaseType.SqlServer;
-
-            CreateDbConnection(connectionString_Write);
-            CreateDbCommand();
-            CreateDbDataAdapter();
-            //初始化访问器
-            AccessorInitializes();
         }
 
         internal override void CreateDbConnection(string connectionString)
@@ -35,7 +29,7 @@ namespace SevenTiny.Bantina.Bankinate
             DbDataAdapter = new SqlDataAdapter();
             DbDataAdapter.SelectCommand = this.DbCommand;
         }
-        internal override void CreateCommandTextGenerator() => new SqlServerCommandTextGenerator();
+        internal override void CreateCommandTextGenerator() => CommandTextGenerator = new SqlServerCommandTextGenerator();
         /// <summary>
         /// 命令参数初始化
         /// </summary>
@@ -50,20 +44,6 @@ namespace SevenTiny.Bantina.Bankinate
 
         public new void Dispose()
         {
-            //释放资源
-            if (this.DbDataAdapter != null)
-                this.DbDataAdapter.Dispose();
-
-            if (this.DbCommand != null)
-                this.DbCommand.Dispose();
-
-            if (this.DbConnection.State == ConnectionState.Open)
-                this.DbConnection.Close();
-            if (this.DbConnection != null)
-                this.DbConnection.Dispose();
-
-            this.CommandTextGenerator = null;
-
             //调用基类的Dispose
             base.Dispose();
         }

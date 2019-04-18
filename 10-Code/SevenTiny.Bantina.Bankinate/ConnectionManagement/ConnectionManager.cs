@@ -14,7 +14,7 @@ namespace SevenTiny.Bantina.Bankinate.ConnectionManagement
         internal ConnectionManager(string connectionString_Write, string[] connectionStrings_Read)
         {
             this.ConnectionString_Write = connectionString_Write;
-            this.ConnectionStrings_Read = connectionStrings_Read;
+            this.ConnectionStrings_Read = connectionStrings_Read?.Distinct()?.ToArray();
 
             //初始化
             //如果写字符串不需要负载策略，则直接返回

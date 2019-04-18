@@ -22,7 +22,12 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
     {
         protected SqlDbContext(string connectionString_Write, params string[] connectionStrings_Read) : base(connectionString_Write, connectionStrings_Read)
         {
-
+            ConnectionManager.SetConnectionString(OperationType.Write);     //初始化连接字符串
+            CreateDbConnection(ConnectionManager.CurrentConnectionString);  //初始化连接器
+            CreateDbCommand();                                              //初始化命令执行器
+            CreateDbDataAdapter();                                          //初始化集合访问器
+            AccessorInitializes();                                          //初始化访问器
+            CreateCommandTextGenerator();                                   //初始化SQL生成器
         }
 
         /// <summary>
@@ -244,5 +249,24 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             return new StoredProcedureQueryable(this);
         }
         #endregion
+
+        public new void Dispose()
+        {
+            //释放资源
+            if (this.DbDataAdapter != null)
+                this.DbDataAdapter.Dispose();
+
+            if (this.DbCommand != null)
+                this.DbCommand.Dispose();
+
+            if (this.DbConnection.State == ConnectionState.Open)
+                this.DbConnection.Close();
+            if (this.DbConnection != null)
+                this.DbConnection.Dispose();
+
+            this.CommandTextGenerator = null;
+
+            base.Dispose();
+        }
     }
 }

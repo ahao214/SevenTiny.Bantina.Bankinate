@@ -13,7 +13,6 @@ namespace Test.MySql
     {
         public OperationDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
         {
-
         }
     }
 

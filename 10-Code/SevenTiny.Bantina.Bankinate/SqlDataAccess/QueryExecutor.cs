@@ -108,10 +108,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
                 dbContext.DbDataAdapter.Fill(ds);
                 return ds;
             }
-            else
-            {
-                return default(DataSet);
-            }
+            return default(DataSet);
         }
 
         /// <summary>
@@ -122,7 +119,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// <returns></returns>
         public static List<Entity> ExecuteList<Entity>(SqlDbContext dbContext) where Entity : class
         {
-            return GetListFromDataSetV2<Entity>(ExecuteDataSet(dbContext));
+            return GetListFromDataSetV2<Entity>(dbContext, ExecuteDataSet(dbContext));
         }
 
         /// <summary>
@@ -133,7 +130,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// <returns></returns>
         public static Entity ExecuteEntity<Entity>(SqlDbContext dbContext) where Entity : class
         {
-            return GetEntityFromDataSetV2<Entity>(ExecuteDataSet(dbContext));
+            return GetEntityFromDataSetV2<Entity>(dbContext, ExecuteDataSet(dbContext));
         }
 
         #region 通过Model反射返回结果集 Model为 Entity 泛型变量的真实类型---反射返回结果集
@@ -232,27 +229,35 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// <typeparam name="Entity"></typeparam>
         /// <param name="ds"></param>
         /// <returns></returns>
-        public static List<Entity> GetListFromDataSetV2<Entity>(DataSet ds) where Entity : class
+        public static List<Entity> GetListFromDataSetV2<Entity>(SqlDbContext dbContext, DataSet ds) where Entity : class
         {
-            DataTable dt = ds.Tables[0];
-            if (dt.Rows.Count > 0)
+            if (dbContext.OpenRealExecutionSaveToDb)
             {
-                List<Entity> list = new List<Entity>();
-                foreach (DataRow row in dt.Rows)
+                DataTable dt = ds.Tables[0];
+                if (dt.Rows.Count > 0)
                 {
-                    Entity entity = FillAdapter<Entity>.AutoFill(row);
-                    list.Add(entity);
+                    List<Entity> list = new List<Entity>();
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        Entity entity = FillAdapter<Entity>.AutoFill(row);
+                        list.Add(entity);
+                    }
+                    return list;
                 }
-                return list;
+                return default(List<Entity>);
             }
             return default(List<Entity>);
         }
-        public static Entity GetEntityFromDataSetV2<Entity>(DataSet ds) where Entity : class
+        public static Entity GetEntityFromDataSetV2<Entity>(SqlDbContext dbContext, DataSet ds) where Entity : class
         {
-            DataTable dt = ds.Tables[0];// 获取到ds的dt
-            if (dt.Rows.Count > 0)
+            if (dbContext.OpenRealExecutionSaveToDb)
             {
-                return FillAdapter<Entity>.AutoFill(dt.Rows[0]);
+                DataTable dt = ds.Tables[0];// 获取到ds的dt
+                if (dt.Rows.Count > 0)
+                {
+                    return FillAdapter<Entity>.AutoFill(dt.Rows[0]);
+                }
+                return default(Entity);
             }
             return default(Entity);
         }
