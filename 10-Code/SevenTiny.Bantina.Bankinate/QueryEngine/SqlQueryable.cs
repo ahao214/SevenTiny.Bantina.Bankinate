@@ -17,7 +17,7 @@ namespace SevenTiny.Bantina.Bankinate
         }
 
         public void Execute() => QueryExecutor.ExecuteNonQuery(DbContext);
-        public async Task<int> ExecuteSqlAsync() => await QueryExecutor.ExecuteNonQueryAsync(DbContext);
+        public async Task<int> ExecuteAsync() => await QueryExecutor.ExecuteNonQueryAsync(DbContext);
 
         public DataSet ToDataSet() => QueryExecutor.ExecuteDataSet(DbContext);
         public object ToData() => QueryExecutor.ExecuteScalar(DbContext);

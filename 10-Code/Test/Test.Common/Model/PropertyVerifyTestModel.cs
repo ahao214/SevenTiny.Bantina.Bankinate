@@ -1,7 +1,7 @@
 ﻿using SevenTiny.Bantina.Bankinate.Validation;
 using System;
 
-namespace Test.SevenTiny.Bantina.Bankinate.Model
+namespace Test.Common.Model
 {
     public class PropertyVerifyTestModel_Int_1_10
     {

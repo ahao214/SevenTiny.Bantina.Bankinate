@@ -1,9 +1,8 @@
 ﻿using SevenTiny.Bantina.Bankinate.Attributes;
-using SevenTiny.Bantina.Bankinate.Helpers;
 using SevenTiny.Bantina.Configuration;
 using System.Collections.Generic;
 
-namespace Test.SevenTiny.Bantina.Bankinate.Helpers
+namespace Test.Common
 {
     public class ConnectionStrings : ConfigBase<ConnectionStrings>
     {
@@ -19,7 +18,10 @@ namespace Test.SevenTiny.Bantina.Bankinate.Helpers
             dictionary = new Dictionary<string, string>();
             foreach (var item in Configs)
             {
-                dictionary.AddOrUpdate(item.Key, item.Value);
+                if (dictionary.ContainsKey(item.Key))
+                    dictionary[item.Key] = item.Value;
+                else
+                    dictionary.Add(item.Key, item.Value);
             }
         }
 
@@ -30,7 +32,13 @@ namespace Test.SevenTiny.Bantina.Bankinate.Helpers
                 return dictionary[key];
             }
             Initial();
-            return dictionary.SafeGet(key);
+
+            if (dictionary.ContainsKey(key))
+                return dictionary[key];
+
+            return null;
         }
     }
 }
+
+//"Data Source=.;Initial Catalog=SevenTinyTest;Integrated Security=True"

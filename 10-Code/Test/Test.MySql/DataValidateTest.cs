@@ -1,19 +1,19 @@
 ﻿using SevenTiny.Bantina.Bankinate;
 using SevenTiny.Bantina.Bankinate.Attributes;
 using System;
-using Test.SevenTiny.Bantina.Bankinate.Helpers;
-using Test.SevenTiny.Bantina.Bankinate.Model;
+using Test.Common;
+using Test.Common.Model;
 using Xunit;
 
-namespace Test.SevenTiny.Bantina.Bankinate
+namespace Test.MySql
 {
     /// <summary>
     /// 数据校验上下文
     /// </summary>
     [DataBase("SevenTinyTest")]
-    public class MySqlPropertyValidateDb : MySqlDbContext<MySqlPropertyValidateDb>
+    public class PropertyValidateDb : MySqlDbContext<PropertyValidateDb>
     {
-        public MySqlPropertyValidateDb() : base(ConnectionStrings.Get("mysql39901"))
+        public PropertyValidateDb() : base(ConnectionStrings.Get("mysql39901"))
         {
             OpenPropertyDataValidate = true;
             OpenRealExecutionSaveToDb = false;
@@ -24,7 +24,7 @@ namespace Test.SevenTiny.Bantina.Bankinate
     [Trait("desc", "当前标签的限制为1-10")]
     public class DataValidateTest
     {
-        public MySqlPropertyValidateDb Db => new MySqlPropertyValidateDb() { };
+        public PropertyValidateDb Db => new PropertyValidateDb() { };
 
         [Theory]
         [InlineData(-1)]

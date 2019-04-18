@@ -1,7 +1,7 @@
 ﻿using SevenTiny.Bantina.Bankinate.Attributes;
 using System;
 
-namespace Test.SevenTiny.Bantina.Bankinate.Model
+namespace Test.Common.Model
 {
     [Table("Student")]
     [TableCaching]
