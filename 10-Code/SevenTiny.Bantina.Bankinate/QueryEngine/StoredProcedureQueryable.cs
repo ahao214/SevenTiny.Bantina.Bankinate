@@ -1,4 +1,5 @@
-﻿using SevenTiny.Bantina.Bankinate.DbContexts;
+﻿using SevenTiny.Bantina.Bankinate.Configs;
+using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using System.Data;
 using System.Threading.Tasks;
@@ -15,7 +16,15 @@ namespace SevenTiny.Bantina.Bankinate
             DbContext.DbCommand.CommandType = CommandType.StoredProcedure;
         }
 
-        public void ExecuteStoredProcedure() => QueryExecutor.ExecuteNonQuery(DbContext);
-        public async Task<int> ExecuteStoredProcedureAsync() => await QueryExecutor.ExecuteNonQueryAsync(DbContext);
+        public int ExecuteStoredProcedure()
+        {
+            DbContext.ConnectionManager.SetConnectionString(OperationType.Write);
+            return QueryExecutor.ExecuteNonQuery(DbContext);
+        }
+        public async Task<int> ExecuteStoredProcedureAsync()
+        {
+            DbContext.ConnectionManager.SetConnectionString(OperationType.Write);
+            return await QueryExecutor.ExecuteNonQueryAsync(DbContext);
+        }
     }
 }

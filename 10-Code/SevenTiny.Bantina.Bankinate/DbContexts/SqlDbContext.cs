@@ -229,6 +229,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         {
             this.SqlStatement = sqlStatement;
             this.Parameters = parms;
+            this.ConnectionManager.SetConnectionString(OperationType.Read);
             return new SqlQueryable(this);
         }
         /// <summary>
@@ -239,6 +240,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         {
             this.SqlStatement = storedProcedureName;
             this.Parameters = parms;
+            this.ConnectionManager.SetConnectionString(OperationType.Read);
             return new StoredProcedureQueryable(this);
         }
         #endregion

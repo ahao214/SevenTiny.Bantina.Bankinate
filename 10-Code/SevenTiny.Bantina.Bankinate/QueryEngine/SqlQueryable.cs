@@ -1,4 +1,5 @@
-﻿using SevenTiny.Bantina.Bankinate.DbContexts;
+﻿using SevenTiny.Bantina.Bankinate.Configs;
+using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using System.Collections.Generic;
 using System.Data;
@@ -16,12 +17,33 @@ namespace SevenTiny.Bantina.Bankinate
             DbContext.DbCommand.CommandType = CommandType.Text;
         }
 
-        public void Execute() => QueryExecutor.ExecuteNonQuery(DbContext);
-        public async Task<int> ExecuteAsync() => await QueryExecutor.ExecuteNonQueryAsync(DbContext);
+        public int Execute()
+        {
+            DbContext.ConnectionManager.SetConnectionString(OperationType.Write);
+            return QueryExecutor.ExecuteNonQuery(DbContext);
+        }
+        public async Task<int> ExecuteAsync()
+        {
+            DbContext.ConnectionManager.SetConnectionString(OperationType.Write);
+            return await QueryExecutor.ExecuteNonQueryAsync(DbContext);
+        }
 
-        public DataSet ToDataSet() => QueryExecutor.ExecuteDataSet(DbContext);
-        public object ToData() => QueryExecutor.ExecuteScalar(DbContext);
-        public TEntity ToOne<TEntity>() where TEntity : class => QueryExecutor.ExecuteEntity<TEntity>(DbContext);
-        public List<TEntity> ToList<TEntity>() where TEntity : class => QueryExecutor.ExecuteList<TEntity>(DbContext);
+        public DataSet ToDataSet()
+        {
+            return QueryExecutor.ExecuteDataSet(DbContext);
+        }
+        public object ToData()
+        {
+            return QueryExecutor.ExecuteScalar(DbContext);
+        }
+        public TEntity ToOne<TEntity>() where TEntity : class
+        {
+            return QueryExecutor.ExecuteEntity<TEntity>(DbContext);
+        }
+
+        public List<TEntity> ToList<TEntity>() where TEntity : class
+        {
+            return QueryExecutor.ExecuteList<TEntity>(DbContext);
+        }
     }
 }
