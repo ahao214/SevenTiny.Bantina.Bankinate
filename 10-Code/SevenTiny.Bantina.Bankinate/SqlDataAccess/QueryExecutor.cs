@@ -38,13 +38,19 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         public static int ExecuteNonQuery(SqlDbContext dbContext)
         {
             if (dbContext.OpenRealExecutionSaveToDb)
+            {
+                dbContext.ParameterInitializes();
                 return dbContext.DbCommand.ExecuteNonQuery();
+            }
             return default(int);
         }
         public static Task<int> ExecuteNonQueryAsync(SqlDbContext dbContext)
         {
             if (dbContext.OpenRealExecutionSaveToDb)
+            {
+                dbContext.ParameterInitializes();
                 return dbContext.DbCommand.ExecuteNonQueryAsync();
+            }
             return default(Task<int>);
         }
 
@@ -56,13 +62,19 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         public static object ExecuteScalar(SqlDbContext dbContext)
         {
             if (dbContext.OpenRealExecutionSaveToDb)
+            {
+                dbContext.ParameterInitializes();
                 return dbContext.DbCommand.ExecuteScalar();
+            }
             return default(object);
         }
         public static Task<object> ExecuteScalarAsync(SqlDbContext dbContext)
         {
             if (dbContext.OpenRealExecutionSaveToDb)
+            {
+                dbContext.ParameterInitializes();
                 return dbContext.DbCommand.ExecuteScalarAsync();
+            }
             return default(Task<object>);
         }
 
@@ -74,7 +86,10 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         public static DbDataReader ExecuteReader(SqlDbContext dbContext)
         {
             if (dbContext.OpenRealExecutionSaveToDb)
+            {
+                dbContext.ParameterInitializes();
                 return dbContext.DbCommand.ExecuteReader(CommandBehavior.CloseConnection);
+            }
             return default(DbDataReader);
         }
 
@@ -87,10 +102,15 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// <returns></returns> 
         public static DataTable ExecuteDataTable(SqlDbContext dbContext)
         {
-            DataSet ds = ExecuteDataSet(dbContext);
-            if (ds != null && ds.Tables != null && ds.Tables.Count > 0)
+            if (dbContext.OpenRealExecutionSaveToDb)
             {
-                return ds.Tables[0];
+                dbContext.ParameterInitializes();
+                DataSet ds = ExecuteDataSet(dbContext);
+                if (ds != null && ds.Tables != null && ds.Tables.Count > 0)
+                {
+                    return ds.Tables[0];
+                }
+                return default(DataTable);
             }
             return default(DataTable);
         }
@@ -104,6 +124,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         {
             if (dbContext.OpenRealExecutionSaveToDb)
             {
+                dbContext.ParameterInitializes();
                 DataSet ds = new DataSet();
                 dbContext.DbDataAdapter.Fill(ds);
                 return ds;
