@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -29,7 +28,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
     /// <summary>
     /// 为了统一控制，这里仅仅存在执行语句，初始化转移到了上下文中进行管理
     /// </summary>
-    public abstract class QueryExecutor
+    public static class QueryExecutor
     {
         /// <summary>
         /// ExcuteNonQuery 执行sql语句或者存储过程,返回影响的行数---ExcuteNonQuery

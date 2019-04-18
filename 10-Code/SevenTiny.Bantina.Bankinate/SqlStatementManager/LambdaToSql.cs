@@ -13,11 +13,13 @@
  * Thx , Best Regards ~
  *********************************************************/
 using SevenTiny.Bantina.Bankinate.Attributes;
+using SevenTiny.Bantina.Bankinate.Extensions;
 using SevenTiny.Bantina.Bankinate.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SevenTiny.Bantina.Bankinate.SqlStatementManager
@@ -314,4 +316,3 @@ namespace SevenTiny.Bantina.Bankinate.SqlStatementManager
         }
     }
 }
-

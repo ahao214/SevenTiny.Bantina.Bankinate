@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
-namespace SevenTiny.Bantina.Bankinate.Helpers
+namespace SevenTiny.Bantina.Bankinate.Extensions
 {
-    public static class GenericExtensions
+    internal static class GenericExtension
     {
         /// <summary>
         /// If exist the key , update the value.

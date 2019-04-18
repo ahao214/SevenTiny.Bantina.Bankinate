@@ -1,5 +1,6 @@
 ﻿using SevenTiny.Bantina.Bankinate.Configs;
 using SevenTiny.Bantina.Bankinate.DbContexts;
+using SevenTiny.Bantina.Bankinate.Extensions;
 using SevenTiny.Bantina.Bankinate.Helpers;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <summary>
         /// 清空所有缓存
         /// </summary>
-        internal static void FlushAllCache(DbContext dbContext)
+        internal static void FlushAllCache(SqlDbContext dbContext)
         {
             if (CacheStorageManager.IsExist(dbContext, BankinateConst.GetQueryCacheKeysCacheKey(dbContext.DataBaseName), out HashSet<string> keys))
             {
@@ -36,7 +37,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// 清空单个表相关的所有缓存
         /// </summary>
         /// <param name="dbContext"></param>
-        internal static void FlushTableCache(DbContext dbContext)
+        internal static void FlushTableCache(SqlDbContext dbContext)
         {
             CacheStorageManager.Delete(dbContext, GetQueryCacheKey(dbContext));
         }
@@ -46,7 +47,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        private static string GetQueryCacheKey(DbContext dbContext)
+        private static string GetQueryCacheKey(SqlDbContext dbContext)
         {
             string key = $"{BankinateConst.CacheKey_QueryCache}{dbContext.TableName}";
             //缓存键更新
@@ -64,7 +65,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        private static int GetSqlQueryCacheKey(DbContext dbContext)
+        private static int GetSqlQueryCacheKey(SqlDbContext dbContext)
         {
             //如果有条件，则sql的key要拼接对应的参数值
             if (dbContext.Parameters != null && dbContext.Parameters.Any())
@@ -80,7 +81,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <typeparam name="T"></typeparam>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        internal static T GetEntitiesFromCache<T>(DbContext dbContext)
+        internal static T GetEntitiesFromCache<T>(SqlDbContext dbContext)
         {
             //1.检查是否开启了Query缓存
             if (dbContext.OpenQueryCache)
@@ -106,7 +107,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <typeparam name="T"></typeparam>
         /// <param name="dbContext"></param>
         /// <param name="cacheValue"></param>
-        internal static void CacheData<T>(DbContext dbContext, T cacheValue)
+        internal static void CacheData<T>(SqlDbContext dbContext, T cacheValue)
         {
             if (dbContext.OpenQueryCache)
             {

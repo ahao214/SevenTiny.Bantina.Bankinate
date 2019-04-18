@@ -11,10 +11,14 @@ using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
+//需要扩展的类型需要在此添加对应的程序集友元标识
+[assembly: InternalsVisibleTo("SevenTiny.Bantina.Bankinate.MySql")]
+[assembly: InternalsVisibleTo("SevenTiny.Bantina.Bankinate.SqlServer")]
 namespace SevenTiny.Bantina.Bankinate.DbContexts
 {
-    public abstract class SqlDbContext : DbContext, IDbContext
+    public abstract class SqlDbContext : DbContext
     {
         protected SqlDbContext(string connectionString_Write, params string[] connectionStrings_Read) : base(connectionString_Write, connectionStrings_Read)
         {
@@ -43,21 +47,47 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             }
         }
         /// <summary>
+        /// 参数化查询参数
+        /// </summary>
+        public IDictionary<string, object> Parameters { get; set; }
+
+        /// <summary>
         /// 数据库连接管理器
         /// </summary>
-        protected abstract DbConnection DbConnection { get; set; }
+        internal DbConnection DbConnection { get; set; }
         /// <summary>
         /// 命令管理器
         /// </summary>
-        protected internal abstract DbCommand DbCommand { get; set; }
+        internal DbCommand DbCommand { get; set; }
         /// <summary>
-        /// 集合访问器
+        /// 结果集访问器
         /// </summary>
-        protected internal abstract DbDataAdapter DbDataAdapter { get; set; }
+        internal DbDataAdapter DbDataAdapter { get; set; }
+        /// <summary>
+        /// 命令生成器
+        /// </summary>
+        internal CommandTextGeneratorBase CommandTextGenerator { get; set; }
+        /// <summary>
+        /// 创建连接管理器
+        /// </summary>
+        /// <param name="connectionString"></param>
+        internal abstract void CreateDbConnection(string connectionString);
+        /// <summary>
+        /// 创建命令管理器
+        /// </summary>
+        internal abstract void CreateDbCommand();
+        /// <summary>
+        /// 创建结果集访问器
+        /// </summary>
+        internal abstract void CreateDbDataAdapter();
+        /// <summary>
+        /// 创建SQL生成器
+        /// </summary>
+        internal abstract void CreateCommandTextGenerator();
         /// <summary>
         /// 初始化访问器
         /// </summary>
-        protected void AccessorInitializes()
+        internal void AccessorInitializes()
         {
             //打开连接
             if (DbConnection.State != ConnectionState.Open)
@@ -70,12 +100,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// <summary>
         /// 初始化查询参数
         /// </summary>
-        protected internal abstract void ParameterInitializes();
-
-        /// <summary>
-        /// 参数化查询参数
-        /// </summary>
-        public IDictionary<string, object> Parameters { get; set; }
+        internal abstract void ParameterInitializes();
 
         /// <summary>
         /// 根据实体获取表明
@@ -108,39 +133,39 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         public void Add<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            SqlGenerator.Add(this, entity);
+            this.CommandTextGenerator.Add(this, entity);
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Add(this, entity);
         }
         public async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            SqlGenerator.Add(this, entity);
+            this.CommandTextGenerator.Add(this, entity);
             await QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Add(this, entity);
         }
 
         public void Delete<TEntity>(TEntity entity) where TEntity : class
         {
-            SqlGenerator.Delete(this, entity);
+            this.CommandTextGenerator.Delete(this, entity);
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Delete(this, entity);
         }
         public async Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class
         {
-            SqlGenerator.Delete(this, entity);
+            this.CommandTextGenerator.Delete(this, entity);
             await QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Delete(this, entity);
         }
         public void Delete<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
         {
-            SqlGenerator.Delete(this, filter);
+            this.CommandTextGenerator.Delete(this, filter);
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Delete(this, filter);
         }
         public async Task DeleteAsync<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
         {
-            SqlGenerator.Delete(this, filter);
+            this.CommandTextGenerator.Delete(this, filter);
             await QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Delete(this, filter);
         }
@@ -148,28 +173,28 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         public void Update<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            SqlGenerator.Update(this, entity, out Expression<Func<TEntity, bool>> filter);
+            this.CommandTextGenerator.Update(this, entity, out Expression<Func<TEntity, bool>> filter);
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Update(this, entity, filter);
         }
         public async Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            SqlGenerator.Update(this, entity, out Expression<Func<TEntity, bool>> filter);
+            this.CommandTextGenerator.Update(this, entity, out Expression<Func<TEntity, bool>> filter);
             await QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Update(this, entity, filter);
         }
         public void Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            SqlGenerator.Update(this, filter, entity);
+            this.CommandTextGenerator.Update(this, filter, entity);
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Update(this, entity, filter);
         }
         public async Task UpdateAsync<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            SqlGenerator.Update(this, filter, entity);
+            this.CommandTextGenerator.Update(this, filter, entity);
             await QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Update(this, entity, filter);
         }

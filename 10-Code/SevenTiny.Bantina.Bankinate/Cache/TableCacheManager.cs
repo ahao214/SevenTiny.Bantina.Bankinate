@@ -1,8 +1,8 @@
 ﻿using MongoDB.Driver;
 using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.Configs;
-using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using SevenTiny.Bantina.Bankinate.DbContexts;
+using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <summary>
         /// 清空所有缓存
         /// </summary>
-        internal static void FlushAllCache(DbContext dbContext)
+        internal static void FlushAllCache(SqlDbContext dbContext)
         {
             if (CacheStorageManager.IsExist(dbContext, BankinateConst.GetTableCacheKeysCacheKey(dbContext.DataBaseName), out HashSet<string> keys))
             {
@@ -34,12 +34,12 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// 清空单个表相关的所有缓存
         /// </summary>
         /// <param name="dbContext"></param>
-        internal static void FlushTableCache(DbContext dbContext)
+        internal static void FlushTableCache(SqlDbContext dbContext)
         {
             CacheStorageManager.Delete(dbContext, GetTableCacheKey(dbContext));
         }
 
-        private static string GetTableCacheKey(DbContext dbContext)
+        private static string GetTableCacheKey(SqlDbContext dbContext)
         {
             string key = $"{BankinateConst.CacheKey_TableCache}{dbContext.TableName}";
             //缓存键更新
@@ -58,7 +58,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="dbContext"></param>
         /// <param name="entity"></param>
-        internal static void AddCache<TEntity>(DbContext dbContext, TEntity entity)
+        internal static void AddCache<TEntity>(SqlDbContext dbContext, TEntity entity)
         {
             if (dbContext.OpenTableCache)
             {
@@ -82,7 +82,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="dbContext"></param>
         /// <param name="values"></param>
-        internal static void AddCache<TEntity>(DbContext dbContext, IEnumerable<TEntity> values)
+        internal static void AddCache<TEntity>(SqlDbContext dbContext, IEnumerable<TEntity> values)
         {
             if (dbContext.OpenTableCache)
             {
@@ -107,7 +107,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <param name="dbContext"></param>
         /// <param name="entity"></param>
         /// <param name="filter"></param>
-        internal static void UpdateCache<TEntity>(DbContext dbContext, TEntity entity, Expression<Func<TEntity, bool>> filter)
+        internal static void UpdateCache<TEntity>(SqlDbContext dbContext, TEntity entity, Expression<Func<TEntity, bool>> filter)
         {
             if (dbContext.OpenTableCache)
             {
@@ -136,7 +136,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="dbContext"></param>
         /// <param name="filter"></param>
-        internal static void DeleteCache<TEntity>(DbContext dbContext, Expression<Func<TEntity, bool>> filter)
+        internal static void DeleteCache<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, bool>> filter)
         {
             if (dbContext.OpenTableCache)
             {
@@ -165,7 +165,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="dbContext"></param>
         /// <param name="entity"></param>
-        internal static void DeleteCache<TEntity>(DbContext dbContext, TEntity entity)
+        internal static void DeleteCache<TEntity>(SqlDbContext dbContext, TEntity entity)
         {
             if (dbContext.OpenTableCache)
             {
@@ -197,7 +197,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <param name="dbContext"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        internal static List<TEntity> GetEntitiesFromCache<TEntity>(DbContext dbContext, Expression<Func<TEntity, bool>> filter) where TEntity : class
+        internal static List<TEntity> GetEntitiesFromCache<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, bool>> filter) where TEntity : class
         {
             //1.检查是否开启了Table缓存
             if (!dbContext.OpenTableCache)
@@ -229,7 +229,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="dbContext">上下文</param>
         /// <param name="tableCacheTimeSpan">tableCache过期时间</param>
-        private static void ScanTableBackground<TEntity>(DbContext dbContext, TimeSpan tableCacheTimeSpan) where TEntity : class
+        private static void ScanTableBackground<TEntity>(SqlDbContext dbContext, TimeSpan tableCacheTimeSpan) where TEntity : class
         {
             string scanKey = $"{BankinateConst.CacheKey_TableScanning}{dbContext.TableName}";
             //1.判断正在扫描键是否存在，如果存在，则返回null，继续等待扫描任务完成
@@ -269,7 +269,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        private static List<TEntity> GetFullTableData<TEntity>(DbContext dbContext) where TEntity : class
+        private static List<TEntity> GetFullTableData<TEntity>(SqlDbContext dbContext) where TEntity : class
         {
             switch (dbContext.DataBaseType)
             {
@@ -280,7 +280,8 @@ namespace SevenTiny.Bantina.Bankinate.Cache
                     dbContext.Parameters = null;
                     return QueryExecutor.ExecuteList<TEntity>(dbContext);
                 case DataBaseType.MongoDB:
-                    return (dbContext.NoSqlCollection as IMongoCollection<TEntity>).Find(t => true).ToList();//获取MongoDb全文档记录
+                    return null;
+                //return (dbContext.NoSqlCollection as IMongoCollection<TEntity>).Find(t => true).ToList();//获取MongoDb全文档记录
                 default:
                     return null;
             }

@@ -14,7 +14,6 @@
 *********************************************************/
 using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.DbContexts;
-using SevenTiny.Bantina.Bankinate.SqlStatementManager;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;

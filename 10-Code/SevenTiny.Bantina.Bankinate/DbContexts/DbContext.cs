@@ -112,18 +112,18 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// </summary>
         internal TimeSpan MaxExpiredTimeSpan { get; set; } = BankinateConst.CacheKeysMaxExpiredTime;
 
-        /// <summary>
-        /// 清空全部缓存
-        /// </summary>
-        public void FlushAllCache() => DbCacheManager.FlushAllCache(this);
-        /// <summary>
-        /// 清空一级缓存
-        /// </summary>
-        public void FlushQueryCache() => QueryCacheManager.FlushAllCache(this);
-        /// <summary>
-        /// 清空二级缓存
-        /// </summary>
-        public void FlushTableCache() => TableCacheManager.FlushAllCache(this);
+        ///// <summary>
+        ///// 清空全部缓存
+        ///// </summary>
+        //public void FlushAllCache() => DbCacheManager.FlushAllCache(this);
+        ///// <summary>
+        ///// 清空一级缓存
+        ///// </summary>
+        //public void FlushQueryCache() => QueryCacheManager.FlushAllCache(this);
+        ///// <summary>
+        ///// 清空二级缓存
+        ///// </summary>
+        //public void FlushTableCache() => TableCacheManager.FlushAllCache(this);
         #endregion
 
         #region Validate Control 校验管理

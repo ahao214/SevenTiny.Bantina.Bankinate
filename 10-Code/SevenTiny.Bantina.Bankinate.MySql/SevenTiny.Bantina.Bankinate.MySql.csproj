@@ -9,10 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MySql.Data" Version="8.0.15" />
   </ItemGroup>
 

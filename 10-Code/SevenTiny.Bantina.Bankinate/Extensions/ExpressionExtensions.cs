@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace SevenTiny.Bantina.Bankinate.Helpers
+namespace SevenTiny.Bantina.Bankinate.Extensions
 {
-    public static class ExpressionExtensions
+    public static class ExpressionExtension
     {
         public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> left, Expression<Func<T, bool>> right)
         {

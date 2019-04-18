@@ -137,6 +137,7 @@ namespace Test.SevenTiny.Bantina.Bankinate
             using (var db = new MySqlDb())
             {
                 //api...
+                SqlGenerator.
 
             }
         }

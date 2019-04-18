@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-using System.Threading.Tasks;
-using SevenTiny.Bantina.Bankinate.DbContexts;
+﻿using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.SqlDataAccess;
+using System.Data;
+using System.Threading.Tasks;
 
 namespace SevenTiny.Bantina.Bankinate
 {

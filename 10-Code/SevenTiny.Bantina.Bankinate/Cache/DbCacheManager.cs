@@ -17,7 +17,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <summary>
         /// 清空所有缓存
         /// </summary>
-        internal static void FlushAllCache(DbContext dbContext)
+        internal static void FlushAllCache(SqlDbContext dbContext)
         {
             QueryCacheManager.FlushAllCache(dbContext);
             TableCacheManager.FlushAllCache(dbContext);
@@ -25,41 +25,41 @@ namespace SevenTiny.Bantina.Bankinate.Cache
         /// <summary>
         /// 清空单个表相关的所有缓存
         /// </summary>
-        internal static void FlushCurrentTableCache(DbContext dbContext)
+        internal static void FlushCurrentTableCache(SqlDbContext dbContext)
         {
             QueryCacheManager.FlushTableCache(dbContext);
             TableCacheManager.FlushTableCache(dbContext);
         }
 
-        internal static void Add<TEntity>(DbContext dbContext, TEntity entity)
+        internal static void Add<TEntity>(SqlDbContext dbContext, TEntity entity)
         {
             //1.清空Query缓存中关于该表的所有缓存记录
             QueryCacheManager.FlushTableCache(dbContext);
             //2.更新Table缓存中的该表记录
             TableCacheManager.AddCache(dbContext, entity);
         }
-        internal static void Add<TEntity>(DbContext dbContext, IEnumerable<TEntity> entities)
+        internal static void Add<TEntity>(SqlDbContext dbContext, IEnumerable<TEntity> entities)
         {
             //1.清空Query缓存中关于该表的所有缓存记录
             QueryCacheManager.FlushTableCache(dbContext);
             //2.更新Table缓存中的该表记录
             TableCacheManager.AddCache(dbContext, entities);
         }
-        internal static void Update<TEntity>(DbContext dbContext, TEntity entity, Expression<Func<TEntity, bool>> filter)
+        internal static void Update<TEntity>(SqlDbContext dbContext, TEntity entity, Expression<Func<TEntity, bool>> filter)
         {
             //1.清空Query缓存中关于该表的所有缓存记录
             QueryCacheManager.FlushTableCache(dbContext);
             //2.更新Table缓存中的该表记录
             TableCacheManager.UpdateCache(dbContext, entity, filter);
         }
-        internal static void Delete<TEntity>(DbContext dbContext, Expression<Func<TEntity, bool>> filter)
+        internal static void Delete<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, bool>> filter)
         {
             //1.清空Query缓存中关于该表的所有缓存记录
             QueryCacheManager.FlushTableCache(dbContext);
             //2.更新Table缓存中的该表记录
             TableCacheManager.DeleteCache(dbContext, filter);
         }
-        internal static void Delete<TEntity>(DbContext dbContext, TEntity entity)
+        internal static void Delete<TEntity>(SqlDbContext dbContext, TEntity entity)
         {
             //1.清空Query缓存中关于该表的所有缓存记录
             QueryCacheManager.FlushTableCache(dbContext);
@@ -67,7 +67,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
             TableCacheManager.DeleteCache(dbContext, entity);
         }
 
-        internal static List<TEntity> GetEntities<TEntity>(DbContext dbContext, Expression<Func<TEntity, bool>> filter, Func<List<TEntity>> func) where TEntity : class
+        internal static List<TEntity> GetEntities<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, bool>> filter, Func<List<TEntity>> func) where TEntity : class
         {
             //1.判断是否在二级TableCache，如果没有，则进行二级缓存初始化逻辑
             var entities = TableCacheManager.GetEntitiesFromCache(dbContext, filter);
@@ -89,7 +89,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
 
             return entities;
         }
-        internal static TEntity GetEntity<TEntity>(DbContext dbContext, Expression<Func<TEntity, bool>> filter, Func<TEntity> func) where TEntity : class
+        internal static TEntity GetEntity<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, bool>> filter, Func<TEntity> func) where TEntity : class
         {
             //1.判断是否在二级TableCache，如果没有，则进行二级缓存初始化逻辑
             var result = TableCacheManager.GetEntitiesFromCache(dbContext, filter)?.FirstOrDefault();
@@ -111,7 +111,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
 
             return result;
         }
-        internal static int GetCount<TEntity>(DbContext dbContext, Expression<Func<TEntity, bool>> filter, Func<int> func) where TEntity : class
+        internal static int GetCount<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, bool>> filter, Func<int> func) where TEntity : class
         {
             //1.判断是否在二级TableCache，如果没有，则进行二级缓存初始化逻辑
             var result = TableCacheManager.GetEntitiesFromCache(dbContext, filter)?.Count;
@@ -133,7 +133,7 @@ namespace SevenTiny.Bantina.Bankinate.Cache
 
             return result ?? default(int);
         }
-        internal static T GetObject<T>(DbContext dbContext, Func<T> func) where T : class
+        internal static T GetObject<T>(SqlDbContext dbContext, Func<T> func) where T : class
         {
             //1.判断是否在一级QueryCahe中
             var result = QueryCacheManager.GetEntitiesFromCache<T>(dbContext);

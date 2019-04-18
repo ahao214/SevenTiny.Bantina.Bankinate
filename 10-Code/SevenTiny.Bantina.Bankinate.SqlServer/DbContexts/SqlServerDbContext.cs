@@ -1,23 +1,18 @@
-﻿using MySql.Data.MySqlClient;
-using SevenTiny.Bantina.Bankinate.DbContexts;
+﻿using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.Extensions;
-using SevenTiny.Bantina.Bankinate.Helpers;
-using SevenTiny.Bantina.Bankinate.MySql.SqlStatementManager;
-using SevenTiny.Bantina.Bankinate.SqlStatementManager;
+using SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManager;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace SevenTiny.Bantina.Bankinate
 {
-    public abstract class MySqlDbContext<TDataBase> : SqlDbContext, IDisposable where TDataBase : class
+    public abstract class SqlServerDbContext<TDataBase> : SqlDbContext, IDisposable where TDataBase : class
     {
-        protected MySqlDbContext(string connectionString_Write, params string[] connectionStrings_Read) : base(connectionString_Write, connectionStrings_Read)
+        protected SqlServerDbContext(string connectionString_Write, params string[] connectionStrings_Read) : base(connectionString_Write, connectionStrings_Read)
         {
-            DataBaseType = DataBaseType.MySql;
+            DataBaseType = DataBaseType.SqlServer;
 
             CreateDbConnection(connectionString_Write);
             CreateDbCommand();
@@ -28,19 +23,19 @@ namespace SevenTiny.Bantina.Bankinate
 
         internal override void CreateDbConnection(string connectionString)
         {
-            DbConnection = new MySqlConnection(connectionString);
+            DbConnection = new SqlConnection(connectionString);
         }
         internal override void CreateDbCommand()
         {
-            DbCommand = new MySqlCommand();
+            DbCommand = new SqlCommand();
             DbCommand.Connection = this.DbConnection;
         }
         internal override void CreateDbDataAdapter()
         {
-            DbDataAdapter = new MySqlDataAdapter();
+            DbDataAdapter = new SqlDataAdapter();
             DbDataAdapter.SelectCommand = this.DbCommand;
         }
-        internal override void CreateCommandTextGenerator() => new MySqlCommandTextGenerator();
+        internal override void CreateCommandTextGenerator() => new SqlServerCommandTextGenerator();
         /// <summary>
         /// 命令参数初始化
         /// </summary>
@@ -49,7 +44,7 @@ namespace SevenTiny.Bantina.Bankinate
             if (Parameters != null && Parameters.Any())
             {
                 DbCommand.Parameters.Clear();
-                Parameters.Foreach(t => DbCommand.Parameters.Add(new MySqlParameter(t.Key, t.Value ?? DBNull.Value)));
+                Parameters.Foreach(t => DbCommand.Parameters.Add(new SqlParameter(t.Key, t.Value ?? DBNull.Value)));
             }
         }
 
