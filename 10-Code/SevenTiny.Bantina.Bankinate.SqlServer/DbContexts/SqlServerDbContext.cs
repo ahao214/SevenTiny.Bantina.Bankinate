@@ -29,7 +29,7 @@ namespace SevenTiny.Bantina.Bankinate
             DbDataAdapter = new SqlDataAdapter();
             DbDataAdapter.SelectCommand = this.DbCommand;
         }
-        internal override void CreateCommandTextGenerator() => CommandTextGenerator = new SqlServerCommandTextGenerator();
+        internal override void CreateCommandTextGenerator() => CommandTextGenerator = new SqlServerCommandTextGenerator(this);
         /// <summary>
         /// 命令参数初始化
         /// </summary>

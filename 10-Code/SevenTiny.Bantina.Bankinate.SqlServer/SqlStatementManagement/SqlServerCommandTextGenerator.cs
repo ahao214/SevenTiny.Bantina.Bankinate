@@ -14,14 +14,16 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
 {
     internal class SqlServerCommandTextGenerator : CommandTextGeneratorBase
     {
-        public override string Add<TEntity>(SqlDbContext dbContext, TEntity entity)
+        public SqlServerCommandTextGenerator(SqlDbContext _dbContext) : base(_dbContext) { }
+
+        public override string Add<TEntity>(TEntity entity)
         {
-            dbContext.TableName = TableAttribute.GetName(typeof(TEntity));
-            dbContext.Parameters = new Dictionary<string, object>();
+            DbContext.TableName = TableAttribute.GetName(typeof(TEntity));
+            DbContext.Parameters = new Dictionary<string, object>();
 
             StringBuilder builder_front = new StringBuilder(), builder_behind = new StringBuilder();
             builder_front.Append("INSERT INTO ");
-            builder_front.Append(dbContext.TableName);
+            builder_front.Append(DbContext.TableName);
             builder_front.Append(" (");
             builder_behind.Append(" VALUES (");
 
@@ -42,7 +44,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
                     columnName = column.GetName(propertyInfo.Name).Replace("[", "").Replace("]", "");
                     builder_behind.Append(columnName);
                     builder_behind.Append(",");
-                    dbContext.Parameters.AddOrUpdate($"@{columnName}", propertyInfo.GetValue(entity));
+                    DbContext.Parameters.AddOrUpdate($"@{columnName}", propertyInfo.GetValue(entity));
                 }
 
                 //in the end,remove the redundant symbol of ','
@@ -55,13 +57,13 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
                 }
             }
             //Generate SqlStatement
-            return dbContext.SqlStatement = builder_front.Append(builder_behind.ToString()).ToString();
+            return DbContext.SqlStatement = builder_front.Append(builder_behind.ToString()).ToString();
         }
 
-        public override string Update<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, bool>> filter, TEntity entity)
+        public override string Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity)
         {
-            dbContext.Parameters = new Dictionary<string, object>();
-            dbContext.TableName = TableAttribute.GetName(typeof(TEntity));
+            DbContext.Parameters = new Dictionary<string, object>();
+            DbContext.TableName = TableAttribute.GetName(typeof(TEntity));
 
             StringBuilder builder_front = new StringBuilder();
             builder_front.Append("UPDATE ");
@@ -88,7 +90,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
                     columnName = columnAttr.GetName(propertyInfo.Name).Replace("[", "").Replace("]", "");
                     builder_front.Append(columnName);
                     builder_front.Append(",");
-                    dbContext.Parameters.AddOrUpdate($"@{alias}{columnName}", propertyInfo.GetValue(entity));
+                    DbContext.Parameters.AddOrUpdate($"@{alias}{columnName}", propertyInfo.GetValue(entity));
                 }
                 //in the end,remove the redundant symbol of ','
                 if (propertyInfos.Last() == propertyInfo)
@@ -98,25 +100,25 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
             }
 
             builder_front.Append(" FROM ");
-            builder_front.Append(dbContext.TableName);
+            builder_front.Append(DbContext.TableName);
             builder_front.Append(" ");
             builder_front.Append(alias);
 
             //Generate SqlStatement
-            return dbContext.SqlStatement = builder_front.Append($"{LambdaToSql.ConvertWhere(filter)}").ToString();
+            return DbContext.SqlStatement = builder_front.Append($"{LambdaToSql.ConvertWhere(filter)}").ToString();
         }
 
-        public override string Update<TEntity>(SqlDbContext dbContext, TEntity entity, out Expression<Func<TEntity, bool>> filter)
+        public override string Update<TEntity>(TEntity entity, out Expression<Func<TEntity, bool>> filter)
         {
-            dbContext.Parameters = new Dictionary<string, object>();
-            dbContext.TableName = TableAttribute.GetName(typeof(TEntity));
+            DbContext.Parameters = new Dictionary<string, object>();
+            DbContext.TableName = TableAttribute.GetName(typeof(TEntity));
             PropertyInfo[] propertyInfos = GetPropertiesDicByType(typeof(TEntity));
 
             //查找主键以及主键对应的值，如果用该方法更新数据，主键是必须存在的
             //get property which is key
             var keyProperty = propertyInfos.Where(t => t.GetCustomAttribute(typeof(KeyAttribute), true) is KeyAttribute)?.FirstOrDefault();
             if (keyProperty == null)
-                throw new TableKeyNotFoundException($"table '{dbContext.TableName}' not found key column");
+                throw new TableKeyNotFoundException($"table '{DbContext.TableName}' not found key column");
 
             //主键的key
             string keyName = keyProperty.Name;
@@ -134,7 +136,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
             filter = Expression.Lambda<Func<TEntity, bool>>(where, param);
 
             //将主键的查询参数加到字典中
-            dbContext.Parameters.AddOrUpdate($"@t{keyName}", keyValue);
+            DbContext.Parameters.AddOrUpdate($"@t{keyName}", keyValue);
 
             //开始构造赋值的sql语句
             StringBuilder builder_front = new StringBuilder();
@@ -165,7 +167,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
                     builder_front.Append(columnName);
                     builder_front.Append(",");
 
-                    dbContext.Parameters.AddOrUpdate($"@{alias}{columnName}", propertyInfo.GetValue(entity));
+                    DbContext.Parameters.AddOrUpdate($"@{alias}{columnName}", propertyInfo.GetValue(entity));
                 }
                 //in the end,remove the redundant symbol of ','
                 if (propertyInfos.Last() == propertyInfo)
@@ -175,24 +177,24 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
             }
 
             builder_front.Append(" FROM ");
-            builder_front.Append(dbContext.TableName);
+            builder_front.Append(DbContext.TableName);
             builder_front.Append(" ");
             builder_front.Append(alias);
 
             //Generate SqlStatement
-            return dbContext.SqlStatement = builder_front.Append($"{LambdaToSql.ConvertWhere(filter)}").ToString();
+            return DbContext.SqlStatement = builder_front.Append($"{LambdaToSql.ConvertWhere(filter)}").ToString();
         }
 
-        public override string Delete<TEntity>(SqlDbContext dbContext, TEntity entity)
+        public override string Delete<TEntity>(TEntity entity)
         {
-            dbContext.Parameters = new Dictionary<string, object>();
-            dbContext.TableName = TableAttribute.GetName(typeof(TEntity));
+            DbContext.Parameters = new Dictionary<string, object>();
+            DbContext.TableName = TableAttribute.GetName(typeof(TEntity));
             PropertyInfo[] propertyInfos = GetPropertiesDicByType(typeof(TEntity));
             //get property which is key
             var property = propertyInfos.Where(t => t.GetCustomAttribute(typeof(KeyAttribute), true) is KeyAttribute)?.FirstOrDefault();
 
             if (property == null)
-                throw new TableKeyNotFoundException($"table '{dbContext.TableName}' not found key column");
+                throw new TableKeyNotFoundException($"table '{DbContext.TableName}' not found key column");
 
             string colunmName = property.Name;
             var value = property.GetValue(entity);
@@ -200,26 +202,26 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
             if (property.GetCustomAttribute(typeof(ColumnAttribute), true) is ColumnAttribute columnAttr)
                 colunmName = columnAttr.GetName(property.Name);
 
-            dbContext.Parameters.AddOrUpdate($"@t{colunmName}", value);
-            return dbContext.SqlStatement = $"DELETE t FROM {dbContext.TableName} t WHERE t.{colunmName} = @t{colunmName}";
+            DbContext.Parameters.AddOrUpdate($"@t{colunmName}", value);
+            return DbContext.SqlStatement = $"DELETE t FROM {DbContext.TableName} t WHERE t.{colunmName} = @t{colunmName}";
         }
 
-        public override string Delete<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, bool>> filter)
+        public override string Delete<TEntity>(Expression<Func<TEntity, bool>> filter)
         {
-            dbContext.TableName = TableAttribute.GetName(typeof(TEntity));
-            dbContext.SqlStatement = $"DELETE {filter.Parameters[0].Name} From {dbContext.TableName} {filter.Parameters[0].Name} {LambdaToSql.ConvertWhere(filter, out IDictionary<string, object> parameters)}";
-            dbContext.Parameters = parameters;
-            return dbContext.SqlStatement;
+            DbContext.TableName = TableAttribute.GetName(typeof(TEntity));
+            DbContext.SqlStatement = $"DELETE {filter.Parameters[0].Name} From {DbContext.TableName} {filter.Parameters[0].Name} {LambdaToSql.ConvertWhere(filter, out IDictionary<string, object> parameters)}";
+            DbContext.Parameters = parameters;
+            return DbContext.SqlStatement;
         }
 
-        public override string QueryableWhere<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, bool>> filter)
+        public override string QueryableWhere<TEntity>(Expression<Func<TEntity, bool>> filter)
         {
             string result = LambdaToSql.ConvertWhere(filter, out IDictionary<string, object> parameters);
-            dbContext.Parameters = parameters;
+            DbContext.Parameters = parameters;
             return result;
         }
 
-        public override string QueryableOrderBy<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, object>> orderBy, bool isDESC)
+        public override string QueryableOrderBy<TEntity>(Expression<Func<TEntity, object>> orderBy, bool isDESC)
         {
             if (orderBy == null)
                 return string.Empty;
@@ -228,28 +230,28 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
             return $" ORDER BY {LambdaToSql.ConvertOrderBy(orderBy)} {desc}";
         }
 
-        public override List<string> QueryableSelect<TEntity>(SqlDbContext dbContext, Expression<Func<TEntity, object>> columns)
+        public override List<string> QueryableSelect<TEntity>(Expression<Func<TEntity, object>> columns)
         {
             return LambdaToSql.ConvertColumns<TEntity>(columns);
         }
 
-        public override string QueryableQueryCount<TEntity>(SqlDbContext dbContext, string alias, string where)
+        public override string QueryableQueryCount<TEntity>(string alias, string where)
         {
-            return dbContext.SqlStatement = $"SELECT COUNT(0) FROM {dbContext.TableName} {alias} {where}";
+            return DbContext.SqlStatement = $"SELECT COUNT(0) FROM {DbContext.TableName} {alias} {where}";
         }
 
-        public override string QueryableQuery<TEntity>(SqlDbContext dbContext, List<string> columns, string alias, string where, string orderBy, string top)
+        public override string QueryableQuery<TEntity>(List<string> columns, string alias, string where, string orderBy, string top)
         {
             string queryColumns = (columns == null || !columns.Any()) ? "*" : string.Join(",", columns.Select(t => $"{alias}.{t}"));
-            return dbContext.SqlStatement = $"SELECT {top} {queryColumns} FROM {dbContext.TableName} {alias} {where} {orderBy}";
+            return DbContext.SqlStatement = $"SELECT {top} {queryColumns} FROM {DbContext.TableName} {alias} {where} {orderBy}";
         }
 
         //目前queryablePaging是最终的结果了
-        public override string QueryablePaging<TEntity>(SqlDbContext dbContext, List<string> columns, string alias, string where, string orderBy, int pageIndex, int pageSize)
+        public override string QueryablePaging<TEntity>(List<string> columns, string alias, string where, string orderBy, int pageIndex, int pageSize)
         {
             string queryColumns = (columns == null || !columns.Any()) ? "*" : string.Join(",", columns.Select(t => $"TTTTTT.{t}").ToArray());
             string queryColumnsChild = (columns == null || !columns.Any()) ? "*" : string.Join(",", columns.Select(t => $"{alias}.{t}").ToArray());
-            return dbContext.SqlStatement = $"SELECT TOP {pageSize} {queryColumns} FROM (SELECT ROW_NUMBER() OVER ({orderBy}) AS RowNumber,{queryColumnsChild} FROM {dbContext.TableName} {alias} {where}) AS TTTTTT  WHERE RowNumber > {pageSize * (pageIndex - 1)}";
+            return DbContext.SqlStatement = $"SELECT TOP {pageSize} {queryColumns} FROM (SELECT ROW_NUMBER() OVER ({orderBy}) AS RowNumber,{queryColumnsChild} FROM {DbContext.TableName} {alias} {where}) AS TTTTTT  WHERE RowNumber > {pageSize * (pageIndex - 1)}";
         }
     }
 }

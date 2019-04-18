@@ -91,7 +91,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// <returns></returns>
         public SqlQueryable<TEntity> Select(Expression<Func<TEntity, object>> columns)
         {
-            _columns = DbContext.CommandTextGenerator.QueryableSelect(DbContext, columns);
+            _columns = DbContext.CommandTextGenerator.QueryableSelect(columns);
             return this;
         }
 
@@ -122,22 +122,20 @@ namespace SevenTiny.Bantina.Bankinate
             if (_isPaging)
             {
                 DbContext.SqlStatement = DbContext.CommandTextGenerator.QueryablePaging<TEntity>(
-                        DbContext,
                         _columns,
                         _alias,
-                        DbContext.CommandTextGenerator.QueryableWhere(DbContext, _where),
-                        DbContext.CommandTextGenerator.QueryableOrderBy(DbContext, _orderby, _isDesc),
+                        DbContext.CommandTextGenerator.QueryableWhere(_where),
+                        DbContext.CommandTextGenerator.QueryableOrderBy(_orderby, _isDesc),
                         _pageIndex,
                         _pageSize);
             }
             else
             {
                 DbContext.SqlStatement = DbContext.CommandTextGenerator.QueryableQuery<TEntity>(
-                        DbContext,
                         _columns,
                         _alias,
-                        DbContext.CommandTextGenerator.QueryableWhere(DbContext, _where),
-                        DbContext.CommandTextGenerator.QueryableOrderBy(DbContext, _orderby, _isDesc),
+                        DbContext.CommandTextGenerator.QueryableWhere(_where),
+                        DbContext.CommandTextGenerator.QueryableOrderBy(_orderby, _isDesc),
                         _top);
             }
 
@@ -155,11 +153,10 @@ namespace SevenTiny.Bantina.Bankinate
             Limit(1);
 
             DbContext.SqlStatement = DbContext.CommandTextGenerator.QueryableQuery<TEntity>(
-                    DbContext,
                     _columns,
                     _alias,
-                    DbContext.CommandTextGenerator.QueryableWhere(DbContext, _where),
-                    DbContext.CommandTextGenerator.QueryableOrderBy(DbContext, _orderby, _isDesc),
+                    DbContext.CommandTextGenerator.QueryableWhere(_where),
+                    DbContext.CommandTextGenerator.QueryableOrderBy(_orderby, _isDesc),
                     _top);
 
             return DbCacheManager.GetEntity(DbContext, _where, () =>
@@ -174,9 +171,8 @@ namespace SevenTiny.Bantina.Bankinate
             ReSetTableName();
 
             DbContext.SqlStatement = DbContext.CommandTextGenerator.QueryableQueryCount<TEntity>(
-                    DbContext,
                     _alias,
-                    DbContext.CommandTextGenerator.QueryableWhere(DbContext, _where));
+                    DbContext.CommandTextGenerator.QueryableWhere(_where));
 
             return DbCacheManager.GetCount(DbContext, _where, () =>
             {

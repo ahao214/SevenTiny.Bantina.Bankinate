@@ -138,7 +138,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         public void Add<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            this.CommandTextGenerator.Add(this, entity);
+            this.CommandTextGenerator.Add(entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Add(this, entity);
@@ -146,7 +146,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         public async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            this.CommandTextGenerator.Add(this, entity);
+            this.CommandTextGenerator.Add(entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
             await QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Add(this, entity);
@@ -154,28 +154,28 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
 
         public void Delete<TEntity>(TEntity entity) where TEntity : class
         {
-            this.CommandTextGenerator.Delete(this, entity);
+            this.CommandTextGenerator.Delete(entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Delete(this, entity);
         }
         public async Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class
         {
-            this.CommandTextGenerator.Delete(this, entity);
+            this.CommandTextGenerator.Delete(entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
             await QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Delete(this, entity);
         }
         public void Delete<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
         {
-            this.CommandTextGenerator.Delete(this, filter);
+            this.CommandTextGenerator.Delete(filter);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Delete(this, filter);
         }
         public async Task DeleteAsync<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
         {
-            this.CommandTextGenerator.Delete(this, filter);
+            this.CommandTextGenerator.Delete(filter);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
             await QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Delete(this, filter);
@@ -184,7 +184,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         public void Update<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            this.CommandTextGenerator.Update(this, entity, out Expression<Func<TEntity, bool>> filter);
+            this.CommandTextGenerator.Update(entity, out Expression<Func<TEntity, bool>> filter);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Update(this, entity, filter);
@@ -192,7 +192,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         public async Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            this.CommandTextGenerator.Update(this, entity, out Expression<Func<TEntity, bool>> filter);
+            this.CommandTextGenerator.Update(entity, out Expression<Func<TEntity, bool>> filter);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
             await QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Update(this, entity, filter);
@@ -200,7 +200,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         public void Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            this.CommandTextGenerator.Update(this, filter, entity);
+            this.CommandTextGenerator.Update(filter, entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
             QueryExecutor.ExecuteNonQuery(this);
             DbCacheManager.Update(this, entity, filter);
@@ -208,7 +208,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         public async Task UpdateAsync<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
         {
             PropertyDataValidator.Verify(this, entity);
-            this.CommandTextGenerator.Update(this, filter, entity);
+            this.CommandTextGenerator.Update(filter, entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
             await QueryExecutor.ExecuteNonQueryAsync(this);
             DbCacheManager.Update(this, entity, filter);
