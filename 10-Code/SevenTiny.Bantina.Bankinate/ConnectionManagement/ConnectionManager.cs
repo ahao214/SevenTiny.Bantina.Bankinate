@@ -43,11 +43,22 @@ namespace SevenTiny.Bantina.Bankinate.ConnectionManagement
         /// 当前使用的连接字符串
         /// </summary>
         public string CurrentConnectionString { get; private set; }
+        /// <summary>
+        /// 下次执行要用的连接字符串
+        /// </summary>
+        public string NextConnectionString { get; private set; }
 
         /// <summary>
         /// 连接字符串使用情况
         /// </summary>
         IList<ConnectionStatus> connectionStatuses = null;
+
+        /// <summary>
+        /// 设置下次执行要使用的连接字符串，效果保持一次查询！
+        /// DESC：采用该功能可以在执行查询过程中手动切换执行下次查询的数据库
+        /// </summary>
+        /// <param name="connectionNext"></param>
+        public void SetNextConnectionString(string connectionNext) => NextConnectionString = connectionNext;
 
         /// <summary>
         /// 设置连接字符串
@@ -56,9 +67,20 @@ namespace SevenTiny.Bantina.Bankinate.ConnectionManagement
         /// <returns></returns>
         internal void SetConnectionString(OperationType operationType)
         {
+            //先校验下次执行的连接字符串
+            if (!string.IsNullOrEmpty(NextConnectionString))
+            {
+                CurrentConnectionString = NextConnectionString;
+                NextConnectionString = string.Empty;
+                return;
+            }
+
             //写
             if (operationType == OperationType.Write)
+            {
                 CurrentConnectionString = ConnectionString_Write;
+                return;
+            }
 
             //读
             if (ConnectionStrings_Read == null || !ConnectionStrings_Read.Any())
