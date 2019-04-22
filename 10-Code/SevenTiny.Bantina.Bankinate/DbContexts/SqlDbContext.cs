@@ -31,13 +31,9 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         }
 
         /// <summary>
-        /// 库名
-        /// </summary>
-        public string DataBaseName { get; protected set; }
-        /// <summary>
         /// 表名
         /// </summary>
-        public string TableName { get; internal set; }
+        public string TableName { get => CollectionName; internal set => CollectionName = value; }
         /// <summary>
         /// Sql语句，获取或赋值命令行对象的CommandText参数
         /// </summary>

@@ -1,9 +1,6 @@
-﻿using SevenTiny.Bantina.Bankinate.CacheManagement;
-using SevenTiny.Bantina.Bankinate.Configs;
+﻿using SevenTiny.Bantina.Bankinate.Configs;
 using SevenTiny.Bantina.Bankinate.ConnectionManagement;
-using SevenTiny.Bantina.Bankinate.Helpers;
 using System;
-using System.Linq;
 
 namespace SevenTiny.Bantina.Bankinate.DbContexts
 {
@@ -22,6 +19,14 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         }
 
         #region Database Control 数据库管理
+        /// <summary>
+        /// 库名（对应SQL数据库的库名）
+        /// </summary>
+        public string DataBaseName { get; protected set; }
+        /// <summary>
+        /// 集合名（对应SQL数据库的表，MongoDB的文档名）
+        /// </summary>
+        public string CollectionName { get; internal set; }
         /// <summary>
         /// 数据库类型
         /// </summary>

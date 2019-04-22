@@ -15,7 +15,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
     /// </summary>
     internal class TableCacheManager : CacheManagerBase
     {
-        public TableCacheManager(SqlDbContext context) : base(context) { }
+        public TableCacheManager(DbContext context) : base(context) { }
 
         /// <summary>
         /// 清空所有缓存
@@ -42,7 +42,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
 
         private string GetTableCacheKey()
         {
-            string key = $"{BankinateConst.CacheKey_TableCache}{DbContext.TableName}";
+            string key = $"{BankinateConst.CacheKey_TableCache}{DbContext.CollectionName}";
             //缓存键更新
             if (!CacheStorageManager.IsExist(BankinateConst.GetTableCacheKeysCacheKey(DbContext.DataBaseName), out HashSet<string> keys))
             {

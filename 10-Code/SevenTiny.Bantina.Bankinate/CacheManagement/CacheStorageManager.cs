@@ -11,9 +11,9 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
     /// </summary>
     internal class CacheStorageManager
     {
-        internal SqlDbContext DbContext;
+        internal DbContext DbContext;
 
-        internal CacheStorageManager(SqlDbContext context)
+        internal CacheStorageManager(DbContext context)
         {
             DbContext = context;
         }
