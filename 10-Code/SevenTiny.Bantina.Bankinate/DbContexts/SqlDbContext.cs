@@ -215,6 +215,37 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         }
         #endregion
 
+        #region 弱类型的执行操作Api
+        public int ExecuteSql(string sqlStatement, IDictionary<string, object> parms = null)
+        {
+            this.SqlStatement = sqlStatement;
+            this.Parameters = parms;
+            this.ConnectionManager.SetConnectionString(OperationType.Write);
+            return QueryExecutor.ExecuteNonQuery(this);
+        }
+        public async Task<int> ExecuteSqlAsync(string sqlStatement, IDictionary<string, object> parms = null)
+        {
+            this.SqlStatement = sqlStatement;
+            this.Parameters = parms;
+            this.ConnectionManager.SetConnectionString(OperationType.Write);
+            return await QueryExecutor.ExecuteNonQueryAsync(this);
+        }
+        public int ExecuteStoredProcedure(string sqlStatement, IDictionary<string, object> parms = null)
+        {
+            this.SqlStatement = sqlStatement;
+            this.Parameters = parms;
+            this.ConnectionManager.SetConnectionString(OperationType.Write);
+            return QueryExecutor.ExecuteNonQuery(this);
+        }
+        public async Task<int> ExecuteStoredProcedureAsync(string sqlStatement, IDictionary<string, object> parms = null)
+        {
+            this.SqlStatement = sqlStatement;
+            this.Parameters = parms;
+            this.ConnectionManager.SetConnectionString(OperationType.Write);
+            return await QueryExecutor.ExecuteNonQueryAsync(this);
+        }
+        #endregion
+
         #region 查询API
         /// <summary>
         /// SQL强类型复杂查询器

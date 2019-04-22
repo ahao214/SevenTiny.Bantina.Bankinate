@@ -17,17 +17,6 @@ namespace SevenTiny.Bantina.Bankinate
             DbContext.DbCommand.CommandType = CommandType.Text;
         }
 
-        public int Execute()
-        {
-            DbContext.ConnectionManager.SetConnectionString(OperationType.Write);
-            return QueryExecutor.ExecuteNonQuery(DbContext);
-        }
-        public async Task<int> ExecuteAsync()
-        {
-            DbContext.ConnectionManager.SetConnectionString(OperationType.Write);
-            return await QueryExecutor.ExecuteNonQueryAsync(DbContext);
-        }
-
         public DataSet ToDataSet()
         {
             return QueryExecutor.ExecuteDataSet(DbContext);
