@@ -13,14 +13,14 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
     /// <summary>
     /// 表缓存管理器(二级缓存管理器）
     /// </summary>
-    internal class TableCacheManager : CacheManagerBase
+    public class TableCacheManager : CacheManagerBase
     {
-        public TableCacheManager(DbContext context) : base(context) { }
+        internal TableCacheManager(DbContext context) : base(context) { }
 
         /// <summary>
         /// 清空所有缓存
         /// </summary>
-        internal void FlushAllCache()
+        public void FlushAllCache()
         {
             if (CacheStorageManager.IsExist(BankinateConst.GetTableCacheKeysCacheKey(DbContext.DataBaseName), out HashSet<string> keys))
             {
@@ -35,7 +35,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
         /// 清空单个表相关的所有缓存
         /// </summary>
         /// <param name="dbContext"></param>
-        internal void FlushTableCache()
+        public void FlushTableCache()
         {
             CacheStorageManager.Delete(GetTableCacheKey());
         }

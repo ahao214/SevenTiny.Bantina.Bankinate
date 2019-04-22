@@ -2,7 +2,7 @@
 
 namespace SevenTiny.Bantina.Bankinate.CacheManagement
 {
-    internal abstract class CacheManagerBase
+    public abstract class CacheManagerBase
     {
         protected DbContext DbContext;
 
@@ -12,6 +12,6 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
             CacheStorageManager = new CacheStorageManager(context);
         }
 
-        protected CacheStorageManager CacheStorageManager { get; set; }
+        internal CacheStorageManager CacheStorageManager { get; set; }
     }
 }

@@ -17,14 +17,14 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
     ///     sql.HashCode(),值
     ///}
     /// </summary>
-    internal class QueryCacheManager : CacheManagerBase
+    public class QueryCacheManager : CacheManagerBase
     {
-        public QueryCacheManager(DbContext context) : base(context) { }
+        internal QueryCacheManager(DbContext context) : base(context) { }
 
         /// <summary>
         /// 清空所有缓存
         /// </summary>
-        internal void FlushAllCache()
+        public void FlushAllCache()
         {
             if (CacheStorageManager.IsExist(BankinateConst.GetQueryCacheKeysCacheKey(DbContext.DataBaseName), out HashSet<string> keys))
             {
@@ -39,7 +39,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
         /// 清空单个表相关的所有缓存
         /// </summary>
         /// <param name="dbContext"></param>
-        internal void FlushTableCache()
+        public void FlushTableCache()
         {
             CacheStorageManager.Delete(GetQueryCacheKey());
         }
@@ -65,15 +65,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
         /// 构建sql查询的sql语句缓存键Key
         /// </summary>
         /// <returns></returns>
-        private int GetSqlQueryCacheKey()
-        {
-            //如果有条件，则sql的key要拼接对应的参数值
-            if (DbContext.Parameters != null && DbContext.Parameters.Any())
-            {
-                return $"{DbContext.SqlStatement}_{string.Join("|", DbContext.Parameters.Values)}".GetHashCode();
-            }
-            return DbContext.SqlStatement.GetHashCode();
-        }
+        private int GetSqlQueryCacheKey() => DbContext.GetQueryCacheKey();
 
         /// <summary>
         /// 从缓存中获取数据

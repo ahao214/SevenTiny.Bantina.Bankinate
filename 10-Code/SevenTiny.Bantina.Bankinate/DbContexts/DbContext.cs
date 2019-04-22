@@ -1,4 +1,5 @@
-﻿using SevenTiny.Bantina.Bankinate.Configs;
+﻿using SevenTiny.Bantina.Bankinate.CacheManagement;
+using SevenTiny.Bantina.Bankinate.Configs;
 using SevenTiny.Bantina.Bankinate.ConnectionManagement;
 using System;
 
@@ -16,6 +17,8 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
 
             if (ConnectionManager == null)
                 ConnectionManager = new ConnectionManager(connectionString_Write, connectionStrings_Read);
+
+            DbCacheManager = new DbCacheManager(this);
         }
 
         #region Database Control 数据库管理
@@ -42,6 +45,10 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         #endregion
 
         #region Cache Control 缓存管理
+        /// <summary>
+        /// 
+        /// </summary>
+        public DbCacheManager DbCacheManager { get; internal set; }
         /// <summary>
         /// 一级缓存
         /// 查询条件级别的缓存（filter），可以暂时缓存根据查询条件查询到的数据
@@ -105,19 +112,12 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// 最大的缓存时间（用于缓存缓存键）
         /// </summary>
         internal TimeSpan MaxExpiredTimeSpan { get; set; } = BankinateConst.CacheKeysMaxExpiredTime;
+        /// <summary>
+        /// 获取一级缓存的缓存键；如SQL中的sql语句和参数，作为一级缓存查询的key，这里根据不同的数据库自定义拼接
+        /// </summary>
+        /// <returns></returns>
+        internal abstract int GetQueryCacheKey();
 
-        ///// <summary>
-        ///// 清空全部缓存
-        ///// </summary>
-        //public void FlushAllCache() => DbCacheManager.FlushAllCache(this);
-        ///// <summary>
-        ///// 清空一级缓存
-        ///// </summary>
-        //public void FlushQueryCache() => QueryCacheManager.FlushAllCache(this);
-        ///// <summary>
-        ///// 清空二级缓存
-        ///// </summary>
-        //public void FlushTableCache() => TableCacheManager.FlushAllCache(this);
         #endregion
 
         #region Validate Control 校验管理
