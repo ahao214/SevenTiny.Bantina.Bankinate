@@ -2,6 +2,7 @@
 using SevenTiny.Bantina.Bankinate.Configs;
 using SevenTiny.Bantina.Bankinate.ConnectionManagement;
 using System;
+using System.Collections.Generic;
 
 namespace SevenTiny.Bantina.Bankinate.DbContexts
 {
@@ -117,13 +118,19 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// </summary>
         /// <returns></returns>
         internal abstract int GetQueryCacheKey();
+        /// <summary>
+        /// 获取集合全部数据的内置方法，用于二级缓存
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        internal abstract List<TEntity> GetFullCollectionData<TEntity>() where TEntity : class;
 
         #endregion
 
-        #region Validate Control 校验管理
-        /// <summary>
-        /// 属性值校验开关，如开启，则Add/Update等操作会校验输入的值是否满足特性标签标识的条件
-        /// </summary>
+            #region Validate Control 校验管理
+            /// <summary>
+            /// 属性值校验开关，如开启，则Add/Update等操作会校验输入的值是否满足特性标签标识的条件
+            /// </summary>
         public bool OpenPropertyDataValidate { get; protected set; } = false;
         #endregion
 

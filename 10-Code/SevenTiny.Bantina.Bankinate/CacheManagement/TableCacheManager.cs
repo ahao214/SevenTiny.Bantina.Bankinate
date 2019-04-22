@@ -232,7 +232,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
         /// <param name="tableCacheTimeSpan">tableCache过期时间</param>
         private void ScanTableBackground<TEntity>(TimeSpan tableCacheTimeSpan) where TEntity : class
         {
-            string scanKey = $"{BankinateConst.CacheKey_TableScanning}{DbContext.TableName}";
+            string scanKey = $"{BankinateConst.CacheKey_TableScanning}{DbContext.CollectionName}";
             //1.判断正在扫描键是否存在，如果存在，则返回null，继续等待扫描任务完成
             if (CacheStorageManager.IsExist(scanKey))
             {
@@ -254,7 +254,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
                     //如果过期时间为0，则取上下文的过期时间
                     TimeSpan timeSpan = tableCacheTimeSpan == TimeSpan.Zero ? DbContext.TableCacheExpiredTimeSpan : tableCacheTimeSpan;
                     //执行扫描全表任务，并将结果存入缓存中
-                    var data = GetFullTableData<TEntity>(DbContext);
+                    var data = DbContext.GetFullCollectionData<TEntity>();
                     if (data != null)
                     {
                         CacheStorageManager.Put(GetTableCacheKey(), data, DbContext.TableCacheExpiredTimeSpan);
@@ -264,28 +264,28 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
                 CacheStorageManager.Delete(scanKey);
             });
         }
-        /// <summary>
-        /// 获取全表数据
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="dbContext"></param>
-        /// <returns></returns>
-        private List<TEntity> GetFullTableData<TEntity>(SqlDbContext dbContext) where TEntity : class
-        {
-            switch (DbContext.DataBaseType)
-            {
-                case DataBaseType.SqlServer:
-                case DataBaseType.MySql:
-                case DataBaseType.Oracle:
-                    DbContext.SqlStatement = $"SELECT * FROM {DbContext.TableName}";
-                    DbContext.Parameters = null;
-                    return QueryExecutor.ExecuteList<TEntity>(dbContext);
-                case DataBaseType.MongoDB:
-                    return null;
-                //return (DbContext.NoSqlCollection as IMongoCollection<TEntity>).Find(t => true).ToList();//获取MongoDb全文档记录
-                default:
-                    return null;
-            }
-        }
+        ///// <summary>
+        ///// 获取全表数据
+        ///// </summary>
+        ///// <typeparam name="TEntity"></typeparam>
+        ///// <param name="dbContext"></param>
+        ///// <returns></returns>
+        //private List<TEntity> GetFullTableData<TEntity>() where TEntity : class
+        //{
+        //    switch (DbContext.DataBaseType)
+        //    {
+        //        case DataBaseType.SqlServer:
+        //        case DataBaseType.MySql:
+        //        case DataBaseType.Oracle:
+        //            //DbContext.SqlStatement = $"SELECT * FROM {DbContext.CollectionName}";
+        //            //DbContext.Parameters = null;
+        //            //return QueryExecutor.ExecuteList<TEntity>(dbContext);
+        //        case DataBaseType.MongoDB:
+        //            return null;
+        //        //return (DbContext.NoSqlCollection as IMongoCollection<TEntity>).Find(t => true).ToList();//获取MongoDb全文档记录
+        //        default:
+        //            return null;
+        //    }
+        //}
     }
 }

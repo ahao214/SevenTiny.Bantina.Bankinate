@@ -28,14 +28,21 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
     /// <summary>
     /// 为了统一控制，这里仅仅存在执行语句，初始化转移到了上下文中进行管理
     /// </summary>
-    public static class QueryExecutor
+    internal class QueryExecutor
     {
+        public QueryExecutor(SqlDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
+
+        private SqlDbContext dbContext;
+
         /// <summary>
         /// ExcuteNonQuery 执行sql语句或者存储过程,返回影响的行数---ExcuteNonQuery
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static int ExecuteNonQuery(SqlDbContext dbContext)
+        public  int ExecuteNonQuery()
         {
             if (dbContext.OpenRealExecutionSaveToDb)
             {
@@ -44,7 +51,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             }
             return default(int);
         }
-        public static Task<int> ExecuteNonQueryAsync(SqlDbContext dbContext)
+        public  Task<int> ExecuteNonQueryAsync()
         {
             if (dbContext.OpenRealExecutionSaveToDb)
             {
@@ -59,7 +66,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static object ExecuteScalar(SqlDbContext dbContext)
+        public  object ExecuteScalar()
         {
             if (dbContext.OpenRealExecutionSaveToDb)
             {
@@ -68,7 +75,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             }
             return default(object);
         }
-        public static Task<object> ExecuteScalarAsync(SqlDbContext dbContext)
+        public  Task<object> ExecuteScalarAsync()
         {
             if (dbContext.OpenRealExecutionSaveToDb)
             {
@@ -83,7 +90,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static DbDataReader ExecuteReader(SqlDbContext dbContext)
+        public  DbDataReader ExecuteReader()
         {
             if (dbContext.OpenRealExecutionSaveToDb)
             {
@@ -100,12 +107,12 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns> 
-        public static DataTable ExecuteDataTable(SqlDbContext dbContext)
+        public  DataTable ExecuteDataTable()
         {
             if (dbContext.OpenRealExecutionSaveToDb)
             {
                 dbContext.ParameterInitializes();
-                DataSet ds = ExecuteDataSet(dbContext);
+                DataSet ds = ExecuteDataSet();
                 if (ds != null && ds.Tables != null && ds.Tables.Count > 0)
                 {
                     return ds.Tables[0];
@@ -120,7 +127,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static DataSet ExecuteDataSet(SqlDbContext dbContext)
+        public  DataSet ExecuteDataSet()
         {
             if (dbContext.OpenRealExecutionSaveToDb)
             {
@@ -138,9 +145,9 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// <typeparam name="Entity"></typeparam>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static List<Entity> ExecuteList<Entity>(SqlDbContext dbContext) where Entity : class
+        public  List<Entity> ExecuteList<Entity>() where Entity : class
         {
-            return GetListFromDataSetV2<Entity>(dbContext, ExecuteDataSet(dbContext));
+            return GetListFromDataSetV2<Entity>(ExecuteDataSet());
         }
 
         /// <summary>
@@ -149,14 +156,14 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// <typeparam name="Entity"></typeparam>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static Entity ExecuteEntity<Entity>(SqlDbContext dbContext) where Entity : class
+        public  Entity ExecuteEntity<Entity>() where Entity : class
         {
-            return GetEntityFromDataSetV2<Entity>(dbContext, ExecuteDataSet(dbContext));
+            return GetEntityFromDataSetV2<Entity>(ExecuteDataSet());
         }
 
         #region 通过Model反射返回结果集 Model为 Entity 泛型变量的真实类型---反射返回结果集
         //DESC:由于性能较低，现在使用全部切换到高性能的方法V2版本，V1版本代码切换成私有方法不再对外开放 -- 7tiny - 2019年1月10日 22点46分
-        private static List<Entity> GetListFromDataSet<Entity>(DataSet ds) where Entity : class
+        private  List<Entity> GetListFromDataSet<Entity>(DataSet ds) where Entity : class
         {
             DataTable dt = ds.Tables[0];//获取到ds的dt
             if (dt.Rows.Count > 0)
@@ -203,7 +210,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             }
             return default(List<Entity>);
         }
-        private static Entity GetEntityFromDataReader<Entity>(DbDataReader reader) where Entity : class
+        private  Entity GetEntityFromDataReader<Entity>(DbDataReader reader) where Entity : class
         {
             Entity model = System.Activator.CreateInstance<Entity>();           //实例化一个T类型对象
             PropertyInfo[] propertyInfos = model.GetType().GetProperties();     //获取T对象的所有公共属性
@@ -239,7 +246,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             }
             return default(Entity);//返回引用类型和值类型的默认值0或null
         }
-        private static Entity GetEntityFromDataSet<Entity>(DataSet ds) where Entity : class
+        private  Entity GetEntityFromDataSet<Entity>(DataSet ds) where Entity : class
         {
             return GetListFromDataSet<Entity>(ds)?.FirstOrDefault();
         }
@@ -250,7 +257,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// <typeparam name="Entity"></typeparam>
         /// <param name="ds"></param>
         /// <returns></returns>
-        public static List<Entity> GetListFromDataSetV2<Entity>(SqlDbContext dbContext, DataSet ds) where Entity : class
+        public  List<Entity> GetListFromDataSetV2<Entity>(DataSet ds) where Entity : class
         {
             if (dbContext.OpenRealExecutionSaveToDb)
             {
@@ -269,7 +276,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             }
             return default(List<Entity>);
         }
-        public static Entity GetEntityFromDataSetV2<Entity>(SqlDbContext dbContext, DataSet ds) where Entity : class
+        public  Entity GetEntityFromDataSetV2<Entity>(DataSet ds) where Entity : class
         {
             if (dbContext.OpenRealExecutionSaveToDb)
             {

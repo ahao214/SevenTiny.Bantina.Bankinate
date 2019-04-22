@@ -139,7 +139,7 @@ namespace SevenTiny.Bantina.Bankinate
                         _top);
             }
 
-            return DbCacheManager.GetEntities(DbContext, _where, () =>
+            return DbContext.DbCacheManager.GetEntities(_where, () =>
             {
                 return QueryExecutor.ExecuteList<TEntity>(DbContext);
             });
@@ -159,10 +159,10 @@ namespace SevenTiny.Bantina.Bankinate
                     DbContext.CommandTextGenerator.QueryableOrderBy(_orderby, _isDesc),
                     _top);
 
-            return DbCacheManager.GetEntity(DbContext, _where, () =>
-            {
-                return QueryExecutor.ExecuteEntity<TEntity>(DbContext);
-            });
+            return DbContext.DbCacheManager.GetEntity(_where, () =>
+           {
+               return QueryExecutor.ExecuteEntity<TEntity>(DbContext);
+           });
         }
 
         public override int ToCount()
@@ -174,10 +174,10 @@ namespace SevenTiny.Bantina.Bankinate
                     _alias,
                     DbContext.CommandTextGenerator.QueryableWhere(_where));
 
-            return DbCacheManager.GetCount(DbContext, _where, () =>
-            {
-                return Convert.ToInt32(QueryExecutor.ExecuteScalar(DbContext));
-            });
+            return DbContext.DbCacheManager.GetCount(_where, () =>
+           {
+               return Convert.ToInt32(QueryExecutor.ExecuteScalar(DbContext));
+           });
         }
 
         public override bool Any(Expression<Func<TEntity, bool>> filter)

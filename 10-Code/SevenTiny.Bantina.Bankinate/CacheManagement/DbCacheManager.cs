@@ -16,8 +16,8 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
     {
         internal DbCacheManager(DbContext context) : base(context)
         {
-                QueryCacheManager = new QueryCacheManager(context);
-                TableCacheManager = new TableCacheManager(context);
+            QueryCacheManager = new QueryCacheManager(context);
+            TableCacheManager = new TableCacheManager(context);
         }
 
         public QueryCacheManager QueryCacheManager { get; set; }

@@ -1,8 +1,11 @@
 ﻿using MySql.Data.MySqlClient;
+using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.Extensions;
 using SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement;
+using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 
@@ -46,6 +49,14 @@ namespace SevenTiny.Bantina.Bankinate
         {
             //调用基类的Dispose
             base.Dispose();
+        }
+
+        internal override List<TEntity> GetFullCollectionData<TEntity>()
+        {
+            this.CollectionName = TableAttribute.GetName(typeof(TEntity));
+            this.SqlStatement = $"SELECT * FROM {CollectionName}";
+            this.Parameters = null;
+            return QueryExecutor.ExecuteList<TEntity>(this);
         }
     }
 }
