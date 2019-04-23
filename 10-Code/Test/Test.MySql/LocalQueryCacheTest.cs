@@ -6,17 +6,17 @@ using Xunit;
 
 namespace Test.MySql
 {
-    [DataBase("SevenTinyTest")]
-    public class LocalQueryCache : MySqlDbContext<LocalQueryCache>
-    {
-        public LocalQueryCache() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
-        {
-            OpenQueryCache = true;//一级缓存开关
-        }
-    }
-
     public class LocalQueryCacheTest
     {
+        [DataBase("SevenTinyTest")]
+        private class LocalQueryCache : MySqlDbContext<LocalQueryCache>
+        {
+            public LocalQueryCache() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
+            {
+                OpenQueryCache = true;//一级缓存开关
+            }
+        }
+
         [Fact]
         public void QueryAdd()
         {

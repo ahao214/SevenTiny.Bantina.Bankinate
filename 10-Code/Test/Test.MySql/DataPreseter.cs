@@ -8,20 +8,20 @@ using Xunit;
 
 namespace Test.MySql
 {
-    [DataBase("SevenTinyTest")]
-    public class DataPreseterDb : MySqlDbContext<DataPreseterDb>
-    {
-        public DataPreseterDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
-        {
-
-        }
-    }
-
     /// <summary>
     /// 数据预置类
     /// </summary>
     public class DataPreseter
     {
+        [DataBase("SevenTinyTest")]
+        private class DataPreseterDb : MySqlDbContext<DataPreseterDb>
+        {
+            public DataPreseterDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
+            {
+
+            }
+        }
+
         //[Fact]
         [Trait("desc", "初始化测试数据")]
         public void InitData()

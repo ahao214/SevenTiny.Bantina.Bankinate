@@ -8,24 +8,24 @@ using Xunit;
 
 namespace Test.MySql
 {
-    [DataBase("SevenTinyTest")]
-    public class OperationDb : MySqlDbContext<OperationDb>
-    {
-        public OperationDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
-        {
-        }
-    }
-
     /// <summary>
     /// 关系型数据库查询测试
     /// </summary>
     public class ApisTest
     {
+        [DataBase("SevenTinyTest")]
+        private class ApiDb : MySqlDbContext<ApiDb>
+        {
+            public ApiDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
+            {
+            }
+        }
+
         [Fact]
         [Trait("desc", "持久化测试")]
         public void Persistence()
         {
-            using (var db = new OperationDb())
+            using (var db = new ApiDb())
             {
                 int value = 999999;
 
@@ -81,7 +81,7 @@ namespace Test.MySql
         [Trait("desc", "持久化测试_默认使用实体主键删除数据")]
         public void Persistence_DeleteEntity()
         {
-            using (var db = new OperationDb())
+            using (var db = new ApiDb())
             {
                 int value = 999999;
 
@@ -119,7 +119,7 @@ namespace Test.MySql
         [Fact]
         public void Query_All()
         {
-            using (var db = new OperationDb())
+            using (var db = new ApiDb())
             {
                 var re = db.Queryable<OperateTestModel>().ToList();
                 Assert.Equal(1000, re.Count);
@@ -129,7 +129,7 @@ namespace Test.MySql
         [Fact]
         public void Query_Where()
         {
-            using (var db = new OperationDb())
+            using (var db = new ApiDb())
             {
                 var re = db.Queryable<OperateTestModel>().Where(t => t.StringKey.EndsWith("3")).ToList();
                 Assert.Equal(100, re.Count);
@@ -139,7 +139,7 @@ namespace Test.MySql
         [Fact]
         public void Query_MultiWhere()
         {
-            using (var db = new OperationDb())
+            using (var db = new ApiDb())
             {
                 var re = db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("3")).Where(t => t.IntKey == 3).ToList();
                 Assert.Single(re);
@@ -149,7 +149,7 @@ namespace Test.MySql
         [Fact]
         public void Query_Select()
         {
-            using (var db = new OperationDb())
+            using (var db = new ApiDb())
             {
                 var re = db.Queryable<OperateTestModel>().Where(t => t.IntKey <= 3).Select(t => new { t.IntKey, t.StringKey }).ToList();
                 Assert.Equal(3, re.Count);
@@ -159,7 +159,7 @@ namespace Test.MySql
         [Fact]
         public void Query_OrderBy()
         {
-            using (var db = new OperationDb())
+            using (var db = new ApiDb())
             {
                 var re = db.Queryable<OperateTestModel>().Where(t => t.IntKey <= 9).Select(t => new { t.IntKey, t.StringKey }).OrderByDescending(t => t.IntKey).ToList();
                 Assert.True(re.Count == 9 && re.First().IntKey == 9 && re.First().Id == 0);//没有查id，id应该=0
@@ -169,7 +169,7 @@ namespace Test.MySql
         [Fact]
         public void Query_Limit()
         {
-            using (var db = new OperationDb())
+            using (var db = new ApiDb())
             {
                 var re = db.Queryable<OperateTestModel>().Where(t => t.IntKey > 3).Select(t => new { t.IntKey, t.StringKey }).OrderByDescending(t => t.IntKey).Limit(30).ToList();
                 Assert.Equal(30, re.Count);
@@ -179,7 +179,7 @@ namespace Test.MySql
         [Fact]
         public void Query_Paging()
         {
-            using (var db = new OperationDb())
+            using (var db = new ApiDb())
             {
                 var re4 = db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("1")).Select(t => new { t.IntKey, t.StringKey }).OrderBy(t => t.IntKey).Paging(0, 10).ToList();
                 var re5 = db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("1")).Select(t => new { t.IntKey, t.StringKey }).OrderByDescending(t => t.IntKey).Paging(0, 10).ToList();
@@ -191,22 +191,10 @@ namespace Test.MySql
         [Fact]
         public void Query_Any()
         {
-            using (var db = new OperationDb())
+            using (var db = new ApiDb())
             {
                 var re = db.Queryable<OperateTestModel>().Any(t => t.StringKey.EndsWith("3"));
                 Assert.True(re);
-            }
-        }
-
-        [Fact]
-        [Trait("bug", "修复同字段不同值的，sql和参数生成错误")]
-        [Trait("bug", "修复生成sql语句由于没有括号，逻辑顺序有误")]
-        public void Query_BugRepaire1()
-        {
-            using (var db = new OperationDb())
-            {
-                var re = db.Queryable<OperateTestModel>().Where(t => t.IntKey == 1 && t.Id != 2 && (t.StringKey.Contains("1") || t.StringKey.Contains("2"))).ToOne();
-                Assert.NotNull(re);
             }
         }
     }

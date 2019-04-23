@@ -6,19 +6,19 @@ using Xunit;
 
 namespace Test.MySql
 {
-    [DataBase("SevenTinyTest")]
-    public class RedisQueryCache : MySqlDbContext<RedisQueryCache>
-    {
-        public RedisQueryCache() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
-        {
-            OpenQueryCache = true;//一级缓存开关
-            CacheMediaType = CacheMediaType.Redis;
-            CacheMediaServer = "192.168.1.110:39912";//redis服务器地址以及端口号
-        }
-    }
-
     public class RedisQueryCacheTest
     {
+        [DataBase("SevenTinyTest")]
+        private class RedisQueryCache : MySqlDbContext<RedisQueryCache>
+        {
+            public RedisQueryCache() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
+            {
+                OpenQueryCache = true;//一级缓存开关
+                CacheMediaType = CacheMediaType.Redis;
+                CacheMediaServer = "192.168.1.110:39912";//redis服务器地址以及端口号
+            }
+        }
+
         [Fact]
         public void QueryAdd()
         {

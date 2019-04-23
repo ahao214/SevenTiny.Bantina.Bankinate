@@ -7,24 +7,24 @@ using Xunit;
 
 namespace Test.MySql
 {
-    /// <summary>
-    /// 数据校验上下文
-    /// </summary>
-    [DataBase("SevenTinyTest")]
-    public class PropertyValidateDb : MySqlDbContext<PropertyValidateDb>
-    {
-        public PropertyValidateDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
-        {
-            OpenPropertyDataValidate = true;
-            OpenRealExecutionSaveToDb = false;
-        }
-    }
-
     [Trait("desc", "测试需要先打开校验属性值的开关")]
     [Trait("desc", "当前标签的限制为1-10")]
     public class DataValidateTest
     {
-        public PropertyValidateDb Db => new PropertyValidateDb() { };
+        /// <summary>
+        /// 数据校验上下文
+        /// </summary>
+        [DataBase("SevenTinyTest")]
+        private class PropertyValidateDb : MySqlDbContext<PropertyValidateDb>
+        {
+            public PropertyValidateDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
+            {
+                OpenPropertyDataValidate = true;
+                OpenRealExecutionSaveToDb = false;
+            }
+        }
+
+        private PropertyValidateDb Db => new PropertyValidateDb() { };
 
         [Theory]
         [InlineData(-1)]

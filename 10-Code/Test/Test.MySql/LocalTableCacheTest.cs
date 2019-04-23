@@ -6,17 +6,18 @@ using Xunit;
 
 namespace Test.MySql
 {
-    [DataBase("SevenTinyTest")]
-    public class LocalTableCache : MySqlDbContext<LocalTableCache>
-    {
-        public LocalTableCache() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
-        {
-            OpenTableCache = true;//二级缓存开关，表实体上的二级标签也需要提供
-        }
-    }
-
     public class LocalTableCacheTest
     {
+        [DataBase("SevenTinyTest")]
+        private class LocalTableCache : MySqlDbContext<LocalTableCache>
+        {
+            public LocalTableCache() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
+            {
+                OpenTableCache = true;//二级缓存开关，表实体上的二级标签也需要提供
+            }
+        }
+
+        [Trait("DESC","该方法和QueryAll放在一起可能冲突，分开进行执行单元测试")]
         [Fact]
         public void QueryAdd()
         {
