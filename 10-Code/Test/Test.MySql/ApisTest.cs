@@ -19,7 +19,7 @@ namespace Test.MySql
     /// <summary>
     /// 关系型数据库查询测试
     /// </summary>
-    public class OperationTest
+    public class ApisTest
     {
         [Fact]
         [Trait("desc", "持久化测试")]
