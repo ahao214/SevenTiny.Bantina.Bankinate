@@ -1,7 +1,6 @@
 ﻿using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.Configs;
 using SevenTiny.Bantina.Bankinate.DbContexts;
-using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,14 +34,14 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
         /// 清空单个表相关的所有缓存
         /// </summary>
         /// <param name="dbContext"></param>
-        public void FlushTableCache()
+        public void FlushCollectionCache(string collectionName = null)
         {
-            CacheStorageManager.Delete(GetTableCacheKey());
+            CacheStorageManager.Delete(GetTableCacheKey(collectionName));
         }
 
-        private string GetTableCacheKey()
+        private string GetTableCacheKey(string collectionName = null)
         {
-            string key = $"{BankinateConst.CacheKey_TableCache}{DbContext.CollectionName}";
+            string key = $"{BankinateConst.CacheKey_TableCache}{collectionName ?? DbContext.CollectionName}";
             //缓存键更新
             if (!CacheStorageManager.IsExist(BankinateConst.GetTableCacheKeysCacheKey(DbContext.DataBaseName), out HashSet<string> keys))
             {
@@ -68,11 +67,9 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
                 {
                     if (TableCachingAttribute.IsExistTaleCaching(typeof(TEntity), out TimeSpan tableCacheTimeSpan))
                     {
-                        //如果过期时间为0，则取上下文的过期时间
-                        TimeSpan timeSpan = tableCacheTimeSpan == TimeSpan.Zero ? DbContext.TableCacheExpiredTimeSpan : tableCacheTimeSpan;
-
                         entities.Add(entity);
-                        CacheStorageManager.Put(GetTableCacheKey(), entities, tableCacheTimeSpan);
+                        //如果过期时间为0，则取上下文的过期时间
+                        CacheStorageManager.Put(GetTableCacheKey(), entities, tableCacheTimeSpan == TimeSpan.Zero ? DbContext.TableCacheExpiredTimeSpan : tableCacheTimeSpan);
                     }
                 }
             }
@@ -147,14 +144,13 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
 
                     if (TableCachingAttribute.IsExistTaleCaching(typeof(TEntity), out TimeSpan tableCacheTimeSpan))
                     {
-                        //如果过期时间为0，则取上下文的过期时间
-                        TimeSpan timeSpan = tableCacheTimeSpan == TimeSpan.Zero ? DbContext.TableCacheExpiredTimeSpan : tableCacheTimeSpan;
                         //从缓存集合中寻找该记录，如果找到，则更新该记录
                         var val = entities.Where(filter.Compile()).FirstOrDefault();
                         if (val != null)
                         {
                             entities.Remove(val);
-                            CacheStorageManager.Put(GetTableCacheKey(), entities, tableCacheTimeSpan);
+                            //如果过期时间为0，则取上下文的过期时间
+                            CacheStorageManager.Put(GetTableCacheKey(), entities, tableCacheTimeSpan == TimeSpan.Zero ? DbContext.TableCacheExpiredTimeSpan : tableCacheTimeSpan);
                         }
                     }
                 }
@@ -189,7 +185,6 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
                 }
             }
         }
-
 
         /// <summary>
         /// 从缓存中获取数据，如果没有，则后台执行扫描表任务
@@ -264,28 +259,5 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
                 CacheStorageManager.Delete(scanKey);
             });
         }
-        ///// <summary>
-        ///// 获取全表数据
-        ///// </summary>
-        ///// <typeparam name="TEntity"></typeparam>
-        ///// <param name="dbContext"></param>
-        ///// <returns></returns>
-        //private List<TEntity> GetFullTableData<TEntity>() where TEntity : class
-        //{
-        //    switch (DbContext.DataBaseType)
-        //    {
-        //        case DataBaseType.SqlServer:
-        //        case DataBaseType.MySql:
-        //        case DataBaseType.Oracle:
-        //            //DbContext.SqlStatement = $"SELECT * FROM {DbContext.CollectionName}";
-        //            //DbContext.Parameters = null;
-        //            //return QueryExecutor.ExecuteList<TEntity>(dbContext);
-        //        case DataBaseType.MongoDB:
-        //            return null;
-        //        //return (DbContext.NoSqlCollection as IMongoCollection<TEntity>).Find(t => true).ToList();//获取MongoDb全文档记录
-        //        default:
-        //            return null;
-        //    }
-        //}
     }
 }

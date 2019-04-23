@@ -29,6 +29,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             CreateDbDataAdapter();                                          //初始化集合访问器
             AccessorInitializes();                                          //初始化访问器
             CreateCommandTextGenerator();                                   //初始化SQL生成器
+            QueryExecutor = new QueryExecutor(this);                        //初始化SQL执行器
         }
 
         /// <summary>
@@ -103,6 +104,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// 初始化查询参数
         /// </summary>
         internal abstract void ParameterInitializes();
+        internal QueryExecutor QueryExecutor { get; private set; }
 
         /// <summary>
         /// 根据实体获取表名
@@ -116,14 +118,14 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// 获取一级缓存的缓存键
         /// </summary>
         /// <returns></returns>
-        internal override int GetQueryCacheKey()
+        internal override string GetQueryCacheKey()
         {
             //如果有条件，则sql的key要拼接对应的参数值
             if (Parameters != null && Parameters.Any())
             {
-                return $"{SqlStatement}_{string.Join("|", Parameters.Values)}".GetHashCode();
+                return MD5Helper.GetMd5Hash($"{SqlStatement}_{string.Join("|", Parameters.Values)}");
             }
-            return SqlStatement.GetHashCode();
+            return MD5Helper.GetMd5Hash(SqlStatement);
         }
 
         /// <summary>
@@ -151,7 +153,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             PropertyDataValidator.Verify(this, entity);
             this.CommandTextGenerator.Add(entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            QueryExecutor.ExecuteNonQuery(this);
+            this.QueryExecutor.ExecuteNonQuery();
             DbCacheManager.Add(entity);
         }
         public async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
@@ -159,7 +161,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             PropertyDataValidator.Verify(this, entity);
             this.CommandTextGenerator.Add(entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            await QueryExecutor.ExecuteNonQueryAsync(this);
+            await QueryExecutor.ExecuteNonQueryAsync();
             DbCacheManager.Add(entity);
         }
 
@@ -167,28 +169,28 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         {
             this.CommandTextGenerator.Delete(entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            QueryExecutor.ExecuteNonQuery(this);
+            QueryExecutor.ExecuteNonQuery();
             DbCacheManager.Delete(entity);
         }
         public async Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class
         {
             this.CommandTextGenerator.Delete(entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            await QueryExecutor.ExecuteNonQueryAsync(this);
+            await QueryExecutor.ExecuteNonQueryAsync();
             DbCacheManager.Delete(entity);
         }
         public void Delete<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
         {
             this.CommandTextGenerator.Delete(filter);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            QueryExecutor.ExecuteNonQuery(this);
+            QueryExecutor.ExecuteNonQuery();
             DbCacheManager.Delete(filter);
         }
         public async Task DeleteAsync<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
         {
             this.CommandTextGenerator.Delete(filter);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            await QueryExecutor.ExecuteNonQueryAsync(this);
+            await QueryExecutor.ExecuteNonQueryAsync();
             DbCacheManager.Delete(filter);
         }
 
@@ -197,7 +199,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             PropertyDataValidator.Verify(this, entity);
             this.CommandTextGenerator.Update(entity, out Expression<Func<TEntity, bool>> filter);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            QueryExecutor.ExecuteNonQuery(this);
+            QueryExecutor.ExecuteNonQuery();
             DbCacheManager.Update(entity, filter);
         }
         public async Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class
@@ -205,7 +207,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             PropertyDataValidator.Verify(this, entity);
             this.CommandTextGenerator.Update(entity, out Expression<Func<TEntity, bool>> filter);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            await QueryExecutor.ExecuteNonQueryAsync(this);
+            await QueryExecutor.ExecuteNonQueryAsync();
             DbCacheManager.Update(entity, filter);
         }
         public void Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
@@ -213,7 +215,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             PropertyDataValidator.Verify(this, entity);
             this.CommandTextGenerator.Update(filter, entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            QueryExecutor.ExecuteNonQuery(this);
+            QueryExecutor.ExecuteNonQuery();
             DbCacheManager.Update(entity, filter);
         }
         public async Task UpdateAsync<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
@@ -221,7 +223,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             PropertyDataValidator.Verify(this, entity);
             this.CommandTextGenerator.Update(filter, entity);
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            await QueryExecutor.ExecuteNonQueryAsync(this);
+            await QueryExecutor.ExecuteNonQueryAsync();
             DbCacheManager.Update(entity, filter);
         }
         #endregion
@@ -232,28 +234,28 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
             this.SqlStatement = sqlStatement;
             this.Parameters = parms;
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            return QueryExecutor.ExecuteNonQuery(this);
+            return QueryExecutor.ExecuteNonQuery();
         }
         public async Task<int> ExecuteSqlAsync(string sqlStatement, IDictionary<string, object> parms = null)
         {
             this.SqlStatement = sqlStatement;
             this.Parameters = parms;
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            return await QueryExecutor.ExecuteNonQueryAsync(this);
+            return await QueryExecutor.ExecuteNonQueryAsync();
         }
         public int ExecuteStoredProcedure(string sqlStatement, IDictionary<string, object> parms = null)
         {
             this.SqlStatement = sqlStatement;
             this.Parameters = parms;
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            return QueryExecutor.ExecuteNonQuery(this);
+            return QueryExecutor.ExecuteNonQuery();
         }
         public async Task<int> ExecuteStoredProcedureAsync(string sqlStatement, IDictionary<string, object> parms = null)
         {
             this.SqlStatement = sqlStatement;
             this.Parameters = parms;
             this.ConnectionManager.SetConnectionString(OperationType.Write);
-            return await QueryExecutor.ExecuteNonQueryAsync(this);
+            return await QueryExecutor.ExecuteNonQueryAsync();
         }
         #endregion
 

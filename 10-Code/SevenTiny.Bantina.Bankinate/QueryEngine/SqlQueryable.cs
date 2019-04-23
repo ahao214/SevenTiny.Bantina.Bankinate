@@ -19,20 +19,20 @@ namespace SevenTiny.Bantina.Bankinate
 
         public DataSet ToDataSet()
         {
-            return QueryExecutor.ExecuteDataSet(DbContext);
+            return DbContext.QueryExecutor.ExecuteDataSet();
         }
         public object ToData()
         {
-            return QueryExecutor.ExecuteScalar(DbContext);
+            return DbContext.QueryExecutor.ExecuteScalar();
         }
         public TEntity ToOne<TEntity>() where TEntity : class
         {
-            return QueryExecutor.ExecuteEntity<TEntity>(DbContext);
+            return DbContext.QueryExecutor.ExecuteEntity<TEntity>();
         }
 
         public List<TEntity> ToList<TEntity>() where TEntity : class
         {
-            return QueryExecutor.ExecuteList<TEntity>(DbContext);
+            return DbContext.QueryExecutor.ExecuteList<TEntity>();
         }
     }
 }

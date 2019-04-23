@@ -12,10 +12,8 @@
 * Description: 适合于Sql条件下的懒加载查询配置
 * Thx , Best Regards ~
 *********************************************************/
-using SevenTiny.Bantina.Bankinate.CacheManagement;
 using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.Extensions;
-using SevenTiny.Bantina.Bankinate.SqlDataAccess;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -141,7 +139,7 @@ namespace SevenTiny.Bantina.Bankinate
 
             return DbContext.DbCacheManager.GetEntities(_where, () =>
             {
-                return QueryExecutor.ExecuteList<TEntity>(DbContext);
+                return DbContext.QueryExecutor.ExecuteList<TEntity>();
             });
         }
 
@@ -161,7 +159,7 @@ namespace SevenTiny.Bantina.Bankinate
 
             return DbContext.DbCacheManager.GetEntity(_where, () =>
            {
-               return QueryExecutor.ExecuteEntity<TEntity>(DbContext);
+               return DbContext.QueryExecutor.ExecuteEntity<TEntity>();
            });
         }
 
@@ -176,7 +174,7 @@ namespace SevenTiny.Bantina.Bankinate
 
             return DbContext.DbCacheManager.GetCount(_where, () =>
            {
-               return Convert.ToInt32(QueryExecutor.ExecuteScalar(DbContext));
+               return Convert.ToInt32(DbContext.QueryExecutor.ExecuteScalar());
            });
         }
 

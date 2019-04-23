@@ -128,3 +128,7 @@
 
 //    }
 //}
+
+
+
+//        //return (DbContext.NoSqlCollection as IMongoCollection<TEntity>).Find(t => true).ToList();//获取MongoDb全文档记录

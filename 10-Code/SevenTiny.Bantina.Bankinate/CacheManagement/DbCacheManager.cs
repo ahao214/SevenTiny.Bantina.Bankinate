@@ -35,19 +35,19 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
         /// <summary>
         /// 清空单个表相关的所有缓存
         /// </summary>
-        public void FlushCurrentTableCache()
+        public void FlushCurrentCollectionCache(string collectionName = null)
         {
             if (DbContext.OpenQueryCache)
-                QueryCacheManager.FlushTableCache();
+                QueryCacheManager.FlushCollectionCache(collectionName);
             if (DbContext.OpenTableCache)
-                TableCacheManager.FlushTableCache();
+                TableCacheManager.FlushCollectionCache(collectionName);
         }
 
         internal void Add<TEntity>(TEntity entity)
         {
             //1.清空Query缓存中关于该表的所有缓存记录
             if (DbContext.OpenQueryCache)
-                QueryCacheManager.FlushTableCache();
+                QueryCacheManager.FlushCollectionCache();
             //2.更新Table缓存中的该表记录
             if (DbContext.OpenTableCache)
                 TableCacheManager.AddCache(entity);
@@ -56,7 +56,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
         {
             //1.清空Query缓存中关于该表的所有缓存记录
             if (DbContext.OpenQueryCache)
-                QueryCacheManager.FlushTableCache();
+                QueryCacheManager.FlushCollectionCache();
             //2.更新Table缓存中的该表记录
             if (DbContext.OpenTableCache)
                 TableCacheManager.AddCache(entities);
@@ -65,7 +65,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
         {
             //1.清空Query缓存中关于该表的所有缓存记录
             if (DbContext.OpenQueryCache)
-                QueryCacheManager.FlushTableCache();
+                QueryCacheManager.FlushCollectionCache();
             //2.更新Table缓存中的该表记录
             if (DbContext.OpenTableCache)
                 TableCacheManager.UpdateCache(entity, filter);
@@ -74,7 +74,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
         {
             //1.清空Query缓存中关于该表的所有缓存记录
             if (DbContext.OpenQueryCache)
-                QueryCacheManager.FlushTableCache();
+                QueryCacheManager.FlushCollectionCache();
             //2.更新Table缓存中的该表记录
             if (DbContext.OpenTableCache)
                 TableCacheManager.DeleteCache(filter);
@@ -83,7 +83,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
         {
             //1.清空Query缓存中关于该表的所有缓存记录
             if (DbContext.OpenQueryCache)
-                QueryCacheManager.FlushTableCache();
+                QueryCacheManager.FlushCollectionCache();
             //2.更新Table缓存中的该表记录
             if (DbContext.OpenTableCache)
                 TableCacheManager.DeleteCache(entity);

@@ -26,7 +26,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// <summary>
         /// 库名（对应SQL数据库的库名）
         /// </summary>
-        public string DataBaseName { get; protected set; }
+        public string DataBaseName { get; internal set; }
         /// <summary>
         /// 集合名（对应SQL数据库的表，MongoDB的文档名）
         /// </summary>
@@ -117,7 +117,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// 获取一级缓存的缓存键；如SQL中的sql语句和参数，作为一级缓存查询的key，这里根据不同的数据库自定义拼接
         /// </summary>
         /// <returns></returns>
-        internal abstract int GetQueryCacheKey();
+        internal abstract string GetQueryCacheKey();
         /// <summary>
         /// 获取集合全部数据的内置方法，用于二级缓存
         /// </summary>

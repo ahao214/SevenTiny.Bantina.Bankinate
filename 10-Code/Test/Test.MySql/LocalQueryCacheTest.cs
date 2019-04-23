@@ -68,6 +68,12 @@ namespace Test.MySql
                 for (int i = 0; i < count; i++)
                 {
                     var re = db.Queryable<OperateTestModel>().ToList();
+
+                    if (i == 0)
+                        Assert.True(!db.IsFromCache);
+                    else
+                        Assert.True(db.IsFromCache);
+
                     Assert.Equal(1000, re.Count);
                 }
             }
@@ -82,6 +88,12 @@ namespace Test.MySql
                 for (int i = 0; i < count; i++)
                 {
                     var re = db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("test")).ToOne();
+
+                    if (i == 0)
+                        Assert.True(!db.IsFromCache);
+                    else
+                        Assert.True(db.IsFromCache);
+
                     Assert.NotNull(re);
                 }
             }
@@ -96,6 +108,12 @@ namespace Test.MySql
                 for (int i = 0; i < count; i++)
                 {
                     var re = db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("test")).ToCount();
+
+                    if (i == 0)
+                        Assert.True(!db.IsFromCache);
+                    else
+                        Assert.True(db.IsFromCache);
+
                     Assert.Equal(1000, re);
                 }
             }
@@ -111,7 +129,31 @@ namespace Test.MySql
                 {
                     var re = db.Queryable<OperateTestModel>().Where(t => t.Id == 1).ToOne();
                     var re1 = db.Queryable<OperateTestModel>().Where(t => t.Id == 2).ToOne();
+
+                    if (i == 0)
+                        Assert.True(!db.IsFromCache);
+                    else
+                        Assert.True(db.IsFromCache);
+
                     Assert.NotEqual(re.StringKey, re1.StringKey);
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(100)]
+        public void QueryWhereWithUnSameCondition2(int count)
+        {
+            using (var db = new LocalQueryCache())
+            {
+                db.DbCacheManager.FlushCurrentCollectionCache(db.GetTableName<OperateTestModel>());
+
+                for (int i = 1; i <= count; i++)
+                {
+                    var re = db.Queryable<OperateTestModel>().Where(t => t.Id == i).ToOne();
+
+                    Assert.True(!db.IsFromCache);
+                    Assert.NotNull(re);
                 }
             }
         }

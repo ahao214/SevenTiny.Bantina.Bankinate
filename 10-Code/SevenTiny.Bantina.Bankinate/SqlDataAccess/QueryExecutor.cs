@@ -32,31 +32,31 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
     {
         public QueryExecutor(SqlDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            this.DbContext = dbContext;
         }
 
-        private SqlDbContext dbContext;
+        private SqlDbContext DbContext;
 
         /// <summary>
         /// ExcuteNonQuery 执行sql语句或者存储过程,返回影响的行数---ExcuteNonQuery
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public  int ExecuteNonQuery()
+        public int ExecuteNonQuery()
         {
-            if (dbContext.OpenRealExecutionSaveToDb)
+            if (DbContext.OpenRealExecutionSaveToDb)
             {
-                dbContext.ParameterInitializes();
-                return dbContext.DbCommand.ExecuteNonQuery();
+                DbContext.ParameterInitializes();
+                return DbContext.DbCommand.ExecuteNonQuery();
             }
             return default(int);
         }
-        public  Task<int> ExecuteNonQueryAsync()
+        public Task<int> ExecuteNonQueryAsync()
         {
-            if (dbContext.OpenRealExecutionSaveToDb)
+            if (DbContext.OpenRealExecutionSaveToDb)
             {
-                dbContext.ParameterInitializes();
-                return dbContext.DbCommand.ExecuteNonQueryAsync();
+                DbContext.ParameterInitializes();
+                return DbContext.DbCommand.ExecuteNonQueryAsync();
             }
             return default(Task<int>);
         }
@@ -66,21 +66,21 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public  object ExecuteScalar()
+        public object ExecuteScalar()
         {
-            if (dbContext.OpenRealExecutionSaveToDb)
+            if (DbContext.OpenRealExecutionSaveToDb)
             {
-                dbContext.ParameterInitializes();
-                return dbContext.DbCommand.ExecuteScalar();
+                DbContext.ParameterInitializes();
+                return DbContext.DbCommand.ExecuteScalar();
             }
             return default(object);
         }
-        public  Task<object> ExecuteScalarAsync()
+        public Task<object> ExecuteScalarAsync()
         {
-            if (dbContext.OpenRealExecutionSaveToDb)
+            if (DbContext.OpenRealExecutionSaveToDb)
             {
-                dbContext.ParameterInitializes();
-                return dbContext.DbCommand.ExecuteScalarAsync();
+                DbContext.ParameterInitializes();
+                return DbContext.DbCommand.ExecuteScalarAsync();
             }
             return default(Task<object>);
         }
@@ -90,12 +90,12 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public  DbDataReader ExecuteReader()
+        public DbDataReader ExecuteReader()
         {
-            if (dbContext.OpenRealExecutionSaveToDb)
+            if (DbContext.OpenRealExecutionSaveToDb)
             {
-                dbContext.ParameterInitializes();
-                return dbContext.DbCommand.ExecuteReader(CommandBehavior.CloseConnection);
+                DbContext.ParameterInitializes();
+                return DbContext.DbCommand.ExecuteReader(CommandBehavior.CloseConnection);
             }
             return default(DbDataReader);
         }
@@ -107,11 +107,11 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns> 
-        public  DataTable ExecuteDataTable()
+        public DataTable ExecuteDataTable()
         {
-            if (dbContext.OpenRealExecutionSaveToDb)
+            if (DbContext.OpenRealExecutionSaveToDb)
             {
-                dbContext.ParameterInitializes();
+                DbContext.ParameterInitializes();
                 DataSet ds = ExecuteDataSet();
                 if (ds != null && ds.Tables != null && ds.Tables.Count > 0)
                 {
@@ -127,13 +127,13 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// </summary>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public  DataSet ExecuteDataSet()
+        public DataSet ExecuteDataSet()
         {
-            if (dbContext.OpenRealExecutionSaveToDb)
+            if (DbContext.OpenRealExecutionSaveToDb)
             {
-                dbContext.ParameterInitializes();
+                DbContext.ParameterInitializes();
                 DataSet ds = new DataSet();
-                dbContext.DbDataAdapter.Fill(ds);
+                DbContext.DbDataAdapter.Fill(ds);
                 return ds;
             }
             return default(DataSet);
@@ -145,7 +145,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// <typeparam name="Entity"></typeparam>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public  List<Entity> ExecuteList<Entity>() where Entity : class
+        public List<Entity> ExecuteList<Entity>() where Entity : class
         {
             return GetListFromDataSetV2<Entity>(ExecuteDataSet());
         }
@@ -156,14 +156,14 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// <typeparam name="Entity"></typeparam>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public  Entity ExecuteEntity<Entity>() where Entity : class
+        public Entity ExecuteEntity<Entity>() where Entity : class
         {
             return GetEntityFromDataSetV2<Entity>(ExecuteDataSet());
         }
 
         #region 通过Model反射返回结果集 Model为 Entity 泛型变量的真实类型---反射返回结果集
         //DESC:由于性能较低，现在使用全部切换到高性能的方法V2版本，V1版本代码切换成私有方法不再对外开放 -- 7tiny - 2019年1月10日 22点46分
-        private  List<Entity> GetListFromDataSet<Entity>(DataSet ds) where Entity : class
+        private List<Entity> GetListFromDataSet<Entity>(DataSet ds) where Entity : class
         {
             DataTable dt = ds.Tables[0];//获取到ds的dt
             if (dt.Rows.Count > 0)
@@ -210,7 +210,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             }
             return default(List<Entity>);
         }
-        private  Entity GetEntityFromDataReader<Entity>(DbDataReader reader) where Entity : class
+        private Entity GetEntityFromDataReader<Entity>(DbDataReader reader) where Entity : class
         {
             Entity model = System.Activator.CreateInstance<Entity>();           //实例化一个T类型对象
             PropertyInfo[] propertyInfos = model.GetType().GetProperties();     //获取T对象的所有公共属性
@@ -246,7 +246,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             }
             return default(Entity);//返回引用类型和值类型的默认值0或null
         }
-        private  Entity GetEntityFromDataSet<Entity>(DataSet ds) where Entity : class
+        private Entity GetEntityFromDataSet<Entity>(DataSet ds) where Entity : class
         {
             return GetListFromDataSet<Entity>(ds)?.FirstOrDefault();
         }
@@ -257,9 +257,9 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         /// <typeparam name="Entity"></typeparam>
         /// <param name="ds"></param>
         /// <returns></returns>
-        public  List<Entity> GetListFromDataSetV2<Entity>(DataSet ds) where Entity : class
+        public List<Entity> GetListFromDataSetV2<Entity>(DataSet ds) where Entity : class
         {
-            if (dbContext.OpenRealExecutionSaveToDb)
+            if (DbContext.OpenRealExecutionSaveToDb)
             {
                 DataTable dt = ds.Tables[0];
                 if (dt.Rows.Count > 0)
@@ -276,9 +276,9 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             }
             return default(List<Entity>);
         }
-        public  Entity GetEntityFromDataSetV2<Entity>(DataSet ds) where Entity : class
+        public Entity GetEntityFromDataSetV2<Entity>(DataSet ds) where Entity : class
         {
-            if (dbContext.OpenRealExecutionSaveToDb)
+            if (DbContext.OpenRealExecutionSaveToDb)
             {
                 DataTable dt = ds.Tables[0];// 获取到ds的dt
                 if (dt.Rows.Count > 0)

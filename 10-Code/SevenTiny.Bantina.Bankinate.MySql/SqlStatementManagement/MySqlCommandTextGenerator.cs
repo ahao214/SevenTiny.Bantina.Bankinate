@@ -59,7 +59,7 @@ namespace SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement
                 }
             }
             //Generate SqlStatement
-            return DbContext.SqlStatement = builder_front.Append(builder_behind.ToString()).ToString();
+            return DbContext.SqlStatement = builder_front.Append(builder_behind.ToString()).ToString().TrimEnd();
         }
 
         public override string Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity)
@@ -105,7 +105,7 @@ namespace SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement
             }
 
             //Generate SqlStatement
-            return DbContext.SqlStatement = builder_front.Append($"{LambdaToSql.ConvertWhere(filter)}").ToString();
+            return DbContext.SqlStatement = builder_front.Append($"{LambdaToSql.ConvertWhere(filter)}").ToString().TrimEnd();
         }
 
         public override string Update<TEntity>(TEntity entity, out Expression<Func<TEntity, bool>> filter)
@@ -190,7 +190,7 @@ namespace SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement
             }
 
             //Generate SqlStatement
-            return DbContext.SqlStatement = builder_front.Append($"{LambdaToSql.ConvertWhere(filter)}").ToString();
+            return DbContext.SqlStatement = builder_front.Append($"{LambdaToSql.ConvertWhere(filter)}").ToString().TrimEnd();
         }
 
         public override string Delete<TEntity>(TEntity entity)
@@ -210,14 +210,14 @@ namespace SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement
                 colunmName = columnAttr.GetName(property.Name);
 
             DbContext.Parameters.AddOrUpdate($"@t{colunmName}", value);
-            return DbContext.SqlStatement = $"DELETE t FROM {DbContext.TableName} t WHERE t.{colunmName} = @t{colunmName}";
+            return DbContext.SqlStatement = $"DELETE t FROM {DbContext.TableName} t WHERE t.{colunmName} = @t{colunmName}".TrimEnd();
         }
 
         public override string Delete<TEntity>(Expression<Func<TEntity, bool>> filter)
         {
             IDictionary<string, object> parameters = new Dictionary<string, object>();
             DbContext.TableName = TableAttribute.GetName(typeof(TEntity));
-            DbContext.SqlStatement = $"DELETE {filter.Parameters[0].Name} From {DbContext.TableName} {filter.Parameters[0].Name} {LambdaToSql.ConvertWhere(filter, out parameters)}";
+            DbContext.SqlStatement = $"DELETE {filter.Parameters[0].Name} From {DbContext.TableName} {filter.Parameters[0].Name} {LambdaToSql.ConvertWhere(filter, out parameters)}".TrimEnd();
             DbContext.Parameters = parameters;
             return DbContext.SqlStatement;
         }
@@ -235,7 +235,7 @@ namespace SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement
                 return string.Empty;
 
             string desc = isDESC ? "DESC" : "ASC";
-            string result = $" ORDER BY {LambdaToSql.ConvertOrderBy(orderBy)} {desc}";
+            string result = $" ORDER BY {LambdaToSql.ConvertOrderBy(orderBy)} {desc}".TrimEnd();
 
             return result;
         }
@@ -247,20 +247,20 @@ namespace SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement
 
         public override string QueryableQueryCount<TEntity>(string alias, string where)
         {
-            return DbContext.SqlStatement = $"SELECT COUNT(0) FROM {DbContext.TableName} {alias} {where}";
+            return DbContext.SqlStatement = $"SELECT COUNT(0) FROM {DbContext.TableName} {alias} {where}".TrimEnd();
         }
 
         public override string QueryableQuery<TEntity>(List<string> columns, string alias, string where, string orderBy, string top)
         {
             string queryColumns = (columns == null || !columns.Any()) ? "*" : string.Join(",", columns.Select(t => $"{alias}.{t}"));
-            return DbContext.SqlStatement = $"SELECT {queryColumns} FROM {DbContext.TableName} {alias} {where} {orderBy} {top}";
+            return DbContext.SqlStatement = $"SELECT {queryColumns} FROM {DbContext.TableName} {alias} {where} {orderBy} {top}".TrimEnd();
         }
 
         //目前queryablePaging是最终的结果了
         public override string QueryablePaging<TEntity>(List<string> columns, string alias, string where, string orderBy, int pageIndex, int pageSize)
         {
             string queryColumns = (columns == null || !columns.Any()) ? "*" : string.Join(",", columns.Select(t => $"TTTTTT.{t}").ToArray());
-            return DbContext.SqlStatement = $"SELECT {string.Join(",", columns.Select(t => $"{alias}.{t}"))} FROM {DbContext.TableName} {alias} {where} {orderBy} LIMIT {pageIndex * pageSize},{pageSize}";
+            return DbContext.SqlStatement = $"SELECT {string.Join(",", columns.Select(t => $"{alias}.{t}"))} FROM {DbContext.TableName} {alias} {where} {orderBy} LIMIT {pageIndex * pageSize},{pageSize}".TrimEnd();
         }
     }
 }
