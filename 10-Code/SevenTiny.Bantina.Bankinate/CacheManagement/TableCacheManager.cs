@@ -112,7 +112,6 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
                 //如果存在表级别缓存，则更新数据到缓存
                 if (CacheStorageManager.IsExist(GetTableCacheKey(), out List<TEntity> entities))
                 {
-
                     if (TableCachingAttribute.IsExistTaleCaching(typeof(TEntity), out TimeSpan tableCacheTimeSpan))
                     {
                         //如果过期时间为0，则取上下文的过期时间
@@ -145,10 +144,10 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
                     if (TableCachingAttribute.IsExistTaleCaching(typeof(TEntity), out TimeSpan tableCacheTimeSpan))
                     {
                         //从缓存集合中寻找该记录，如果找到，则更新该记录
-                        var val = entities.Where(filter.Compile()).FirstOrDefault();
-                        if (val != null)
+                        var list = entities.Where(filter.Compile()).ToList();
+                        if (list != null && list.Any())
                         {
-                            entities.Remove(val);
+                            entities.RemoveAll(t => list.Contains(t));
                             //如果过期时间为0，则取上下文的过期时间
                             CacheStorageManager.Put(GetTableCacheKey(), entities, tableCacheTimeSpan == TimeSpan.Zero ? DbContext.TableCacheExpiredTimeSpan : tableCacheTimeSpan);
                         }

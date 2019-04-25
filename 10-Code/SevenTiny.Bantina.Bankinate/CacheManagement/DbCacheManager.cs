@@ -137,9 +137,9 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
 
             return result;
         }
-        internal int GetCount<TEntity>(Expression<Func<TEntity, bool>> filter, Func<int> func) where TEntity : class
+        internal long GetCount<TEntity>(Expression<Func<TEntity, bool>> filter, Func<long> func) where TEntity : class
         {
-            int? result = null;
+            long? result = null;
 
             //1.判断是否在二级TableCache，如果没有，则进行二级缓存初始化逻辑
             if (DbContext.OpenTableCache)
@@ -148,10 +148,10 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
             //2.判断是否在一级QueryCahe中
             if (DbContext.OpenQueryCache)
                 if (result == null)
-                    result = QueryCacheManager.GetEntitiesFromCache<int?>();
+                    result = QueryCacheManager.GetEntitiesFromCache<long?>();
 
             //3.如果都没有，则直接从逻辑中获取
-            if (result == null || result == default(int?))
+            if (result == null || result == default)
             {
                 result = func();
                 DbContext.IsFromCache = false;

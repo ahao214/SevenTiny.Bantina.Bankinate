@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.Extensions;
 using SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement;
@@ -14,6 +15,7 @@ namespace SevenTiny.Bantina.Bankinate
         protected MySqlDbContext(string connectionString_Write, params string[] connectionStrings_Read) : base(connectionString_Write, connectionStrings_Read)
         {
             DataBaseType = DataBaseType.MySql;
+            DataBaseName = DataBaseAttribute.GetName(typeof(TDataBase));
         }
 
         internal override void CreateDbConnection(string connectionString)

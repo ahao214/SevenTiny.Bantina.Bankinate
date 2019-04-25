@@ -1,4 +1,5 @@
-﻿using SevenTiny.Bantina.Bankinate.DbContexts;
+﻿using SevenTiny.Bantina.Bankinate.Attributes;
+using SevenTiny.Bantina.Bankinate.DbContexts;
 using SevenTiny.Bantina.Bankinate.Extensions;
 using SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement;
 using System;
@@ -13,6 +14,7 @@ namespace SevenTiny.Bantina.Bankinate
         protected SqlServerDbContext(string connectionString_Write, params string[] connectionStrings_Read) : base(connectionString_Write, connectionStrings_Read)
         {
             DataBaseType = DataBaseType.SqlServer;
+            DataBaseName = DataBaseAttribute.GetName(typeof(TDataBase));
         }
 
         internal override void CreateDbConnection(string connectionString)

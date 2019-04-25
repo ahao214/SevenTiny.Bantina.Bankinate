@@ -15,6 +15,8 @@ namespace SevenTiny.Bantina.Bankinate.ConnectionManagement
         {
             this.ConnectionString_Write = connectionString_Write;
             this.ConnectionStrings_Read = connectionStrings_Read?.Distinct()?.ToArray();
+            //默认当前连接字符串是写
+            this.CurrentConnectionString = connectionString_Write;
 
             //初始化
             //如果写字符串不需要负载策略，则直接返回
