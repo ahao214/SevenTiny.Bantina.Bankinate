@@ -160,7 +160,7 @@ namespace SevenTiny.Bantina.Bankinate
             MustExistCheck();
             ReSetTableName();
 
-            DbContext.SqlStatement = DbContext.CommandTextGenerator.QueryableQueryCount<TEntity>(
+            DbContext.SqlStatement = DbContext.CommandTextGenerator.QueryableCount<TEntity>(
                     _alias,
                     DbContext.CommandTextGenerator.QueryableWhere(_where));
 
@@ -170,9 +170,19 @@ namespace SevenTiny.Bantina.Bankinate
            });
         }
 
-        public override bool Any(Expression<Func<TEntity, bool>> filter)
+        public override bool Any()
         {
-            return this.Where(filter).ToCount() > 0;
+            MustExistCheck();
+            ReSetTableName();
+
+            DbContext.SqlStatement = DbContext.CommandTextGenerator.QueryableAny<TEntity>(
+                    _alias,
+                    DbContext.CommandTextGenerator.QueryableWhere(_where));
+
+            return DbContext.DbCacheManager.GetCount(_where, () =>
+            {
+                return Convert.ToInt32(DbContext.QueryExecutor.ExecuteScalar());
+            }) > 0;
         }
     }
 }

@@ -99,6 +99,6 @@ namespace SevenTiny.Bantina.Bankinate
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public abstract bool Any(Expression<Func<TEntity, bool>> filter);
+        public abstract bool Any();
     }
 }

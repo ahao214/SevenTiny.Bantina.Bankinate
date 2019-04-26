@@ -16,6 +16,36 @@ namespace SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement
     {
         public MySqlCommandTextGenerator(SqlDbContext _dbContext) : base(_dbContext) { }
 
+        public override void SetWhere<TEntity>(Expression<Func<TEntity, bool>> where)
+        {
+            this._where = LambdaToSql.ConvertWhere(where, out IDictionary<string, object> parameters);
+            DbContext.Parameters = parameters;
+        }
+
+        public override void SetOrderBy<TEntity>(Expression<Func<TEntity, object>> orderBy, bool isDesc)
+        {
+            if (orderBy == null)
+                return;
+            string desc = isDesc ? "DESC" : "ASC";
+            this._orderBy = $" ORDER BY {LambdaToSql.ConvertOrderBy(orderBy)} {desc}".TrimEnd();
+        }
+
+        public override void SetPage(int pageIndex, int pageSize)
+        {
+            this._pageIndex = pageIndex;
+            this._pageSize = pageSize;
+        }
+
+        public override void SetAlias(string alias)
+        {
+            this._alias = alias;
+        }
+
+        public override void SetColumns<TEntity>(Expression<Func<TEntity, object>> columns)
+        {
+            _columns = LambdaToSql.ConvertColumns<TEntity>(columns);
+        }
+
         public override string Add<TEntity>(TEntity entity)
         {
             DbContext.TableName = TableAttribute.GetName(typeof(TEntity));
@@ -224,33 +254,10 @@ namespace SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement
 
         public override string Limit(int count)
         {
-            return $" LIMIT {count} ";
+            return $"LIMIT {count}";
         }
 
-        public override string QueryableWhere<TEntity>(Expression<Func<TEntity, bool>> filter)
-        {
-            string result = LambdaToSql.ConvertWhere(filter, out IDictionary<string, object> parameters);
-            DbContext.Parameters = parameters;
-            return result;
-        }
-
-        public override string QueryableOrderBy<TEntity>(Expression<Func<TEntity, object>> orderBy, bool isDESC)
-        {
-            if (orderBy == null)
-                return string.Empty;
-
-            string desc = isDESC ? "DESC" : "ASC";
-            string result = $" ORDER BY {LambdaToSql.ConvertOrderBy(orderBy)} {desc}".TrimEnd();
-
-            return result;
-        }
-
-        public override List<string> QueryableSelect<TEntity>(Expression<Func<TEntity, object>> columns)
-        {
-            return LambdaToSql.ConvertColumns<TEntity>(columns);
-        }
-
-        public override string QueryableQueryCount<TEntity>(string alias, string where)
+        public override string QueryableCount<TEntity>(string alias, string where)
         {
             return DbContext.SqlStatement = $"SELECT COUNT(0) FROM {DbContext.TableName} {alias} {where}".TrimEnd();
         }
@@ -266,6 +273,11 @@ namespace SevenTiny.Bantina.Bankinate.MySql.SqlStatementManagement
         {
             string queryColumns = (columns == null || !columns.Any()) ? "*" : string.Join(",", columns.Select(t => $"TTTTTT.{t}").ToArray());
             return DbContext.SqlStatement = $"SELECT {string.Join(",", columns.Select(t => $"{alias}.{t}"))} FROM {DbContext.TableName} {alias} {where} {orderBy} LIMIT {pageIndex * pageSize},{pageSize}".TrimEnd();
+        }
+
+        public override string QueryableAny<TEntity>(string alias, string where)
+        {
+            return DbContext.SqlStatement = $"SELECT 1 FROM {DbContext.TableName} {alias} {where} {Limit(1)}".TrimEnd();
         }
     }
 }

@@ -216,7 +216,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
 
         public override string Limit(int count)
         {
-            return $" TOP {count} ";
+            return $"TOP {count}";
         }
 
         public override string QueryableWhere<TEntity>(Expression<Func<TEntity, bool>> filter)
@@ -240,7 +240,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
             return LambdaToSql.ConvertColumns<TEntity>(columns);
         }
 
-        public override string QueryableQueryCount<TEntity>(string alias, string where)
+        public override string QueryableCount<TEntity>(string alias, string where)
         {
             return DbContext.SqlStatement = $"SELECT COUNT(0) FROM {DbContext.TableName} {alias} {where}".TrimEnd();
         }
@@ -257,6 +257,11 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
             string queryColumns = (columns == null || !columns.Any()) ? "*" : string.Join(",", columns.Select(t => $"TTTTTT.{t}").ToArray());
             string queryColumnsChild = (columns == null || !columns.Any()) ? "*" : string.Join(",", columns.Select(t => $"{alias}.{t}").ToArray());
             return DbContext.SqlStatement = $"SELECT TOP {pageSize} {queryColumns} FROM (SELECT ROW_NUMBER() OVER ({orderBy}) AS RowNumber,{queryColumnsChild} FROM {DbContext.TableName} {alias} {where}) AS TTTTTT  WHERE RowNumber > {pageSize * (pageIndex - 1)}".TrimEnd();
+        }
+
+        public override string QueryableAny<TEntity>(string alias, string where)
+        {
+            return DbContext.SqlStatement = $"SELECT {Limit(1)} 1 FROM {DbContext.TableName} {alias} {where}".TrimEnd();
         }
     }
 }
