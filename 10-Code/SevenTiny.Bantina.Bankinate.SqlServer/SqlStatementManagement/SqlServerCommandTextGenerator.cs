@@ -214,6 +214,11 @@ namespace SevenTiny.Bantina.Bankinate.SqlServer.SqlStatementManagement
             return DbContext.SqlStatement;
         }
 
+        public override string Limit(int count)
+        {
+            return $" TOP {count} ";
+        }
+
         public override string QueryableWhere<TEntity>(Expression<Func<TEntity, bool>> filter)
         {
             string result = LambdaToSql.ConvertWhere(filter, out IDictionary<string, object> parameters);

@@ -3,13 +3,15 @@ using SevenTiny.Bantina.Bankinate.Configs;
 using SevenTiny.Bantina.Bankinate.ConnectionManagement;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace SevenTiny.Bantina.Bankinate.DbContexts
 {
     /// <summary>
     /// 数据上下文
     /// </summary>
-    public abstract class DbContext : IDisposable
+    public abstract class DbContext : IDbContext, IBaseOperate
     {
         protected DbContext(string connectionString_Write, params string[] connectionStrings_Read)
         {
@@ -127,11 +129,23 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
 
         #endregion
 
-            #region Validate Control 校验管理
-            /// <summary>
-            /// 属性值校验开关，如开启，则Add/Update等操作会校验输入的值是否满足特性标签标识的条件
-            /// </summary>
+        #region Validate Control 校验管理
+        /// <summary>
+        /// 属性值校验开关，如开启，则Add/Update等操作会校验输入的值是否满足特性标签标识的条件
+        /// </summary>
         public bool OpenPropertyDataValidate { get; protected set; } = false;
+        #endregion
+
+        #region Operate 标准API
+        public abstract void Add<TEntity>(TEntity entity) where TEntity : class;
+        public abstract Task AddAsync<TEntity>(TEntity entity) where TEntity : class;
+
+        public abstract void Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class;
+        public abstract Task UpdateAsync<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class;
+
+        public abstract void Delete<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class;
+        public abstract Task DeleteAsync<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class;
+
         #endregion
 
         public void Dispose()

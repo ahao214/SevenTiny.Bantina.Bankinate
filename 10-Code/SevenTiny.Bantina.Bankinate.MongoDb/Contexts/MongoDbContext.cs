@@ -17,6 +17,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using SevenTiny.Bantina.Bankinate.Attributes;
 using SevenTiny.Bantina.Bankinate.DbContexts;
+using SevenTiny.Bantina.Bankinate.Helpers;
 using SevenTiny.Bantina.Bankinate.Validation;
 using System;
 using System.Collections.Generic;
@@ -42,8 +43,7 @@ namespace SevenTiny.Bantina.Bankinate
         {
             SetContext();
 
-            if (host_port_dic == null || !host_port_dic.Any())
-                throw new ArgumentException($"argument of '{nameof(host_port_dic)}' can not be null!");
+            Ensure.IsNotNullOrEmpty(host_port_dic, nameof(host_port_dic));
 
             Client = new MongoClient(new MongoClientSettings
             {
@@ -85,13 +85,13 @@ namespace SevenTiny.Bantina.Bankinate
         #endregion
 
         #region 强类型 API
-        public void Add<TEntity>(TEntity entity) where TEntity : class
+        public override void Add<TEntity>(TEntity entity)
         {
             PropertyDataValidator.Verify(this, entity);
             GetCollectionEntity<TEntity>().InsertOne(entity);
             DbCacheManager.Add(entity);
         }
-        public async Task AddAsync<TEntity>(TEntity entity) where TEntity : class
+        public override async Task AddAsync<TEntity>(TEntity entity)
         {
             PropertyDataValidator.Verify(this, entity);
             await GetCollectionEntity<TEntity>().InsertOneAsync(entity);
@@ -110,17 +110,15 @@ namespace SevenTiny.Bantina.Bankinate
             DbCacheManager.Add(entities);
         }
 
-        public void Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
+        public override void Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity)
         {
             PropertyDataValidator.Verify(this, entity);
-            QueryCacheKey = filter.ToString();
             GetCollectionEntity<TEntity>().ReplaceOne(filter, entity);
             DbCacheManager.Update(entity, filter);
         }
-        public async Task UpdateAsync<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class
+        public override async Task UpdateAsync<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity)
         {
             PropertyDataValidator.Verify(this, entity);
-            QueryCacheKey = filter.ToString();
             await GetCollectionEntity<TEntity>().ReplaceOneAsync(filter, entity);
             DbCacheManager.Update(entity, filter);
         }
@@ -135,15 +133,13 @@ namespace SevenTiny.Bantina.Bankinate
             await GetCollectionEntity<TEntity>().DeleteOneAsync(filter);
             DbCacheManager.Delete(filter);
         }
-        public void Delete<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
+        public override void Delete<TEntity>(Expression<Func<TEntity, bool>> filter)
         {
-            QueryCacheKey = filter.ToString();
             GetCollectionEntity<TEntity>().DeleteMany(filter);
             DbCacheManager.Delete(filter);
         }
-        public async Task DeleteAsync<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
+        public override async Task DeleteAsync<TEntity>(Expression<Func<TEntity, bool>> filter)
         {
-            QueryCacheKey = filter.ToString();
             await GetCollectionEntity<TEntity>().DeleteManyAsync(filter);
             DbCacheManager.Delete(filter);
         }

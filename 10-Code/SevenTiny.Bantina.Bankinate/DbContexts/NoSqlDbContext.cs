@@ -1,11 +1,4 @@
-﻿using SevenTiny.Bantina.Bankinate.Attributes;
-using SevenTiny.Bantina.Bankinate.CacheManagement;
-using SevenTiny.Bantina.Bankinate.SqlDataAccess;
-using SevenTiny.Bantina.Bankinate.Validation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System;
 using System.Runtime.CompilerServices;
 
 //需要扩展的类型需要在此添加对应的程序集友元标识
@@ -16,7 +9,6 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
     {
         protected NoSqlDbContext(string connectionString_Write, params string[] connectionStrings_Read) : base(connectionString_Write, connectionStrings_Read)
         {
-
         }
 
         /// <summary>
@@ -26,8 +18,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
 
         internal override string GetQueryCacheKey()
         {
-            //这里要将条件和参数值都加上
-            return null;
+            return QueryCacheKey;
         }
 
         public new void Dispose()

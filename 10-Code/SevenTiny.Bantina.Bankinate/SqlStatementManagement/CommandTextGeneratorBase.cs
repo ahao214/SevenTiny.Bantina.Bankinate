@@ -36,6 +36,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlStatementManagement
         public abstract string Delete<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class;
 
         #region Queryable Methods
+        public abstract string Limit(int count);
         public abstract string QueryableWhere<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class;
         public abstract string QueryableOrderBy<TEntity>(Expression<Func<TEntity, object>> orderBy, bool isDESC) where TEntity : class;
         public abstract List<string> QueryableSelect<TEntity>(Expression<Func<TEntity, object>> columns) where TEntity : class;

@@ -4,7 +4,7 @@
 * Author: 7tiny
 * Address: Earth
 * Create: 1/8/2019, 5:31:04 PM
-* Modify: 
+* Modify: 2019年4月26日16点35分
 * E-mail: dong@7tiny.com | sevenTiny@foxmail.com 
 * GitHub: https://github.com/sevenTiny 
 * Personal web site: http://www.7tiny.com 
@@ -100,15 +100,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// <returns></returns>
         public SqlQueryable<TEntity> Limit(int count)
         {
-            switch (DbContext.DataBaseType)
-            {
-                case DataBaseType.SqlServer:
-                    _top = $" TOP {count} "; break;
-                case DataBaseType.MySql:
-                    _top = $" LIMIT {count} "; break;
-                case DataBaseType.Oracle:
-                    break;
-            }
+            _top = DbContext.CommandTextGenerator.Limit(count);
             return this;
         }
 
@@ -163,7 +155,7 @@ namespace SevenTiny.Bantina.Bankinate
            });
         }
 
-        public override int ToCount()
+        public override long ToCount()
         {
             MustExistCheck();
             ReSetTableName();

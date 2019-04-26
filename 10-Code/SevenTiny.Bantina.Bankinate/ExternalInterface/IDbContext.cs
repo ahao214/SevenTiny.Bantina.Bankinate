@@ -17,9 +17,9 @@ using System;
 namespace SevenTiny.Bantina.Bankinate
 {
     /// <summary>
-    /// 通用的Api接口，具备基础的操作，缓存
+    /// 通用接口
     /// </summary>
-    public interface IDbContext : IDisposable, IBaseOperate, ICacheable
+    public interface IDbContext : IDisposable, ICacheable
     {
     }
 }

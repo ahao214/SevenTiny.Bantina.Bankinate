@@ -47,6 +47,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             if (DbContext.OpenRealExecutionSaveToDb)
             {
                 DbContext.ParameterInitializes();
+                DbContext.ConnectionStatusCheck();
                 return DbContext.DbCommand.ExecuteNonQuery();
             }
             return default(int);
@@ -56,6 +57,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             if (DbContext.OpenRealExecutionSaveToDb)
             {
                 DbContext.ParameterInitializes();
+                DbContext.ConnectionStatusCheck();
                 return DbContext.DbCommand.ExecuteNonQueryAsync();
             }
             return default(Task<int>);
@@ -71,6 +73,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             if (DbContext.OpenRealExecutionSaveToDb)
             {
                 DbContext.ParameterInitializes();
+                DbContext.ConnectionStatusCheck();
                 return DbContext.DbCommand.ExecuteScalar();
             }
             return default(object);
@@ -80,6 +83,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             if (DbContext.OpenRealExecutionSaveToDb)
             {
                 DbContext.ParameterInitializes();
+                DbContext.ConnectionStatusCheck();
                 return DbContext.DbCommand.ExecuteScalarAsync();
             }
             return default(Task<object>);
@@ -95,6 +99,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             if (DbContext.OpenRealExecutionSaveToDb)
             {
                 DbContext.ParameterInitializes();
+                DbContext.ConnectionStatusCheck();
                 return DbContext.DbCommand.ExecuteReader(CommandBehavior.CloseConnection);
             }
             return default(DbDataReader);
@@ -111,7 +116,6 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
         {
             if (DbContext.OpenRealExecutionSaveToDb)
             {
-                DbContext.ParameterInitializes();
                 DataSet ds = ExecuteDataSet();
                 if (ds != null && ds.Tables != null && ds.Tables.Count > 0)
                 {
@@ -132,6 +136,7 @@ namespace SevenTiny.Bantina.Bankinate.SqlDataAccess
             if (DbContext.OpenRealExecutionSaveToDb)
             {
                 DbContext.ParameterInitializes();
+                DbContext.ConnectionStatusCheck();
                 DataSet ds = new DataSet();
                 DbContext.DbDataAdapter.Fill(ds);
                 return ds;
