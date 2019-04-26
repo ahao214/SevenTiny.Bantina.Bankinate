@@ -13,6 +13,8 @@
 * Thx , Best Regards ~
 *********************************************************/
 using SevenTiny.Bantina.Bankinate.DbContexts;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SevenTiny.Bantina.Bankinate.Validation
 {
@@ -35,13 +37,40 @@ namespace SevenTiny.Bantina.Bankinate.Validation
                 var value = propertyInfo.GetValue(entity);
 
                 //Require
-                RequireAttribute.Verify(propertyInfo,value);
+                RequireAttribute.Verify(propertyInfo, value);
 
                 //StringLength
                 StringLengthAttribute.Verify(propertyInfo, value);
 
                 //RangeLimit
                 RangeLimitAttribute.Verify(propertyInfo, value);
+            }
+        }
+
+        public static void Verify<TEntity>(DbContext context, IEnumerable<TEntity> entities) where TEntity : class
+        {
+            //判断是否开启字段值校验
+            if (!context.OpenPropertyDataValidate)
+                return;
+
+            if (entities == null || !entities.Any())
+                return;
+
+            foreach (var propertyInfo in typeof(TEntity).GetProperties())
+            {
+                foreach (var item in entities)
+                {
+                    var value = propertyInfo.GetValue(item);
+
+                    //Require
+                    RequireAttribute.Verify(propertyInfo, value);
+
+                    //StringLength
+                    StringLengthAttribute.Verify(propertyInfo, value);
+
+                    //RangeLimit
+                    RangeLimitAttribute.Verify(propertyInfo, value);
+                }
             }
         }
     }

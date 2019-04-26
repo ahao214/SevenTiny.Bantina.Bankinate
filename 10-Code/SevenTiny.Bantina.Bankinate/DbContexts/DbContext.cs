@@ -1,59 +1,57 @@
-﻿using SevenTiny.Bantina.Bankinate.Attributes;
-using SevenTiny.Bantina.Bankinate.Cache;
+﻿using SevenTiny.Bantina.Bankinate.CacheManagement;
 using SevenTiny.Bantina.Bankinate.Configs;
-using SevenTiny.Bantina.Bankinate.DataAccessEngine;
+using SevenTiny.Bantina.Bankinate.ConnectionManagement;
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace SevenTiny.Bantina.Bankinate.DbContexts
 {
-    public abstract class DbContext
+    /// <summary>
+    /// 数据上下文
+    /// </summary>
+    public abstract class DbContext : IDbContext, IBaseOperate
     {
-        public DbContext(DataBaseType dataBaseType, string connectionString) : this(dataBaseType, connectionString, connectionString) { }
-
-        public DbContext(DataBaseType dataBaseType, string connectionString_ReadWrite, string connectionString_Read)
+        protected DbContext(string connectionString_Write, params string[] connectionStrings_Read)
         {
-            DataBaseType = dataBaseType;
-            ConnString_RW = connectionString_ReadWrite;
-            ConnString_R = connectionString_Read;
+            if (string.IsNullOrEmpty(connectionString_Write))
+                throw new ArgumentNullException(nameof(connectionString_Write), "argument can not be null");
+
+            if (ConnectionManager == null)
+                ConnectionManager = new ConnectionManager(connectionString_Write, connectionStrings_Read);
+
+            DbCacheManager = new DbCacheManager(this);
         }
 
+        #region Database Control 数据库管理
         /// <summary>
-        /// 连接字符串 ConnString_RW 读写数据库使用
+        /// 库名（对应SQL数据库的库名）
         /// </summary>
-        public string ConnString_RW { get; set; }
+        public string DataBaseName { get; internal set; }
         /// <summary>
-        /// 连接字符串 ConnString_R 读数据库使用
+        /// 集合名（对应SQL数据库的表，MongoDB的文档名）
         /// </summary>
-        public string ConnString_R { get; set; }
-        public DataBaseType DataBaseType { get; private set; }
-        public string DataBaseName { get; protected set; }
-        public string TableName { get; internal set; }
+        public string CollectionName { get; internal set; }
         /// <summary>
-        /// Sql语句
+        /// 数据库类型
         /// </summary>
-        public string SqlStatement { get; internal set; }
+        public DataBaseType DataBaseType { get; protected set; }
         /// <summary>
-        /// 命令类型，可以在运行时随时灵活调整
+        /// 连接管理器
         /// </summary>
-        public CommandType CommandType { get; set; } = CommandType.Text;
-        /// <summary>
-        /// 参数化查询参数
-        /// </summary>
-        public IDictionary<string, object> Parameters { get; set; }
-        /// <summary>
-        /// NoSql的文档集合
-        /// </summary>
-        internal dynamic NoSqlCollection { get; set; }
-
-        //Db Control
+        public ConnectionManager ConnectionManager { get; }
         /// <summary>
         /// 真实执行持久化操作开关，如果为false，则只执行准备动作，不实际操作数据库（友情提示：测试框架代码执行情况可以将其关闭）
         /// </summary>
         public bool OpenRealExecutionSaveToDb { get; protected set; } = true;
+        #endregion
 
-        //Cache Control
+        #region Cache Control 缓存管理
+        /// <summary>
+        /// 
+        /// </summary>
+        public DbCacheManager DbCacheManager { get; internal set; }
         /// <summary>
         /// 一级缓存
         /// 查询条件级别的缓存（filter），可以暂时缓存根据查询条件查询到的数据
@@ -68,7 +66,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// <summary>
         /// 查询缓存的默认缓存时间
         /// </summary>
-        private TimeSpan _QueryCacheExpiredTimeSpan = DefaultValue.QueryCacheExpiredTimeSpan;
+        private TimeSpan _QueryCacheExpiredTimeSpan = BankinateConst.QueryCacheExpiredTimeSpan;
         public TimeSpan QueryCacheExpiredTimeSpan
         {
             get { return _QueryCacheExpiredTimeSpan; }
@@ -84,7 +82,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// <summary>
         /// 表缓存的缓存时间
         /// </summary>
-        private TimeSpan _TableCacheExpiredTimeSpan = DefaultValue.TableCacheExpiredTimeSpan;
+        private TimeSpan _TableCacheExpiredTimeSpan = BankinateConst.TableCacheExpiredTimeSpan;
         public TimeSpan TableCacheExpiredTimeSpan
         {
             get { return _TableCacheExpiredTimeSpan; }
@@ -100,7 +98,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// <summary>
         /// 每张表一级缓存的最大个数，超出数目将会按从早到晚的顺序移除缓存键
         /// </summary>
-        public int QueryCacheMaxCountPerTable { get; protected set; } = DefaultValue.QueryCacheMaxCountPerTable;
+        public int QueryCacheMaxCountPerTable { get; protected set; } = BankinateConst.QueryCacheMaxCountPerTable;
         /// <summary>
         /// 数据是否从缓存中获取
         /// </summary>
@@ -108,7 +106,7 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// <summary>
         /// Cache 存储媒介,默认本地缓存
         /// </summary>
-        public CacheMediaType CacheMediaType { get; protected set; } = DefaultValue.CacheMediaType;
+        public CacheMediaType CacheMediaType { get; protected set; } = BankinateConst.CacheMediaType;
         /// <summary>
         /// Cache 第三方存储媒介服务地址
         /// </summary>
@@ -116,34 +114,43 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// <summary>
         /// 最大的缓存时间（用于缓存缓存键）
         /// </summary>
-        internal TimeSpan MaxExpiredTimeSpan { get; set; } = DefaultValue.CacheKeysMaxExpiredTime;
+        internal TimeSpan MaxExpiredTimeSpan { get; set; } = BankinateConst.CacheKeysMaxExpiredTime;
+        /// <summary>
+        /// 获取一级缓存的缓存键；如SQL中的sql语句和参数，作为一级缓存查询的key，这里根据不同的数据库自定义拼接
+        /// </summary>
+        /// <returns></returns>
+        internal abstract string GetQueryCacheKey();
+        /// <summary>
+        /// 获取集合全部数据的内置方法，用于二级缓存
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        internal abstract List<TEntity> GetFullCollectionData<TEntity>() where TEntity : class;
 
-        /// <summary>
-        /// 清空全部缓存
-        /// </summary>
-        public void FlushAllCache() => DbCacheManager.FlushAllCache(this);
-        /// <summary>
-        /// 清空一级缓存
-        /// </summary>
-        public void FlushQueryCache() => QueryCacheManager.FlushAllCache(this);
-        /// <summary>
-        /// 清空二级缓存
-        /// </summary>
-        public void FlushTableCache() => TableCacheManager.FlushAllCache(this);
+        #endregion
 
-        //Validate Control
+        #region Validate Control 校验管理
         /// <summary>
         /// 属性值校验开关，如开启，则Add/Update等操作会校验输入的值是否满足特性标签标识的条件
         /// </summary>
         public bool OpenPropertyDataValidate { get; protected set; } = false;
+        #endregion
 
-        //内置方法
-        /// <summary>
-        /// 根据实体获取表明
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
-        public string GetTableName<TEntity>() where TEntity : class
-        => TableAttribute.GetName(typeof(TEntity));
+        #region Operate 标准API
+        public abstract void Add<TEntity>(TEntity entity) where TEntity : class;
+        public abstract Task AddAsync<TEntity>(TEntity entity) where TEntity : class;
+
+        public abstract void Update<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class;
+        public abstract Task UpdateAsync<TEntity>(Expression<Func<TEntity, bool>> filter, TEntity entity) where TEntity : class;
+
+        public abstract void Delete<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class;
+        public abstract Task DeleteAsync<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class;
+
+        #endregion
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }
