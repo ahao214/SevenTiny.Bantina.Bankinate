@@ -18,7 +18,7 @@ namespace Test.MySql
         {
             public ApiDb() : base(ConnectionStringHelper.ConnectionString_Write, ConnectionStringHelper.ConnectionStrings_Read)
             {
-                OpenRealExecutionSaveToDb = false;
+                OpenRealExecutionSaveToDb = true;
             }
         }
 
@@ -194,7 +194,7 @@ namespace Test.MySql
         {
             using (var db = new ApiDb())
             {
-                var re = db.Queryable<OperateTestModel>().Any(t => t.StringKey.EndsWith("3"));
+                var re = db.Queryable<OperateTestModel>().Where(t => t.StringKey.EndsWith("3")).Any();
                 //db.SqlStatement = "SELECT COUNT(0) FROM OperateTest t  WHERE ( 1=1 )  AND  (t.StringKey LIKE @tStringKey)";
                 Assert.True(re);
             }

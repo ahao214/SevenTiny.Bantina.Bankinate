@@ -26,11 +26,13 @@ namespace SevenTiny.Bantina.Bankinate.SqlStatementManagement
         protected int _pageSize;
         protected string _alias;
         protected List<string> _columns;
+        protected string _limit;
 
         #region 设置关键字
         public abstract void SetWhere<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class;
         public abstract void SetOrderBy<TEntity>(Expression<Func<TEntity, object>> orderBy, bool isDesc) where TEntity : class;
         public abstract void SetPage(int pageIndex, int pageSize);
+        public abstract void SetLimit(int count);
         public abstract void SetAlias(string alias);
         public abstract void SetColumns<TEntity>(Expression<Func<TEntity, object>> columns) where TEntity : class;
         #endregion
@@ -49,13 +51,11 @@ namespace SevenTiny.Bantina.Bankinate.SqlStatementManagement
         public abstract string Delete<TEntity>(TEntity entity) where TEntity : class;
         public abstract string Delete<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class;
 
-        #region Queryable Methods
-        public abstract string Limit(int count);
-        public abstract string QueryableCount<TEntity>(string alias, string where) where TEntity : class;
-        public abstract string QueryableAny<TEntity>(string alias, string where) where TEntity : class;
-        public abstract string QueryableQuery<TEntity>(List<string> columns, string alias, string where, string orderBy, string top) where TEntity : class;
-        //目前queryablePaging是最终的结果了
-        public abstract string QueryablePaging<TEntity>(List<string> columns, string alias, string where, string orderBy, int pageIndex, int pageSize) where TEntity : class;
+        #region Queryable Methods,返回的都是最终结果
+        public abstract string QueryableCount<TEntity>() where TEntity : class;
+        public abstract string QueryableAny<TEntity>() where TEntity : class;
+        public abstract string QueryableQuery<TEntity>() where TEntity : class;
+        public abstract string QueryablePaging<TEntity>() where TEntity : class;
         #endregion
 
     }
