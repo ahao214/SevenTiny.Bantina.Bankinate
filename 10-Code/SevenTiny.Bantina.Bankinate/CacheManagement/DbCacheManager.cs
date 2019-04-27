@@ -151,7 +151,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
                     result = QueryCacheManager.GetEntitiesFromCache<long?>();
 
             //3.如果都没有，则直接从逻辑中获取
-            if (result == null || result == default)
+            if (result == null || result == default(long))
             {
                 result = func();
                 DbContext.IsFromCache = false;
@@ -159,7 +159,7 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
                 QueryCacheManager.CacheData(result);
             }
 
-            return result ?? default(int);
+            return result ?? default(long);
         }
         internal T GetObject<T>(Func<T> func) where T : class
         {
