@@ -1,15 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SevenTiny.Bantina.Bankinate\SevenTiny.Bantina.Bankinate.csproj" />
+    <PackageReference Include="MySql.Data" Version="8.0.15" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="8.0.15" />
+    <ProjectReference Include="..\SevenTiny.Bantina.Bankinate\SevenTiny.Bantina.Bankinate.csproj" />
   </ItemGroup>
 
 </Project>
