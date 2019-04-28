@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenTiny.Bantina.Bankinate", "..\10-Code\SevenTiny.Bantina.Bankinate\SevenTiny.Bantina.Bankinate.csproj", "{81F0C6B2-6BC5-47D5-B198-C34DA71BA920}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{9C767BBE-6BD1-498E-AE09-683F62AC64C3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenTiny.Bantina.Bankinate.MySql", "..\10-Code\SevenTiny.Bantina.Bankinate.MySql\SevenTiny.Bantina.Bankinate.MySql.csproj", "{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}"
@@ -21,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.MongoDb", "..\10-Code\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Common", "..\10-Code\Test\Test.Common\Test.Common.csproj", "{03174E5D-7084-41FF-8E4E-411B0509F27D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Bankinate", "..\10-Code\Test\Test.Bankinate\Test.Bankinate.csproj", "{1CDDB08D-9CF3-450D-A438-DE3D8EC3B182}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Bankinate", "..\10-Code\Test\Test.Bankinate\Test.Bankinate.csproj", "{1CDDB08D-9CF3-450D-A438-DE3D8EC3B182}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenTiny.Bantina.Bankinate.Core", "..\10-Code\SevenTiny.Bantina.Bankinate.Core\SevenTiny.Bantina.Bankinate.Core.csproj", "{A931C6CA-FD61-4EBE-89D7-0AF64B43364F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{81F0C6B2-6BC5-47D5-B198-C34DA71BA920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81F0C6B2-6BC5-47D5-B198-C34DA71BA920}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81F0C6B2-6BC5-47D5-B198-C34DA71BA920}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81F0C6B2-6BC5-47D5-B198-C34DA71BA920}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -65,6 +61,10 @@ Global
 		{1CDDB08D-9CF3-450D-A438-DE3D8EC3B182}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1CDDB08D-9CF3-450D-A438-DE3D8EC3B182}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CDDB08D-9CF3-450D-A438-DE3D8EC3B182}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A931C6CA-FD61-4EBE-89D7-0AF64B43364F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A931C6CA-FD61-4EBE-89D7-0AF64B43364F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A931C6CA-FD61-4EBE-89D7-0AF64B43364F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A931C6CA-FD61-4EBE-89D7-0AF64B43364F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

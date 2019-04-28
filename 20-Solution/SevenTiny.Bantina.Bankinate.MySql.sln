@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenTiny.Bantina.Bankinate.MySql", "..\10-Code\SevenTiny.Bantina.Bankinate.MySql\SevenTiny.Bantina.Bankinate.MySql.csproj", "{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenTiny.Bantina.Bankinate", "..\10-Code\SevenTiny.Bantina.Bankinate\SevenTiny.Bantina.Bankinate.csproj", "{EC612114-93D9-453C-9B6D-5BAB1B12A066}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenTiny.Bantina.Bankinate.Core", "..\10-Code\SevenTiny.Bantina.Bankinate.Core\SevenTiny.Bantina.Bankinate.Core.csproj", "{029924C9-ECCC-4D01-B1B7-D180F8915F69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5ACA3AE8-6C44-4BB4-81DD-3DB6C86107B3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EC612114-93D9-453C-9B6D-5BAB1B12A066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC612114-93D9-453C-9B6D-5BAB1B12A066}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC612114-93D9-453C-9B6D-5BAB1B12A066}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC612114-93D9-453C-9B6D-5BAB1B12A066}.Release|Any CPU.Build.0 = Release|Any CPU
+		{029924C9-ECCC-4D01-B1B7-D180F8915F69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{029924C9-ECCC-4D01-B1B7-D180F8915F69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{029924C9-ECCC-4D01-B1B7-D180F8915F69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{029924C9-ECCC-4D01-B1B7-D180F8915F69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
