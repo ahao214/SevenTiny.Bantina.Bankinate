@@ -84,7 +84,7 @@ namespace SevenTiny.Bantina.Bankinate
         /// 查询出符合当前条件的数据条数
         /// </summary>
         /// <returns></returns>
-        public abstract long ToCount();
+        public abstract long Count();
         /// <summary>
         /// 查询是否有符合条件的记录数
         /// </summary>

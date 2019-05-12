@@ -138,7 +138,7 @@ namespace SevenTiny.Bantina.Bankinate
            });
         }
 
-        public override long ToCount()
+        public override long Count()
         {
             MustExistCheck();
             ReSetTableName();

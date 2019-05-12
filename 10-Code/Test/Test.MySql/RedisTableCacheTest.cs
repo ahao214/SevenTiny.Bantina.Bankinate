@@ -98,7 +98,7 @@ namespace Test.MySql
             {
                 for (int i = 0; i < count; i++)
                 {
-                    var re = db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("test")).ToCount();
+                    var re = db.Queryable<OperateTestModel>().Where(t => t.StringKey.Contains("test")).Count();
                     Assert.Equal(1000, re);
                 }
             }
