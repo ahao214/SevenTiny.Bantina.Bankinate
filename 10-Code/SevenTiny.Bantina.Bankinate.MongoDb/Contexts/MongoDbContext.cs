@@ -67,7 +67,7 @@ namespace SevenTiny.Bantina.Bankinate
         #region MongoDb Server
         private MongoClient Client { get; set; }
         private IMongoDatabase DataBase => Client.GetDatabase(DataBaseName);
-        private IMongoCollection<TEntity> GetCollectionEntity<TEntity>() where TEntity : class
+        public IMongoCollection<TEntity> GetCollectionEntity<TEntity>() where TEntity : class
         {
             CollectionName = TableAttribute.GetName(typeof(TEntity));
             return DataBase.GetCollection<TEntity>(CollectionName);
@@ -144,41 +144,11 @@ namespace SevenTiny.Bantina.Bankinate
             DbCacheManager.Delete(filter);
         }
 
-        public long QueryCount<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
+        public MongoQueryable<TEntity> Queryable<TEntity>() where TEntity : class
         {
-            QueryCacheKey = filter.ToString();
-            return DbCacheManager.GetCount(filter, () =>
-            {
-                return GetCollectionEntity<TEntity>().CountDocuments(filter);
-            });
+            return new MongoQueryable<TEntity>(this, DataBase);
         }
-        public bool QueryExist<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
-        {
-            return QueryCount<TEntity>(filter) > 0;
-        }
-        public TEntity QueryOne<TEntity>(string _id) where TEntity : class
-        {
-            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("_id", _id);
-            return GetCollectionEntity<TEntity>().Find(filter).FirstOrDefault();
-        }
-        public TEntity QueryOne<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
-        {
-            QueryCacheKey = filter.ToString();
-            return DbCacheManager.GetEntity(filter, () =>
-            {
-                return QueryList(filter).FirstOrDefault();
-            });
-        }
-        public List<TEntity> QueryList<TEntity>(Expression<Func<TEntity, bool>> filter) where TEntity : class
-        {
-            QueryCacheKey = filter.ToString();
-            return DbCacheManager.GetEntities(filter, () =>
-            {
-                return GetCollectionEntity<TEntity>().Find(filter).ToList();
-            });
-        }
-
-        public IMongoQueryable<TEntity> Queryable<TEntity>() where TEntity : class
+        public IMongoQueryable<TEntity> MongoQueryable<TEntity>() where TEntity : class
         {
             return GetCollectionEntity<TEntity>().AsQueryable();
         }
