@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.8.0" />
-    <PackageReference Include="SevenTiny.Bantina.Bankinate.Core" Version="1.0.5" />
+    <PackageReference Include="MongoDB.Driver" Version="2.8.1" />
+    <PackageReference Include="SevenTiny.Bantina.Bankinate.Core" Version="1.0.7" />
   </ItemGroup>
 
 </Project>
