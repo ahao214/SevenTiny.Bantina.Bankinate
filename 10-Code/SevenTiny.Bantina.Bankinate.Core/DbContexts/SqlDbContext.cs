@@ -296,6 +296,8 @@ namespace SevenTiny.Bantina.Bankinate.DbContexts
         /// <returns></returns>
         public SqlQueryable<TEntity> Queryable<TEntity>() where TEntity : class
         {
+            //重置命令生成器，防止上次查询参数被重用
+            this.CreateCommandTextGenerator();
             this.ConnectionManager.SetConnectionString(OperationType.Read);
             return new SqlQueryable<TEntity>(this);
         }
