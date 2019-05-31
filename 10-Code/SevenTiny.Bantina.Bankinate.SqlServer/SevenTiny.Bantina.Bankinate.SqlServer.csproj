@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SevenTiny.Bantina.Bankinate.Core" Version="1.0.7" />
+    <PackageReference Include="SevenTiny.Bantina.Bankinate.Core" Version="1.0.8" />
     <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
   </ItemGroup>
 
