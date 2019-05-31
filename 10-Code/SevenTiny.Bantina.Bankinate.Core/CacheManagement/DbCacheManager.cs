@@ -20,8 +20,8 @@ namespace SevenTiny.Bantina.Bankinate.CacheManagement
             TableCacheManager = new TableCacheManager(context);
         }
 
-        public QueryCacheManager QueryCacheManager { get; set; }
-        public TableCacheManager TableCacheManager { get; set; }
+        public QueryCacheManager QueryCacheManager { get; private set; }
+        public TableCacheManager TableCacheManager { get; private set; }
 
         /// 清空所有缓存
         /// </summary>
