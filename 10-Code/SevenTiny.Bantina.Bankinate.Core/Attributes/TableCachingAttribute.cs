@@ -9,9 +9,9 @@ namespace SevenTiny.Bantina.Bankinate.Attributes
     {
         public TimeSpan ExpiredTime { get; private set; }
         public TableCachingAttribute() { }
-        public TableCachingAttribute(TimeSpan expiredTime)
+        public TableCachingAttribute(int expiredTimeMinutes)
         {
-            ExpiredTime = expiredTime;
+            ExpiredTime = TimeSpan.FromMinutes(expiredTimeMinutes);
         }
 
         public static bool IsExistTaleCaching(Type type, out TimeSpan timeSpan)
